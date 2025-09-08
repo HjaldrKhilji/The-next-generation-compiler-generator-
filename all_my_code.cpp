@@ -52,7 +52,7 @@ class Tokenezer {
         "\\n",
         "\\S",
         "\\t",
-        "\\TS"
+        "\\A"
       }, {
         [](std::string & input_string, size_t & where_is_it_found) -> void {
           input_string.replace(
@@ -74,13 +74,16 @@ class Tokenezer {
         },
         [ & non_terminal_pattern, this](std::string & input_string,
           size_t & where_is_it_found) -> void {
+               std::string temp = common_functions::read_identifier(this -> line_stream);
           input_string.replace(
             where_is_it_found,
-            size_of_common_escape_charactors, "");
-          std::string temp = common_functions::read_identifier(this -> line_stream);
-          temp = non_terminal_regex_table[temp];
+            size_of_common_escape_charactors, temp);
+         
+          
           if (temp.empty()) {
-            throw std::runtime_error("non terminal symbol not found!");
+            throw std::runtime_error("non terminal symbol not found. The output after this is undefined!");
+            
+              
           }
           non_terminal_pattern += temp;
           where_is_it_found += temp.length();
@@ -206,5 +209,4 @@ int main() {
   };
 lexer.parse_input_and_move_result_to_output_stream();
   return 0;
-
 }
