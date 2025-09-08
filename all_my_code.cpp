@@ -126,20 +126,22 @@ class Tokenezer {
     current_line_number++;
     return raw_input;
   }
-  void output_parsed_input_from_line_to_stream() {
+  void output_parsed_input_from_all_read_lines_to_output_stream() {
     for (auto symbol_declaration: non_terminal_regex_table) {
-      * output_stream << symbol_declaration.first << " " << symbol_declaration.second;
+      * output_stream << symbol_declaration.first << " " << symbol_declaration.second<< "\n\\END\n";
 
     }
 
   }
   void change_current_line() {
+     line_stream.clear();
+
     line_stream.str(get_raw_input());
   }
   std::istringstream & current_line() {
     return line_stream;
   }
-  void parse_input_and_move_result_to_output_stream() {
+  void get_and_parse_input() {
     do {
       try {
         change_current_line();
@@ -155,9 +157,9 @@ class Tokenezer {
       }
       //notice an extra flush using std::endl isnt required while using cerr stream in the code above because cerr is flush automatically
     } while (line_stream.good() == true);
-    output_parsed_input_from_line_to_stream();
 
   } // parse the whole file
+  
   Tokenezer(std::istream & a, std::ostream & b): input_stream {
     & a
   },
@@ -169,7 +171,7 @@ class Tokenezer {
   },
   is_output_stream_owned {
     false
-  } {}
+  },line_stream{""} {}
   Tokenezer(std::istream * a, std::ostream * b): input_stream {
     a
   },
@@ -181,7 +183,7 @@ class Tokenezer {
   },
   is_output_stream_owned {
     true
-  } {}
+  }, line_stream{""} {}
   ~Tokenezer() {
     if (is_input_stream_owned) {
       delete input_stream;
@@ -204,9 +206,12 @@ class Tokenezer {
 };
 
 int main() {
+    //test:
   Tokenezer lexer {
     std::cin, std::cout
   };
-lexer.parse_input_and_move_result_to_output_stream();
+lexer.get_and_parse_input();
+lexer.get_and_parse_input();
+lexer.output_parsed_input_from_all_read_lines_to_output_stream();
   return 0;
 }
