@@ -41,58 +41,7 @@ namespace common_functions {
 }; // namespace common_functions
 
 class Tokenezer {
-  public: void parse_raw_input() {
-    constexpr size_t size_of_common_escape_charactors = 2;
-    constexpr size_t size_of_the_replacement_of_escape_char = 1;
-    std::string non_terminal_name = common_functions::read_identifier(this -> line_stream);
-    std::string non_terminal_pattern;
-    line_stream >> non_terminal_pattern;
-    common_functions::escape_string(
-      non_terminal_pattern, {
-        "\\n",
-        "\\S",
-        "\\t",
-        "\\A"
-      }, {
-        [](std::string & input_string, size_t & where_is_it_found) -> void {
-          input_string.replace(
-            where_is_it_found,
-            size_of_common_escape_charactors, "\n");
-          where_is_it_found += size_of_the_replacement_of_escape_char;
-        },
-        [](std::string & input_string, size_t & where_is_it_found) -> void {
-          input_string.replace(
-            where_is_it_found,
-            size_of_common_escape_charactors, " ");
-          where_is_it_found += size_of_the_replacement_of_escape_char;
-        },
-        [](std::string & input_string, size_t & where_is_it_found) -> void {
-          input_string.replace(
-            where_is_it_found,
-            size_of_common_escape_charactors, "\t");
-          where_is_it_found += size_of_the_replacement_of_escape_char;
-        },
-        [ & non_terminal_pattern, this](std::string & input_string,
-          size_t & where_is_it_found) -> void {
-               std::string temp = common_functions::read_identifier(this -> line_stream);
-          input_string.replace(
-            where_is_it_found,
-            size_of_common_escape_charactors, temp);
-         
-          
-          if (temp.empty()) {
-            throw std::runtime_error("non terminal symbol not found. The output after this is undefined!");
-            
-              
-          }
-          non_terminal_pattern += temp;
-          where_is_it_found += temp.length();
-        }
-      });
-    non_terminal_regex_table[non_terminal_name] =
-      non_terminal_pattern;
-  }
-
+  public: 
   std::string get_raw_input() {
     std::string raw_input {};
     std::getline( * input_stream, raw_input);
@@ -126,13 +75,99 @@ class Tokenezer {
     current_line_number++;
     return raw_input;
   }
+  void parse_raw_input() {
+    constexpr size_t size_of_common_escape_charactors = 2;
+    constexpr size_t size_of_the_replacement_of_escape_char = 1;
+    std::string non_terminal_name = common_functions::read_identifier(this -> line_stream);
+    std::string non_terminal_pattern;
+    line_stream >> non_terminal_pattern;
+    non_terminal_regex_table[non_terminal_name].push_back("");//adding_initial_sapce
+    
+    common_functions::escape_string(
+      non_terminal_pattern, {
+        "\\n",
+        "\\S",
+        "\\t",
+        "\\A"
+      }, {
+        [](std::string & input_string, size_t & where_is_it_found) -> void {
+          input_string.replace(
+            where_is_it_found,
+            size_of_common_escape_charactors, "\n");
+          where_is_it_found += size_of_the_replacement_of_escape_char;
+        },
+        [](std::string & input_string, size_t & where_is_it_found) -> void {
+          input_string.replace(
+            where_is_it_found,
+            size_of_common_escape_charactors, " ");
+          where_is_it_found += size_of_the_replacement_of_escape_char;
+        },
+        [](std::string & input_string, size_t & where_is_it_found) -> void {
+          input_string.replace(
+            where_is_it_found,
+            size_of_common_escape_charactors, "\t");
+          where_is_it_found += size_of_the_replacement_of_escape_char;
+        },
+        [ &non_terminal_name,& non_terminal_pattern, this](std::string & input_string,
+          size_t & where_is_it_found) -> void {
+               std::string temp = common_functions::read_identifier(this -> line_stream);
+                if (temp.empty()) {
+            throw std::runtime_error("non terminal symbol not found. The output after this is undefined!");
+              
+          }
+               temp="("+temp+")";
+          input_string.replace(
+            where_is_it_found,
+            size_of_common_escape_charactors, temp);
+            non_terminal_regex_table[non_terminal_name].push_back(temp);
+         
+          
+
+          non_terminal_pattern += temp;
+          where_is_it_found += temp.length();
+        }
+      });
+        non_terminal_regex_table[non_terminal_name][0]= non_terminal_pattern;
+  }
+
   void output_parsed_input_from_all_read_lines_to_output_stream() {
     for (auto symbol_declaration: non_terminal_regex_table) {
-      * output_stream << symbol_declaration.first << " " << symbol_declaration.second<< "\n\\END\n";
-
-    }
-
+  
+        //the code below first outputs:
+        //1.the non term name, of which the information is gonna be printed for.
+        //2.then it prints the non term name's regex pattern.
+        //3.then it prints the non term names whose patterns are
+        //included as capture groups the current non term pattern.
+      * output_stream << symbol_declaration.first << " ";
+    std::for_each(begin(symbol_declaration.second),end(symbol_declaration.second),
+     [this](std::string non_term_names) { *output_stream << non_term_names<<" ";
+        }
+    );
+    * output_stream <<"\\END"<<std::endl;
   }
+      
+  }
+   
+   void change_output_stream(std::ostream *new_output_stream){
+       output_stream =new_output_stream;
+        is_output_stream_owned=   true;
+
+   }
+    void change_input_stream(std::istream *new_input_stream){
+       input_stream=new_input_stream;
+        is_input_stream_owned =true;
+        
+    }
+     void change_output_stream(std::ostream &new_output_stream){
+       output_stream=&new_output_stream;
+        is_input_stream_owned=false;
+   }
+   
+   void change_input_stream(std::istream &new_input_stream){
+       input_stream=&new_input_stream;
+      is_input_stream_owned =false;
+   }
+   
   void change_current_line() {
      line_stream.clear();
 
@@ -185,19 +220,16 @@ class Tokenezer {
     true
   }, line_stream{""} {}
   ~Tokenezer() {
-    if (is_input_stream_owned) {
-      delete input_stream;
-    } else {}
-    if (is_output_stream_owned) {
-      delete output_stream;
-    } else {}
+    if (is_input_stream_owned) delete input_stream;
+   
+    if (is_output_stream_owned) delete output_stream;
   }
 
   private:
 
     int current_line_number;
   std::map < std::string,
-  std::string > non_terminal_regex_table;
+  std::vector<std::string> > non_terminal_regex_table;
   std::istringstream line_stream;
   std::istream * input_stream;
   bool is_input_stream_owned;
