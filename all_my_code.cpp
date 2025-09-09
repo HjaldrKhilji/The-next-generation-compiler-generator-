@@ -45,15 +45,30 @@ class Tokenezer {
   std::string get_raw_input() {
     std::string raw_input {};
     std::getline( * input_stream, raw_input);
+
+
+ 
+    current_line_number++;
+    return raw_input;
+  }
+  void parse_raw_input() {
     constexpr size_t size_of_common_escape_charactors = 2;
     constexpr size_t size_of_the_replacement_of_escape_char = 1;
-    //provide a escape charactor for \ and for joining the next line into the current one; \\N 
+    std::string non_terminal_name = common_functions::read_identifier(this -> line_stream);
+    std::string non_terminal_pattern;
+    line_stream >> non_terminal_pattern;
+    non_terminal_regex_table[non_terminal_name].push_back("");//adding_initial_sapce
+    
     common_functions::escape_string(
-      raw_input, {
+      non_terminal_pattern, {
         "\\\\",
-        "\\N"
+        "\\N",
+        "\\n",
+        "\\S",
+        "\\t",
+        "\\A"
       }, {
-
+          
         [](std::string & input_string, size_t & where_is_it_found) -> void {
           input_string.replace(where_is_it_found,
             size_of_common_escape_charactors, "\\");
@@ -69,27 +84,7 @@ class Tokenezer {
             "\n" + temp_input);
           where_is_it_found +=
             size_of_the_replacement_of_escape_char + temp_input.length();
-        }
-
-      });
-    current_line_number++;
-    return raw_input;
-  }
-  void parse_raw_input() {
-    constexpr size_t size_of_common_escape_charactors = 2;
-    constexpr size_t size_of_the_replacement_of_escape_char = 1;
-    std::string non_terminal_name = common_functions::read_identifier(this -> line_stream);
-    std::string non_terminal_pattern;
-    line_stream >> non_terminal_pattern;
-    non_terminal_regex_table[non_terminal_name].push_back("");//adding_initial_sapce
-    
-    common_functions::escape_string(
-      non_terminal_pattern, {
-        "\\n",
-        "\\S",
-        "\\t",
-        "\\A"
-      }, {
+        },
         [](std::string & input_string, size_t & where_is_it_found) -> void {
           input_string.replace(
             where_is_it_found,
@@ -130,7 +125,7 @@ class Tokenezer {
         non_terminal_regex_table[non_terminal_name][0]= non_terminal_pattern;
   }
 
-  void output_parsed_input_from_all_read_lines_to_output_stream() {
+  void output_all_previously_parsed_into_to_output_stream() {
     for (auto symbol_declaration: non_terminal_regex_table) {
   
         //the code below first outputs:
@@ -244,6 +239,6 @@ int main() {
   };
 lexer.get_and_parse_input();
 lexer.get_and_parse_input();
-lexer.output_parsed_input_from_all_read_lines_to_output_stream();
+lexer.output_all_previously_parsed_into_to_output_stream();
   return 0;
 }
