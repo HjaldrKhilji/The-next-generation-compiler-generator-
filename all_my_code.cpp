@@ -31,7 +31,7 @@ namespace common_functions {
   std::string read_identifier(std::istringstream & line_stream) {
     std::string identifier;
     char c;
-    while(line_stream.get(c)&&(isspace(c)));
+    while (line_stream.get(c) && (isspace(c)));
     line_stream.putback(c);
     for (; line_stream.get(c) && (isalnum(c) || c == '_'); identifier += c);
     line_stream.putback(c);
@@ -142,50 +142,57 @@ class Compiler {
     return std::move(raw_input);
   }
 
-class Function_object_to_escape_escape_charactors{
+  class Function_object_to_escape_escape_charactors {
     public:
-    //lambda has to be used with common_functions::escape_string() function
-   
-    std::string string_to_be_replaced_with;
-         size_t size_of_the_replacement_of_escape_string;
+      //lambda has to be used with common_functions::escape_string() function
 
-       size_t size_of_escape_charactor;
-     Function_object_to_escape_escape_charactors(std::string &&y, size_t x):  string_to_be_replaced_with{y},size_of_the_replacement_of_escape_string{y.length()}, size_of_escape_charactor{x}{ }
-    
+      std::string string_to_be_replaced_with;
+    size_t size_of_the_replacement_of_escape_string;
 
-   void operator ()(std::string & input_string, size_t & where_is_it_found) {
-          input_string.replace(where_is_it_found,
-            size_of_escape_charactor, string_to_be_replaced_with);
-          where_is_it_found += size_of_the_replacement_of_escape_string;
-        }
-    };
-std::function<void(std::string &, size_t&)> escape_backslash_capital_N=[this](std::string & input_string,
-          size_t & where_is_it_found) -> void {
-            constexpr size_t size_of_common_escape_charactors = 2;
+    size_t size_of_escape_charactor;
+    Function_object_to_escape_escape_charactors(std::string && y, size_t x): string_to_be_replaced_with {
+      y
+    },
+    size_of_the_replacement_of_escape_string {
+      y.length()
+    },
+    size_of_escape_charactor {
+      x
+    } {}
 
-          std::string temp_input = this -> get_raw_input();
+    void operator()(std::string & input_string, size_t & where_is_it_found) {
+      input_string.replace(where_is_it_found,
+        size_of_escape_charactor, string_to_be_replaced_with);
+      where_is_it_found += size_of_the_replacement_of_escape_string;
+    }
+  };
+  std:: function < void(std::string & , size_t & ) > escape_backslash_capital_N = [this](std::string & input_string,
+    size_t & where_is_it_found) -> void {
+    constexpr size_t size_of_common_escape_charactors = 2;
 
-          input_string.replace(
-            where_is_it_found,
-            size_of_common_escape_charactors,
-            temp_input);
-          where_is_it_found += temp_input.length();
-        };
-std::function<void(std::string &, size_t&)> escape_backslash_capital_A_by_reading_nested_symbols=  [this](std::string & input_string,
-          size_t & where_is_it_found) -> void {
-          constexpr size_t size_of_common_escape_charactors = 2;
+    std::string temp_input = this -> get_raw_input();
 
-          std::string name = common_functions::read_identifier(this -> line_stream);
-          std::string the_nested_non_term_entry_pattern = all_entries.get_pattern_of_nested_non_term_symbol_pattern(name);
-          std::string pattern_corrresponding_to_nested_name = "(" + the_nested_non_term_entry_pattern + ")";
-          input_string.replace(
-            where_is_it_found,
-            size_of_common_escape_charactors, pattern_corrresponding_to_nested_name);
-          all_entries.add_nested_non_term_symbol_to_the_newest_entry(name);
+    input_string.replace(
+      where_is_it_found,
+      size_of_common_escape_charactors,
+      temp_input);
+    where_is_it_found += temp_input.length();
+  };
+  std:: function < void(std::string & , size_t & ) > escape_backslash_capital_A_by_reading_nested_symbols = [this](std::string & input_string,
+    size_t & where_is_it_found) -> void {
+    constexpr size_t size_of_common_escape_charactors = 2;
 
-          where_is_it_found += pattern_corrresponding_to_nested_name.length();
+    std::string name = common_functions::read_identifier(this -> line_stream);
+    std::string the_nested_non_term_entry_pattern = all_entries.get_pattern_of_nested_non_term_symbol_pattern(name);
+    std::string pattern_corrresponding_to_nested_name = "(" + the_nested_non_term_entry_pattern + ")";
+    input_string.replace(
+      where_is_it_found,
+      size_of_common_escape_charactors, pattern_corrresponding_to_nested_name);
+    all_entries.add_nested_non_term_symbol_to_the_newest_entry(name);
 
-        };
+    where_is_it_found += pattern_corrresponding_to_nested_name.length();
+
+  };
   void parse_raw_input() {
     constexpr size_t size_of_common_escape_charactors = 2;
     std::string non_terminal_name = common_functions::read_identifier(line_stream);
@@ -206,14 +213,28 @@ std::function<void(std::string &, size_t&)> escape_backslash_capital_A_by_readin
         "\\S",
         "\\t",
         "\\A",
-      },{Function_object_to_escape_escape_charactors{"\\", size_of_common_escape_charactors} ,
-    escape_backslash_capital_N,
-       Function_object_to_escape_escape_charactors{"\n", size_of_common_escape_charactors},
-       Function_object_to_escape_escape_charactors{" ", size_of_common_escape_charactors},
-    Function_object_to_escape_escape_charactors{"\t", size_of_common_escape_charactors},
-        escape_backslash_capital_A_by_reading_nested_symbols}
+      }, {
+        Function_object_to_escape_escape_charactors {
+          "\\",
+          size_of_common_escape_charactors
+        },
+        escape_backslash_capital_N,
+        Function_object_to_escape_escape_charactors {
+          "\n",
+          size_of_common_escape_charactors
+        },
+        Function_object_to_escape_escape_charactors {
+          " ",
+          size_of_common_escape_charactors
+        },
+        Function_object_to_escape_escape_charactors {
+          "\t",
+          size_of_common_escape_charactors
+        },
+        escape_backslash_capital_A_by_reading_nested_symbols
+      }
 
-      );
+    );
     all_entries.add_non_term_pattern_for_newest_entry(non_terminal_pattern);
   }
 
