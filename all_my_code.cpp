@@ -128,7 +128,7 @@ class All_non_terminal_entries {
   std::map < reference_to_string,
   reference_to_Non_terminal_name_entry,
   Function_object_class_to_compare_underlying_objects_of_a_reference > map_for_fast_retrival_of_entries;
-  std::vector < Non_terminal_name_entry > list_of_all_non_term_entries_for_fast_traversal;
+  std::deque < Non_terminal_name_entry > list_of_all_non_term_entries_for_fast_traversal;
 };
 
 class Compiler {
