@@ -70,7 +70,7 @@ class All_non_terminal_entries {
 
   }
   std::string & get_pattern_of_nested_non_term_symbol_pattern(std::string sub_symbol_name) {
-    if (map_for_fast_retrival_of_entries.contains(sub_symbol_name)) {
+    if (!map_for_fast_retrival_of_entries.contains(sub_symbol_name)) {
       throw std::runtime_error("no pattern founds, output is undefined!");
     }
 
