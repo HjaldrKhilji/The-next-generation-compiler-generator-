@@ -31,6 +31,8 @@ namespace common_functions {
   std::string read_identifier(std::istringstream & line_stream) {
     std::string identifier;
     char c;
+    while(line_stream.get(c)&&(isspace(c)));
+    line_stream.putback(c);
     for (; line_stream.get(c) && (isalnum(c) || c == '_'); identifier += c);
     line_stream.putback(c);
     if (identifier.empty()) {
@@ -139,61 +141,7 @@ class Compiler {
     current_line_number++;
     return std::move(raw_input);
   }
-  //to be done later:
-  // void Parse_semantical_rules(){
-  //     std::string semantic_input_for_current_nested_non_term_symbol;
-  //     line_stream>>semantic_input_for_current_nested_non_term_symbol;
-  //     common_functions::escape_string(
-  //       non_terminal_pattern, {
-  //         "\\\\",
-  //         "\\N",
-  //         "\\n",
-  //         "\\S",
-  //         "\\t",
-  //         "\\A",
-  //       }, {
 
-  //         [](std::string & input_string, size_t & where_is_it_found) -> void {
-  //           input_string.replace(where_is_it_found,
-  //             size_of_common_escape_charactors, "\\");
-  //           where_is_it_found += size_of_the_replacement_of_escape_char;
-  //         },
-  //         [this](std::string & input_string,
-  //           size_t & where_is_it_found) -> void {
-  //           std::string temp_input = this -> get_raw_input();
-
-  //           input_string.replace(
-  //             where_is_it_found,
-  //             size_of_common_escape_charactors,
-  //              temp_input);
-  //           where_is_it_found += temp_input.length();
-  //         },
-  //         [](std::string & input_string, size_t & where_is_it_found) -> void {
-  //           input_string.replace(
-  //             where_is_it_found,
-  //             size_of_common_escape_charactors, "\n");
-  //           where_is_it_found += size_of_the_replacement_of_escape_char;
-  //         },
-  //         [](std::string & input_string, size_t & where_is_it_found) -> void {
-  //           input_string.replace(
-  //             where_is_it_found,
-  //             size_of_common_escape_charactors, " ");
-  //           where_is_it_found += size_of_the_replacement_of_escape_char;
-  //         },
-  //         [](std::string & input_string, size_t & where_is_it_found) -> void {
-  //           input_string.replace(
-  //             where_is_it_found,
-  //             size_of_common_escape_charactors, "\t");
-  //           where_is_it_found += size_of_the_replacement_of_escape_char;
-  //         },
-  //         [ &non_terminal_name,& non_terminal_pattern, this](std::string & input_string,
-  //           size_t & where_is_it_found) -> void {
-
-  //         }
-
-  //       });
-
-  //   }
 class Function_object_to_escape_escape_charactors{
     public:
     //lambda has to be used with common_functions::escape_string() function
