@@ -33,7 +33,7 @@ namespace common_functions {
     char c;
     for (; line_stream.get(c) && (isalnum(c) || c == '_'); identifier += c);
     line_stream.putback(c);
-    if (identifier.length() == 0) {
+    if (identifier.empty()) {
       throw std::runtime_error("empty non terminal symbol name");
     }
     return identifier;
@@ -137,7 +137,7 @@ class Compiler {
     std::getline( * input_stream, raw_input);
 
     current_line_number++;
-    return raw_input;
+    return std::move(raw_input);
   }
   //to be done later:
   // void Parse_semantical_rules(){
@@ -194,11 +194,53 @@ class Compiler {
   //       });
 
   //   }
+class Function_object_to_escape_escape_charactors{
+    public:
+    //lambda has to be used with common_functions::escape_string() function
+   
+    std::string string_to_be_replaced_with;
+         size_t size_of_the_replacement_of_escape_string;
 
+       size_t size_of_escape_charactor;
+     Function_object_to_escape_escape_charactors(std::string &&y, size_t x):  string_to_be_replaced_with{y},size_of_the_replacement_of_escape_string{y.length()}, size_of_escape_charactor{x}{ }
+    
+
+   void operator ()(std::string & input_string, size_t & where_is_it_found) {
+          input_string.replace(where_is_it_found,
+            size_of_escape_charactor, string_to_be_replaced_with);
+          where_is_it_found += size_of_the_replacement_of_escape_string;
+        }
+    };
+std::function<void(std::string &, size_t&)> escape_backslash_capital_N=[this](std::string & input_string,
+          size_t & where_is_it_found) -> void {
+            constexpr size_t size_of_common_escape_charactors = 2;
+
+          std::string temp_input = this -> get_raw_input();
+
+          input_string.replace(
+            where_is_it_found,
+            size_of_common_escape_charactors,
+            temp_input);
+          where_is_it_found += temp_input.length();
+        };
+std::function<void(std::string &, size_t&)> escape_backslash_capital_A_by_reading_nested_symbols=  [this](std::string & input_string,
+          size_t & where_is_it_found) -> void {
+          constexpr size_t size_of_common_escape_charactors = 2;
+
+          std::string name = common_functions::read_identifier(this -> line_stream);
+          std::string the_nested_non_term_entry_pattern = all_entries.get_pattern_of_nested_non_term_symbol_pattern(name);
+          std::string pattern_corrresponding_to_nested_name = "(" + the_nested_non_term_entry_pattern + ")";
+          input_string.replace(
+            where_is_it_found,
+            size_of_common_escape_charactors, pattern_corrresponding_to_nested_name);
+          all_entries.add_nested_non_term_symbol_to_the_newest_entry(name);
+
+          where_is_it_found += pattern_corrresponding_to_nested_name.length();
+
+        };
   void parse_raw_input() {
     constexpr size_t size_of_common_escape_charactors = 2;
-    constexpr size_t size_of_the_replacement_of_escape_char = 1;
-    std::string non_terminal_name = common_functions::read_identifier(this -> line_stream);
+    std::string non_terminal_name = common_functions::read_identifier(line_stream);
     std::string non_terminal_pattern;
     line_stream >> non_terminal_pattern;
     all_entries.add_non_term_symbol_name(non_terminal_name);
@@ -216,56 +258,14 @@ class Compiler {
         "\\S",
         "\\t",
         "\\A",
-      }, {
+      },{Function_object_to_escape_escape_charactors{"\\", size_of_common_escape_charactors} ,
+    escape_backslash_capital_N,
+       Function_object_to_escape_escape_charactors{"\n", size_of_common_escape_charactors},
+       Function_object_to_escape_escape_charactors{" ", size_of_common_escape_charactors},
+    Function_object_to_escape_escape_charactors{"\t", size_of_common_escape_charactors},
+        escape_backslash_capital_A_by_reading_nested_symbols}
 
-        [](std::string & input_string, size_t & where_is_it_found) -> void {
-          input_string.replace(where_is_it_found,
-            size_of_common_escape_charactors, "\\");
-          where_is_it_found += size_of_the_replacement_of_escape_char;
-        },
-        [this](std::string & input_string,
-          size_t & where_is_it_found) -> void {
-          std::string temp_input = this -> get_raw_input();
-
-          input_string.replace(
-            where_is_it_found,
-            size_of_common_escape_charactors,
-            temp_input);
-          where_is_it_found += temp_input.length();
-        },
-        [](std::string & input_string, size_t & where_is_it_found) -> void {
-          input_string.replace(
-            where_is_it_found,
-            size_of_common_escape_charactors, "\n");
-          where_is_it_found += size_of_the_replacement_of_escape_char;
-        },
-        [](std::string & input_string, size_t & where_is_it_found) -> void {
-          input_string.replace(
-            where_is_it_found,
-            size_of_common_escape_charactors, " ");
-          where_is_it_found += size_of_the_replacement_of_escape_char;
-        },
-        [](std::string & input_string, size_t & where_is_it_found) -> void {
-          input_string.replace(
-            where_is_it_found,
-            size_of_common_escape_charactors, "\t");
-          where_is_it_found += size_of_the_replacement_of_escape_char;
-        },
-        [this](std::string & input_string,
-          size_t & where_is_it_found) -> void {
-          std::string name = common_functions::read_identifier(this -> line_stream);
-          std::string the_nested_non_term_entry_pattern = all_entries.get_pattern_of_nested_non_term_symbol_pattern(name);
-          std::string pattern_corrresponding_to_nested_name = "(" + the_nested_non_term_entry_pattern + ")";
-          input_string.replace(
-            where_is_it_found,
-            size_of_common_escape_charactors, pattern_corrresponding_to_nested_name);
-          all_entries.add_nested_non_term_symbol_to_the_newest_entry(name);
-
-          where_is_it_found += pattern_corrresponding_to_nested_name.length();
-
-        }
-
-      });
+      );
     all_entries.add_non_term_pattern_for_newest_entry(non_terminal_pattern);
   }
 
@@ -296,6 +296,8 @@ class Compiler {
     line_stream.clear();
 
     line_stream.str(get_raw_input());
+    parse_raw_input();
+
   }
   std::istringstream & current_line() {
     return line_stream;
@@ -304,7 +306,6 @@ class Compiler {
     do {
       try {
         change_current_line();
-        parse_raw_input();
 
       } catch (const std::ios_base::failure & e) {
         std::cerr << "File stream error: " << e.what() << "\n" << current_line_number << "\n\n\n";
