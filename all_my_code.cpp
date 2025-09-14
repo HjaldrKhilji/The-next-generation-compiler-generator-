@@ -22,12 +22,8 @@
  its regex 2.0 because the escape_string is highly generic, and the way I use it is also generic, The true regex 2.0 is the semantical analyser,
  which again at the time of this commit isnt full completed
  */
-/* I also used reference wrappers, not to increase readability, but to implement immutability
- by immutability In the context of reference mappers, I mean, that you can rmeove the element, and then reinsert them
-but you cant directly change them. this is something that makes me feel safer when writing code, hence I used reference mappers
-you may claim that I abused these features, but I tried to mantain a consistent tradoff between readability, maintability, 
-and performance while keeping in mind that I am all alone in this project, hence what I preferred whats most readable to me
-than what might be readable to someone else
+/* 
+I used refernece wrappers because I Just dont like using pointers, in code that is meant to be low level and hard to read
 */
 namespace common_functions {
   using escape_charactor_function_wrapper_type= std::function<void(
@@ -137,8 +133,8 @@ class All_non_terminal_entries {
     std::cout << std::endl;
   }
   private: 
-  using reference_to_string = std::reference_wrapper < std::string > ;
-  using reference_to_Non_terminal_name_entry = std::reference_wrapper < Non_terminal_name_entry > ;
+  using reference_to_string = std::reference_wrapper <  std::string > ;
+  using reference_to_Non_terminal_name_entry = std::reference_wrapper <  Non_terminal_name_entry > ;
   struct Function_object_class_to_compare_underlying_objects_of_a_reference {
     bool operator()(const std::reference_wrapper < std::string > & a,
       const std::reference_wrapper < std::string > & b) const {
@@ -476,5 +472,4 @@ int main() {
   lexer.print_all_parsed_input_for_testing();
   return 0;
 }
-
 
