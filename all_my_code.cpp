@@ -12,7 +12,19 @@
 
 #include <vector>
  //todo: MAKE THE CODE READABLE 
+ //PLEASE NOTE THAT I DIDNT USE FLAT MAPS FOR NON TERM ENTRIES, OR REGEX FUNCTIONS FOR ESCAPING STRINGS because:
+ /*
+ 1.Flat maps arent insert ordered
+ 2.REGEX Functions for escaping strings are slow in C++, and I dont trust the boost library alternative functions
  
+ */
+/* I also used reference wrappers, not to increase readability, but to implement immutability
+ by immutability In the context of reference mappers, I mean, that you can rmeove the element, and then reinsert them
+but you cant directly change them. this is something that makes me feel safer when writing code, hence I used reference mappers
+you may claim that I abused these features, but I tried to mantain a consistent tradoff between readability, maintability, 
+and performance while keeping in mind that I am all alone in this project, hence what I preferred whats most readable to me
+than what might be readable to someone else
+*/
 namespace common_functions {
   using escape_charactor_function_wrapper_type= std::function<void(
           std::string & input_string, size_t & where_is_it_found)>;
@@ -460,4 +472,3 @@ int main() {
   lexer.print_all_parsed_input_for_testing();
   return 0;
 }
-
