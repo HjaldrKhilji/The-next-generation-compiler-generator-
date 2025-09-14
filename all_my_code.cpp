@@ -17,7 +17,10 @@
  /*
  1.Flat maps arent insert ordered
  2.REGEX Functions for escaping strings are slow in C++, and I dont trust the boost library alternative functions
- 
+ 3.REGEX functions didnt fullfill all my needs in a generic way, and I needed something more generic, like a regex 2.0
+ I am still using REGEX underneath the regex 2.0, at the time that I added this comment, regex underneath regex 2.0 isnt fully done
+ its regex 2.0 because the escape_string is highly generic, and the way I use it is also generic, The true regex 2.0 is the semantical analyser,
+ which again at the time of this commit isnt full completed
  */
 /* I also used reference wrappers, not to increase readability, but to implement immutability
  by immutability In the context of reference mappers, I mean, that you can rmeove the element, and then reinsert them
@@ -473,4 +476,5 @@ int main() {
   lexer.print_all_parsed_input_for_testing();
   return 0;
 }
+
 
