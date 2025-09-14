@@ -198,7 +198,7 @@ class Compiler {
       where_is_it_found,
       size_of_common_escape_charactors,
       temp_input);
-    where_is_it_found += temp_input.length();
+    
   };
 
   //note that the layer below lexical analysis is syntaxical analysis, and the config generation for that
