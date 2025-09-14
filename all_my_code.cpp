@@ -48,8 +48,8 @@ struct Semantical_analyzer_config_entry{
   std::reference_wrapper < std::string > name_of_non_term_symbol_to_check;
   std::reference_wrapper < std::string > the_pattern_to_check;
 
-  bool weather_to_checK_exist_or_not_exist;//1 for if you want to check if it exist, and 0 if you dont
-  bool weather_to_check_atleast_or_exact;//1 if you want to check atleast, and 0 if you dont
+  bool whether_to_checK_exist_or_not_exist;//1 for if you want to check if it exist, and 0 if you dont
+  bool whether_to_check_atleast_or_exact;//1 if you want to check atleast, and 0 if you dont
   
   
   unsigned int number_of_times_checks;
@@ -460,3 +460,4 @@ int main() {
   lexer.print_all_parsed_input_for_testing();
   return 0;
 }
+
