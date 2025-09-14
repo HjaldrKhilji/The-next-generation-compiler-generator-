@@ -12,6 +12,7 @@
 
 #include <vector>
  //todo: MAKE THE CODE READABLE 
+//I only use regex for lexcial anaylsis, and semantical checks
  //PLEASE NOTE THAT I DIDNT USE FLAT MAPS FOR NON TERM ENTRIES, OR REGEX FUNCTIONS FOR ESCAPING STRINGS because:
  /*
  1.Flat maps arent insert ordered
@@ -472,3 +473,4 @@ int main() {
   lexer.print_all_parsed_input_for_testing();
   return 0;
 }
+
