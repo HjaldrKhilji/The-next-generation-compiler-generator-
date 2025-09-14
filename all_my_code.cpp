@@ -12,11 +12,13 @@
 
 #include <vector>
  //todo: MAKE THE CODE READABLE 
+ 
 namespace common_functions {
+  using escape_charactor_function_wrapper_type= std::function<void(
+          std::string & input_string, size_t & where_is_it_found)>;
   void escape_string(std::string & input_string,
     const std::vector < std::string > & strings_to_be_replaced,
-      const std::vector < std:: function < void(
-          std::string & input_string, size_t & where_is_it_found) >>
+      const std::vector < escape_charactor_function_wrapper_type >
         function_to_be_run_for_each) {
     for (size_t index = 0; index < strings_to_be_replaced.size(); index++) {
       size_t position_of_the_match_found_last = 0;
@@ -42,12 +44,22 @@ namespace common_functions {
 
   }
 };
+struct Semantical_analyzer_config_entry{
+  std::reference_wrapper < std::string > name_of_non_term_symbol_to_check;
+  std::reference_wrapper < std::string > the_pattern_to_check;
+
+  bool weather_to_checK_exist_or_not_exist;//1 for if you want to check if it exist, and 0 if you dont
+  bool weather_to_check_atleast_or_exact;//1 if you want to check atleast, and 0 if you dont
+  
+  
+  unsigned int number_of_times_checks;
+};
 struct Non_terminal_name_entry {
 
   std::string name;
   std::string pattern;
   std::vector < std::reference_wrapper < Non_terminal_name_entry >> sub_entries;
-  std::vector < std::vector < std::string >> the_semantics_of_sub_names;
+  std::vector < std::vector < Semantical_analyzer_config_entry >> Semantical_analysis_rules;
 
 };
 
@@ -88,22 +100,12 @@ class All_non_terminal_entries {
 
   }
 
-  void add_semantic_rule_for_newest_sub_entry(std::string sub_symbol_name) {
+  void add_semantic_rule_for_newest_sub_entry(Semantical_analyzer_config_entry semantical_rule_entry) {
     auto & newest_entry = list_of_all_non_term_entries_for_fast_traversal.back();;
-    newest_entry.the_semantics_of_sub_names.back().push_back(sub_symbol_name);
+    newest_entry.Semantical_analysis_rules.back().push_back(semantical_rule_entry);
 
   }
-  Non_terminal_name_entry & return_current_entry() {
-    if (list_of_all_non_term_entries_for_fast_traversal.empty()) {
-      throw std::runtime_error("no entries inputed, the OUTPUT is undefined");
-
-    }
-    return list_of_all_non_term_entries_for_fast_traversal[entry_number];
-
-  }
-  void change_current_entry() {
-    entry_number++;
-  }
+ 
   void print_all_content() {
     for (auto current_entry: list_of_all_non_term_entries_for_fast_traversal) {
       std::cout << current_entry.name << " ";
@@ -118,7 +120,7 @@ class All_non_terminal_entries {
     }
     std::cout << std::endl;
   }
-  private: int entry_number {};
+  private: 
   using reference_to_string = std::reference_wrapper < std::string > ;
   using reference_to_Non_terminal_name_entry = std::reference_wrapper < Non_terminal_name_entry > ;
   struct Function_object_class_to_compare_underlying_objects_of_a_reference {
@@ -166,11 +168,18 @@ class Compiler {
       where_is_it_found += size_of_the_replacement_of_escape_string;
     }
   };
-  std:: function < void(std::string & , size_t & ) > escape_backslash_capital_N = [this](std::string & input_string,
-    size_t & where_is_it_found) -> void {
+  //the code below is simply if you want the line below to be pasted in place, for example:
+  /*
+  a \N a
+  sta mur ghayama 
+  becomes:
+  a  sta mur ghayama a
+  */
+
+    void escape_backslash_capital_N (std::string & input_string, size_t & where_is_it_found)  {
     constexpr size_t size_of_common_escape_charactors = 2;
 
-    std::string temp_input = this -> get_raw_input();
+    std::string temp_input =  get_raw_input();
 
     input_string.replace(
       where_is_it_found,
@@ -178,11 +187,106 @@ class Compiler {
       temp_input);
     where_is_it_found += temp_input.length();
   };
-  std:: function < void(std::string & , size_t & ) > escape_backslash_capital_A_by_reading_nested_symbols = [this](std::string & input_string,
-    size_t & where_is_it_found) -> void {
+
+  //note that the layer below lexical analysis is syntaxical analysis, and the config generation for that
+  // is handled by the escape characotor \A, the code below is the function to handle \A, this function then calls semantical 
+  //config analyzer parser
+
+
+std::string return_raw_info_where_to_look_in_and_config_on_how(){
+  constexpr int size_of_common_escape_charactors=1;
+ std::string name = common_functions::read_identifier(line_stream);
+      std::string where_to_look_in_config;
+      line_stream>>where_to_look_in_config;
+      common_functions::escape_string(
+      where_to_look_in_config, {
+        "+",
+        "*",
+        "?"
+        
+      },{
+       Function_object_to_escape_escape_charactors {
+          "{1,}",
+          size_of_common_escape_charactors
+        },
+     Function_object_to_escape_escape_charactors {
+          "{0,}",
+          size_of_common_escape_charactors
+        },
+       Function_object_to_escape_escape_charactors {
+          "{0,0}",
+          size_of_common_escape_charactors
+        }
+      }
+    );
+    
+    return std::move(name);
+  }
+void semantical_analyzer_rules_reader(){
     constexpr size_t size_of_common_escape_charactors = 2;
 
-    std::string name = common_functions::read_identifier(this -> line_stream);
+    std::string semantic_pattern_to_check;
+    line_stream >> semantic_pattern_to_check;
+    common_functions::escape_string(
+      semantic_pattern_to_check, {
+        "\\\\",
+        "\\S",
+        "\\t",
+        "\\n",
+        "\\N"
+      
+      },
+      {
+      Function_object_to_escape_escape_charactors {
+          "\\",
+          size_of_common_escape_charactors
+        },
+        Function_object_to_escape_escape_charactors {
+          " ",
+          size_of_common_escape_charactors
+        },
+
+        Function_object_to_escape_escape_charactors {
+          "\t",
+          size_of_common_escape_charactors
+        },
+        Function_object_to_escape_escape_charactors {
+          "\n",
+          size_of_common_escape_charactors
+        },
+        Function_object_to_escape_escape_charactors {
+          "\t",
+          size_of_common_escape_charactors
+        },
+        [this](std::string& input_string, size_t &where_found){this->escape_backslash_capital_N(input_string, where_found);}
+
+      });
+      std::string raw_info_on_where_to_look_in_and_how=return_raw_info_where_to_look_in_and_config_on_how();
+      std::istringstream line_stream {raw_info_on_where_to_look_in_and_how};
+     // Semantical_analyzer_config_entry entry_to_enter; notice the default constructor of the class type is deleted, this issue will be solved, though, by me
+      char parse_config_one_by_one;
+      if(line_stream>>parse_config_one_by_one){
+      switch(parse_config_one_by_one){
+        case '?':
+
+        break;
+        case '{':
+
+        break;
+        default:
+       
+        break;
+      }
+
+      }
+
+     
+}
+
+  void escape_backslash_capital_A_by_reading_nested_symbols (std::string & input_string, size_t & where_is_it_found)  {
+    constexpr size_t size_of_common_escape_charactors = 2;
+
+    std::string name = common_functions::read_identifier(line_stream);
     std::string the_nested_non_term_entry_pattern = all_entries.get_pattern_of_nested_non_term_symbol_pattern(name);
     std::string pattern_corrresponding_to_nested_name = "(" + the_nested_non_term_entry_pattern + ")";
     input_string.replace(
@@ -192,7 +296,7 @@ class Compiler {
 
     where_is_it_found += pattern_corrresponding_to_nested_name.length();
 
-  };
+  }
   void parse_raw_input() {
     constexpr size_t size_of_common_escape_charactors = 2;
     std::string non_terminal_name = common_functions::read_identifier(line_stream);
@@ -218,7 +322,9 @@ class Compiler {
           "\\",
           size_of_common_escape_charactors
         },
-        escape_backslash_capital_N,
+        [this](std::string& input_string, size_t &where_found){this->escape_backslash_capital_N(input_string, where_found);}
+
+        ,
         Function_object_to_escape_escape_charactors {
           "\n",
           size_of_common_escape_charactors
@@ -231,7 +337,9 @@ class Compiler {
           "\t",
           size_of_common_escape_charactors
         },
-        escape_backslash_capital_A_by_reading_nested_symbols
+        [this](std::string& input_string, size_t &where_found){this->escape_backslash_capital_A_by_reading_nested_symbols(input_string, where_found);}
+
+        
       }
 
     );
@@ -280,7 +388,7 @@ class Compiler {
         std::cerr << "File stream error: " << e.what() << "\n" << current_line_number << "\n\n\n";
         return;
       } catch (const std::runtime_error & e) {
-        std::cerr << "Runtime error: " << e.what() << "\n" << current_line_number << "\n\n\n";
+        std::cerr << "Runtime error: " << e.what() << current_line_number << "\n\n\n";
 
         return;
       }
