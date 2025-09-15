@@ -343,11 +343,10 @@ std::string take_space_terminated_input_and_escape_it(){
       return "("+ std::move(semantic_pattern_to_check)+")";
 }
 
-settings_for_semantical_rules return_fully_parsed_config(std::istringstream&& line_stream, unsigned int &minimum_amount_of_Matches, unsigned int &maximum_amount_of_matches){
+void parse_config_for_semantic_entry(settings_for_semantical_rules &settings_for_current_config,std::istringstream&& line_stream, unsigned int &minimum_amount_of_Matches, unsigned int &maximum_amount_of_matches){
 
    char parse_config_one_by_one;
-      settings_for_semantical_rules settings_for_current_config=settings_for_semantical_rules::check_exist|settings_for_semantical_rules::check_atleast;
-      //notice by default check_exist and check_atleast are turned on
+ 
       line_stream>>parse_config_one_by_one;
     
       switch(parse_config_one_by_one){
@@ -372,7 +371,6 @@ settings_for_semantical_rules return_fully_parsed_config(std::istringstream&& li
         std::cout<<"invalid configuration input, procede on your own risk";
         break;
       }
-      return settings_for_current_config;
 
 }
 void semantical_analyzer_entry_reader(){
@@ -381,8 +379,9 @@ void semantical_analyzer_entry_reader(){
       unsigned int minimum_amount_of_Matches=0;
       unsigned int maximum_amount_of_matches=0;//only used if settings_for_semantic_rules dosent have check_atlest on.
       std::string raw_config_info=return_raw_config_for_pattern();
-     
-      settings_for_semantical_rules fully_parsed_config= return_fully_parsed_config( std::istringstream {raw_config_info}, minimum_amount_of_Matches, maximum_amount_of_matches);
+          settings_for_semantical_rules fully_parsed_config=settings_for_semantical_rules::check_exist|settings_for_semantical_rules::check_atleast;
+      //notice by default check_exist and check_atleast are turned on
+      parse_config_for_semantic_entry( fully_parsed_config,std::istringstream {raw_config_info}, minimum_amount_of_Matches, maximum_amount_of_matches);
       Semantical_analyzer_config_entry semantic_rule_entry_to_enter{non_terminal_name_to_search_inside ,semantic_pattern_to_check, fully_parsed_config, minimum_amount_of_Matches, maximum_amount_of_matches};
 
       
