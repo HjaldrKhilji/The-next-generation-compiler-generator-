@@ -21,11 +21,12 @@
  2.REGEX Functions for escaping strings are slow in C++, and I dont trust the boost library alternative functions
  3.REGEX functions didnt fullfill all my needs in a generic way, and I needed something more generic, like a regex 2.0
  I am still using REGEX underneath the regex 2.0, at the time that I added this comment, regex underneath regex 2.0 isnt fully done
- its regex 2.0 because the escape_string is highly generic, and the way I use it is also generic, The true regex 2.0 is the semantical analyser
+ its regex 2.0 because the escape_string is highly generic, and the way I use it is also generic, The true regex 2.0 is the semantical analyser.
  */
 /* 
 I used refernece wrappers because I Just dont like using pointers, in code that is meant to be low level and hard to read
 */
+//I use istringstream a lot because of flexibility in error handling, parsing, but also for the sake of extending my code with ease.
 namespace common_functions {
   using escape_charactor_function_wrapper_type= std::function<void(
           std::string & input_string, size_t & where_is_it_found)>;
