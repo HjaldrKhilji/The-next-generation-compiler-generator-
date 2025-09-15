@@ -34,9 +34,17 @@ I used refernece wrappers because I Just dont like using pointers, in code that 
 //I use istringstream a lot because of flexibility in error handling, parsing, but also for the sake of extending my code with ease.
 //I also believe that istringstream are actually faster for my case, again, I cant confirm, but the reason that I think this way is:
 /*
-I can empty a input stream by reading from it into any type, and simply push back if I dont like the input
-this can help me read input directly into any type, I do get that some conversion will happen to the target type, but that is done using the standard
-library, so its still not that bad, in terms of performance
+
+it can help me read input directly into any type, I do get that some conversion will happen to the target type, but that is done using the standard
+library, so its still not that bad, in terms of performance because standard library tends to have optimized implementations
+
+think of how the stack operations in assembly can be used to make the logic of your code concise, and your code faster in doing so
+
+in this case, I want to make sure that when I read input, I move it as well, I also want to make sure that I can keep the logic concise.
+
+
+
+my future self: please dont replace istringstream, I need it!
 
 again this is just my opinion
 
