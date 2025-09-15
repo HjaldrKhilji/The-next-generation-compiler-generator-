@@ -11,9 +11,14 @@
 #include <string>
 
 #include <vector>
-//I didnt use import std because it dosent work in windows for some reason
+
 //todo: add more error handling for all stream operations and make exceptions give some sort of gurrenties of crashes, or on recovery, instead of just undefined
 //todo: MAKE THE CODE READABLE 
+
+
+//My reasons for doing stuff in a certian way:
+//I didnt use import std because it dosent work in windows for some reason
+
 //I only use regex for lexcial anaylsis, and semantical checks
  //PLEASE NOTE THAT I DIDNT USE FLAT MAPS FOR NON TERM ENTRIES, OR REGEX FUNCTIONS FOR ESCAPING STRINGS because:
  /*
@@ -27,6 +32,16 @@
 I used refernece wrappers because I Just dont like using pointers, in code that is meant to be low level and hard to read
 */
 //I use istringstream a lot because of flexibility in error handling, parsing, but also for the sake of extending my code with ease.
+//I also believe that istringstream are actually faster for my case, again, I cant confirm, but the reason that I think this way is:
+/*
+I can empty a input stream by reading from it into any type, and simply push back if I dont like the input
+this can help me read input directly into any type, I do get that some conversion will happen to the target type, but that is done using the standard
+library, so its still not that bad, in terms of performance
+
+again this is just my opinion
+
+*/
+// so yeah thats all the reasons that I have
 namespace common_functions {
   using escape_charactor_function_wrapper_type= std::function<void(
           std::string & input_string, size_t & where_is_it_found)>;
