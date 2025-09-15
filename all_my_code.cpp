@@ -56,15 +56,40 @@ namespace common_functions {
 
   }
 };
+enum  class settings_for_semantical_rules:short{
+NONE=0,
+check_exist=1,
+check_dont_exist=2,
+check_atleast=4,
+check_exact= 8 
+};
+inline settings_for_semantical_rules operator|(settings_for_semantical_rules a, settings_for_semantical_rules b){
+  return static_cast<settings_for_semantical_rules>(static_cast<int>(a)|static_cast<int>(b));
+
+}
+inline void operator|=(settings_for_semantical_rules a, settings_for_semantical_rules b){
+  a= a|b;
+
+}
+
+inline settings_for_semantical_rules operator^(settings_for_semantical_rules a, settings_for_semantical_rules b){
+  return static_cast<settings_for_semantical_rules>(static_cast<int>(a)^static_cast<int>(b));
+
+}
+inline void operator^=(settings_for_semantical_rules a, settings_for_semantical_rules b){
+  a= a^b;
+
+}
 struct Semantical_analyzer_config_entry{
+
+
+  
   std::reference_wrapper < std::string > name_of_non_term_symbol_to_check;
   std::reference_wrapper < std::string > the_pattern_to_check;
+  settings_for_semantical_rules  all_settings;
 
-  bool whether_to_checK_exist_or_not_exist;//1 for if you want to check if it exist, and 0 if you dont
-  bool whether_to_check_atleast_or_exact;//1 if you want to check atleast, and 0 if you dont
-  
-  
-  unsigned int number_of_times_checks;
+  unsigned int minimum_amount_of_matches;
+  unsigned int maximum_amount_of_matches;
 };
 struct Non_terminal_name_entry {
 
@@ -205,13 +230,12 @@ class Compiler {
   //config analyzer parser
 
 
-std::string return_raw_info_where_to_look_in_and_config_on_how(){
+std::string return_raw_config_for_pattern(){
   constexpr int size_of_common_escape_charactors=1;
- std::string name = common_functions::read_identifier(line_stream);
-      std::string where_to_look_in_config;
-      line_stream>>where_to_look_in_config;
+      std::string raw_config;
+      line_stream>>raw_config;
       common_functions::escape_string(
-      where_to_look_in_config, {
+      raw_config, {
         "+",
         "*",
         "?"
@@ -232,20 +256,22 @@ std::string return_raw_info_where_to_look_in_and_config_on_how(){
       }
     );
     
-    return std::move(name);
+    return std::move(raw_config);
   }
-void semantical_analyzer_rules_reader(){
-    constexpr size_t size_of_common_escape_charactors = 2;
-
+std::string take_space_terminated_input_and_escape_it(){
+  constexpr size_t size_of_common_escape_charactors = 2;
     std::string semantic_pattern_to_check;
     line_stream >> semantic_pattern_to_check;
-    common_functions::escape_string(
+   common_functions::escape_string(
       semantic_pattern_to_check, {
         "\\\\",
         "\\S",
         "\\t",
         "\\n",
-        "\\N"
+        "(",
+        ")",
+        "\\N",
+       
       
       },
       {
@@ -266,31 +292,65 @@ void semantical_analyzer_rules_reader(){
           "\n",
           size_of_common_escape_charactors
         },
+        
         Function_object_to_escape_escape_charactors {
-          "\t",
-          size_of_common_escape_charactors
+          "\\(",
+          1
+        }//size of ( is one hence I wrote 1 in the second argument
+        ,Function_object_to_escape_escape_charactors {
+          "\\)",
+          1
         },
         [this](std::string& input_string, size_t &where_found){this->escape_backslash_capital_N(input_string, where_found);}
-
+//size of ) is one hence I wrote 1 in the second argument
       });
-      std::string raw_info_on_where_to_look_in_and_how=return_raw_info_where_to_look_in_and_config_on_how();
-      std::istringstream line_stream {raw_info_on_where_to_look_in_and_how};
-     // Semantical_analyzer_config_entry entry_to_enter; notice the default constructor of the class type is deleted, this issue will be solved, though, by me
-      char parse_config_one_by_one;
-      if(line_stream>>parse_config_one_by_one){
+      
+      return "("+ std::move(semantic_pattern_to_check)+")";
+}
+
+settings_for_semantical_rules return_fully_parsed_config(std::istringstream&& line_stream, unsigned int &minimum_amount_of_Matches, unsigned int &maximum_amount_of_matches){
+
+   char parse_config_one_by_one;
+      settings_for_semantical_rules settings_for_current_config=settings_for_semantical_rules::check_exist|settings_for_semantical_rules::check_atleast;
+      //notice by default check_exist and check_atleast are turned on
+      line_stream>>parse_config_one_by_one;
+    
       switch(parse_config_one_by_one){
-        case '?':
-
-        break;
+        case '!':
+        settings_for_current_config|=settings_for_semantical_rules::check_dont_exist;
+        settings_for_current_config^=settings_for_semantical_rules::check_exist;
+        line_stream>>parse_config_one_by_one;
+        [[fallthrough]]
         case '{':
-
+        line_stream>>minimum_amount_of_Matches;
+        line_stream>>parse_config_one_by_one;
+        [[fallthrough]]
+        case ',':
+        line_stream>>parse_config_one_by_one;
+        settings_for_current_config=settings_for_semantical_rules::check_exact;
+        settings_for_current_config=settings_for_semantical_rules::check_atleast;
+        line_stream>>maximum_amount_of_matches;
+        [[fallthrough]]
+        case '}':
         break;
         default:
-       
+        std::cout<<"invalid configuration input, procede on your own risk";
         break;
       }
+      return settings_for_current_config;
 
-      }
+}
+void semantical_analyzer_entry_reader(){
+      std::string non_terminal_name_to_search_inside= common_functions::read_identifier(line_stream);
+    std::string semantic_pattern_to_check=take_space_terminated_input_and_escape_it();
+      unsigned int minimum_amount_of_Matches=0;
+      unsigned int maximum_amount_of_matches=0;//only used if settings_for_semantic_rules dosent have check_atlest on.
+      std::string raw_config_info=return_raw_config_for_pattern();
+     
+      settings_for_semantical_rules fully_parsed_config= return_fully_parsed_config( std::istringstream {raw_config_info}, minimum_amount_of_Matches, maximum_amount_of_matches);
+      Semantical_analyzer_config_entry semantic_rule_entry_to_enter{non_terminal_name_to_search_inside ,semantic_pattern_to_check, fully_parsed_config, minimum_amount_of_Matches, maximum_amount_of_matches};
+
+      
 
      
 }
@@ -327,6 +387,8 @@ void semantical_analyzer_rules_reader(){
         "\\N",
         "\\n",
         "\\S",
+        "(",
+        ")",
         "\\t",
         "\\A",
       }, {
@@ -346,6 +408,14 @@ void semantical_analyzer_rules_reader(){
           size_of_common_escape_charactors
         },
         Function_object_to_escape_escape_charactors {
+          "\\(",
+          1
+        }//size of ( is one hence I wrote 1 in the second argument
+        ,Function_object_to_escape_escape_charactors {
+          "\\)",
+          1
+        },//size of ) is one hence I wrote 1 in the second argument
+        Function_object_to_escape_escape_charactors {
           "\t",
           size_of_common_escape_charactors
         },
@@ -355,7 +425,7 @@ void semantical_analyzer_rules_reader(){
       }
 
     );
-    all_entries.add_non_term_pattern_for_newest_entry(non_terminal_pattern);
+    all_entries.add_non_term_pattern_for_newest_entry("("+non_terminal_pattern+")");
   }
 
   void print_all_parsed_input_for_testing() {
