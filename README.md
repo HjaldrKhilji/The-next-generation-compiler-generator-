@@ -9,3 +9,6 @@ like C++ did for C, but this time the abstractions are for compiler design, and 
 
 Why am I making this? well, as one fraustrated physicist might put it: I want a simpler notation to describe my formulas that still compile into standard notation without any hard work.
                       This applies to all fields.
+
+The goal is for the base tool to be generic, but you should be able to use abstraction to special this tool and make other compiler generators that are specialized for a specific task.
+
