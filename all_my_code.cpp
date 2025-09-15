@@ -11,7 +11,9 @@
 #include <string>
 
 #include <vector>
- //todo: MAKE THE CODE READABLE 
+//I didnt use import std because it dosent work in windows for some reason
+//todo: add more error handling for all stream operations and make exceptions give some sort of gurrenties of crashes, or on recovery, instead of just undefined
+//todo: MAKE THE CODE READABLE 
 //I only use regex for lexcial anaylsis, and semantical checks
  //PLEASE NOTE THAT I DIDNT USE FLAT MAPS FOR NON TERM ENTRIES, OR REGEX FUNCTIONS FOR ESCAPING STRINGS because:
  /*
