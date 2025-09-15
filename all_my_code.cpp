@@ -45,8 +45,18 @@ in this case, I want to make sure that when I read input, I move it as well, I a
 
 
 my future self: please dont replace istringstream, I need it!
+ 
+to my future self:
+if you prove that istringstreams are inefficient, and escape_string function is too then just dont change the design, and try:
+1.defining your own line_stream whose interface is the same as istringstreams, make sure the istringstream alternative is well defined. 
+2.dont remove escape_string itself, just change the implementation
 
-again this is just my opinion
+with the current design, I can optimize the code, if my code is ever proven to be slower than what it can be.
+so dont change the design!!!!!!!!
+
+optimize only after the compiler generator is done
+
+again these are just my opinion, dont judge
 
 */
 // so yeah thats all the reasons that I have
