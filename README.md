@@ -12,4 +12,4 @@ Why am I making this? well, as one fraustrated physicist might put it: I want a 
 
 The goal is for the base tool to be generic, but you should be able to use abstraction to special this tool and make other compiler generators that are specialized for a specific task.
 
-This of my tool as a programming language with all general constructs to generate compilers
+you can make make entries using my tool to make programming constructs that you can use in my tool
