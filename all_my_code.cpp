@@ -193,11 +193,11 @@ class All_non_terminal_entries {
 
         auto unwrapped_sub_entries = wrapped_sub_entries[index].get();
         std::cout << unwrapped_sub_entries.name << unwrapped_sub_entries.pattern << " ";
-        for (auto semantic_rules_in_sub_entries: current_entry.Semantical_analysis_rules[index]) {
-          std::cout << semantic_rules_in_sub_entries.name_of_non_term_symbol_to_check.get() << " " << semantic_rules_in_sub_entries.the_pattern_to_check.get() << " " <<
-            semantic_rules_in_sub_entries.minimum_amount_of_matches << " " << semantic_rules_in_sub_entries.maximum_amount_of_matches;
+        // for (auto semantic_rules_in_sub_entries: current_entry.Semantical_analysis_rules[index]) {
+        //   std::cout << semantic_rules_in_sub_entries.name_of_non_term_symbol_to_check.get() << " " << semantic_rules_in_sub_entries.the_pattern_to_check.get() << " " <<
+        //     semantic_rules_in_sub_entries.minimum_amount_of_matches << " " << semantic_rules_in_sub_entries.maximum_amount_of_matches;
 
-        }
+        // }
 
       }
       std::cout << std::endl;
