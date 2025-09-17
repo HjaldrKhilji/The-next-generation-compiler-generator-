@@ -11,10 +11,10 @@
 #include <string>
 
 #include <vector>
+//semantical analyzer still has bugs, so I didnt use it yet
 
 //todo: add more error handling for all stream operations and make exceptions give some sort of gurrenties of crashes, or on recovery, instead of just undefined
 //todo: MAKE THE CODE READABLE 
-
 
 //My reasons for doing stuff in a certian way:
 //I didnt use import std because it dosent work in windows for some reason
@@ -80,9 +80,9 @@ namespace common_functions {
   std::string read_identifier(std::istringstream & line_stream) {
     std::string identifier;
     char c;
-    while (line_stream.get(c) && (isspace(c)));
+    line_stream>> std::skipws >>c;//skipping whitespaces
     line_stream.putback(c);
-    for (; line_stream.get(c) && (isalnum(c) || c == '_'); identifier += c);
+    for (; line_stream>>std::noskipws>> c  && (isalnum(c) || c == '_'); identifier += c);
     line_stream.putback(c);
     if (identifier.empty()) {
       throw std::runtime_error("empty non terminal symbol name");
@@ -174,6 +174,12 @@ class All_non_terminal_entries {
 
   void add_semantic_rule_for_newest_sub_entry(Semantical_analyzer_config_entry semantical_rule_entry) {
     auto & newest_entry = list_of_all_non_term_entries_for_fast_traversal.back();;
+    if(newest_entry.sub_entries.size()> newest_entry.Semantical_analysis_rules.size()){
+      //this means thats it the first semantic entry for the nested name
+          newest_entry.Semantical_analysis_rules.push_back(std::vector < Semantical_analyzer_config_entry >{semantical_rule_entry});
+          return;
+    }
+  
     newest_entry.Semantical_analysis_rules.back().push_back(semantical_rule_entry);
 
   }
@@ -182,16 +188,23 @@ class All_non_terminal_entries {
     for (auto current_entry: list_of_all_non_term_entries_for_fast_traversal) {
       std::cout << current_entry.name << " ";
       std::cout << current_entry.pattern << " ";
+      int index=0;
+    for (auto wrapped_sub_entries=  current_entry.sub_entries.begin(); wrapped_sub_entries+index!=  current_entry.sub_entries.end(); index++) {
 
-      for (auto wrapped_sub_entries_in_the_current_entry: current_entry.sub_entries) {
-        auto unwrapped_sub_entries_in_the_current_entry = wrapped_sub_entries_in_the_current_entry.get();
-        std::cout << unwrapped_sub_entries_in_the_current_entry.name << unwrapped_sub_entries_in_the_current_entry.pattern << " ";
+        auto unwrapped_sub_entries = wrapped_sub_entries[index].get();
+        std::cout << unwrapped_sub_entries.name << unwrapped_sub_entries.pattern << " ";
+    for (auto semantic_rules_in_sub_entries: current_entry.Semantical_analysis_rules[index]){
+        std::cout << semantic_rules_in_sub_entries.name_of_non_term_symbol_to_check.get() << " "<< semantic_rules_in_sub_entries.the_pattern_to_check.get() << " "<<
+        semantic_rules_in_sub_entries.minimum_amount_of_matches << " "<< semantic_rules_in_sub_entries.maximum_amount_of_matches;
 
-      }
+
+    }
+      
 
     }
     std::cout << std::endl;
   }
+}
   private: 
   using reference_to_string = std::reference_wrapper <  std::string > ;
   using reference_to_Non_terminal_name_entry = std::reference_wrapper <  Non_terminal_name_entry > ;
@@ -248,7 +261,7 @@ class Compiler {
   a  sta mur ghayama a
   */
 
-    void escape_backslash_capital_N (std::string & input_string, size_t & where_is_it_found)  {
+    void escape_backslash_capital_n (std::string & input_string, size_t & where_is_it_found)  {
     constexpr size_t size_of_common_escape_charactors = 2;
 
     std::string temp_input =  get_raw_input();
@@ -264,11 +277,38 @@ class Compiler {
   // is handled by the escape characotor \A, the code below is the function to handle \A, this function then calls semantical 
   //config analyzer parser
 
+  void escape_backslash_capital_a_by_reading_nested_symbols (std::string & input_string, size_t & where_is_it_found)  {
+    constexpr size_t size_of_common_escape_charactors = 2;
 
+    std::string name = common_functions::read_identifier(line_stream);
+    std::string the_nested_non_term_entry_pattern = all_entries.get_pattern_of_nested_non_term_symbol_pattern(name);
+    std::string pattern_corrresponding_to_nested_name =  the_nested_non_term_entry_pattern ;// you dont need to add () because they are already added to the pattern
+    input_string.replace(
+      where_is_it_found,
+      size_of_common_escape_charactors, pattern_corrresponding_to_nested_name);
+    all_entries.add_nested_non_term_symbol_to_the_newest_entry(name);
+
+    where_is_it_found += pattern_corrresponding_to_nested_name.length();
+    // semantical_analyzer_entry_reader(); cant use it yet because the mechanism still has bugs
+
+  }
+    void escape_backslash_capital_u_by_reading_nested_symbols (std::string & input_string, size_t & where_is_it_found)  {
+    constexpr size_t size_of_common_escape_charactors = 2;
+
+    std::string name = common_functions::read_identifier(line_stream);
+    std::string the_nested_non_term_entry_pattern = all_entries.get_pattern_of_nested_non_term_symbol_pattern(name);
+    std::string pattern_corrresponding_to_nested_name = the_nested_non_term_entry_pattern ;
+    input_string.replace(
+      where_is_it_found,
+      size_of_common_escape_charactors, pattern_corrresponding_to_nested_name);
+
+    where_is_it_found += pattern_corrresponding_to_nested_name.length();
+
+  }
 std::string return_raw_config_for_pattern(){
   constexpr int size_of_common_escape_charactors=1;
       std::string raw_config;
-      line_stream>>raw_config;
+      line_stream>>std::skipws>>raw_config;
       common_functions::escape_string(
       raw_config, {
         "+",
@@ -293,10 +333,11 @@ std::string return_raw_config_for_pattern(){
     
     return std::move(raw_config);
   }
+
 std::string take_space_terminated_input_and_escape_it(){
   constexpr size_t size_of_common_escape_charactors = 2;
     std::string semantic_pattern_to_check;
-    line_stream >> semantic_pattern_to_check;
+    line_stream >> std::skipws >>semantic_pattern_to_check;
    common_functions::escape_string(
       semantic_pattern_to_check, {
         "\\\\",
@@ -305,8 +346,9 @@ std::string take_space_terminated_input_and_escape_it(){
         "\\n",
         "(",
         ")",
-        "\\N",
-       
+         "\\U",
+        "\\N"
+      
       
       },
       {
@@ -336,7 +378,8 @@ std::string take_space_terminated_input_and_escape_it(){
           "\\)",
           1
         },
-        [this](std::string& input_string, size_t &where_found){this->escape_backslash_capital_N(input_string, where_found);}
+        [this](std::string& input_string, size_t &where_found){this->escape_backslash_capital_n(input_string, where_found);},
+        [this](std::string& input_string, size_t &where_found){this->escape_backslash_capital_u_by_reading_nested_symbols(input_string, where_found);}
 //size of ) is one hence I wrote 1 in the second argument
       });
       
@@ -347,7 +390,7 @@ void parse_config_for_semantic_entry(settings_for_semantical_rules &settings_for
 
    char parse_config_one_by_one;
  
-      line_stream>>parse_config_one_by_one;
+      line_stream>>parse_config_one_by_one;//isstring in this function isnt the same as the one used in this class, hence I dont need to change the settings using std::skipws or std::noskipws 
     
       switch(parse_config_one_by_one){
         case '!':
@@ -368,12 +411,18 @@ void parse_config_for_semantic_entry(settings_for_semantical_rules &settings_for
         case '}':
         break;
         default:
-        std::cout<<"invalid configuration input, procede on your own risk";
+        throw std::runtime_error("invalid configuration input, procede on your own risk");
         break;
       }
 
 }
-void semantical_analyzer_entry_reader(){
+ void semantical_analyzer_entry_reader(){
+    char c;
+    if(!(line_stream>>std::skipws >>c)) {
+
+      return;
+    }   
+    line_stream.putback(c);
       std::string non_terminal_name_to_search_inside= common_functions::read_identifier(line_stream);
     std::string semantic_pattern_to_check=take_space_terminated_input_and_escape_it();
       unsigned int minimum_amount_of_Matches=0;
@@ -382,32 +431,19 @@ void semantical_analyzer_entry_reader(){
           settings_for_semantical_rules fully_parsed_config=settings_for_semantical_rules::check_exist|settings_for_semantical_rules::check_atleast;
       //notice by default check_exist and check_atleast are turned on
       parse_config_for_semantic_entry( fully_parsed_config,std::istringstream {raw_config_info}, minimum_amount_of_Matches, maximum_amount_of_matches);
-      Semantical_analyzer_config_entry semantic_rule_entry_to_enter{non_terminal_name_to_search_inside ,semantic_pattern_to_check, fully_parsed_config, minimum_amount_of_Matches, maximum_amount_of_matches};
-
+      all_entries.add_semantic_rule_for_newest_sub_entry(Semantical_analyzer_config_entry{non_terminal_name_to_search_inside ,semantic_pattern_to_check, fully_parsed_config, minimum_amount_of_Matches, maximum_amount_of_matches});
+      
       
 
      
 }
 
-  void escape_backslash_capital_A_by_reading_nested_symbols (std::string & input_string, size_t & where_is_it_found)  {
-    constexpr size_t size_of_common_escape_charactors = 2;
 
-    std::string name = common_functions::read_identifier(line_stream);
-    std::string the_nested_non_term_entry_pattern = all_entries.get_pattern_of_nested_non_term_symbol_pattern(name);
-    std::string pattern_corrresponding_to_nested_name = "(" + the_nested_non_term_entry_pattern + ")";
-    input_string.replace(
-      where_is_it_found,
-      size_of_common_escape_charactors, pattern_corrresponding_to_nested_name);
-    all_entries.add_nested_non_term_symbol_to_the_newest_entry(name);
-
-    where_is_it_found += pattern_corrresponding_to_nested_name.length();
-
-  }
   void parse_raw_input() {
     constexpr size_t size_of_common_escape_charactors = 2;
     std::string non_terminal_name = common_functions::read_identifier(line_stream);
     std::string non_terminal_pattern;
-    line_stream >> non_terminal_pattern;
+    line_stream  >> std::skipws >>  non_terminal_pattern;
     all_entries.add_non_term_symbol_name(non_terminal_name);
     //replace \\ with \, and \\N with what ever is in the next line
     //replace \\n with \n(newline),\\S with space, \\t with a tab
@@ -425,12 +461,13 @@ void semantical_analyzer_entry_reader(){
         ")",
         "\\t",
         "\\A",
+        "\\U"
       }, {
         Function_object_to_escape_escape_charactors {
           "\\",
           size_of_common_escape_charactors
         },
-        [this](std::string& input_string, size_t &where_found){this->escape_backslash_capital_N(input_string, where_found);}
+        [this](std::string& input_string, size_t &where_found){this->escape_backslash_capital_n(input_string, where_found);}
 
         ,
         Function_object_to_escape_escape_charactors {
@@ -453,7 +490,9 @@ void semantical_analyzer_entry_reader(){
           "\t",
           size_of_common_escape_charactors
         },
-        [this](std::string& input_string, size_t &where_found){this->escape_backslash_capital_A_by_reading_nested_symbols(input_string, where_found);}
+        [this](std::string& input_string, size_t &where_found){this->escape_backslash_capital_a_by_reading_nested_symbols(input_string, where_found);},
+        [this](std::string& input_string, size_t &where_found){this->escape_backslash_capital_u_by_reading_nested_symbols(input_string, where_found);}
+
 
         
       }
@@ -504,7 +543,7 @@ void semantical_analyzer_entry_reader(){
         std::cerr << "File stream error: " << e.what() << "\n" << current_line_number << "\n\n\n";
         return;
       } catch (const std::runtime_error & e) {
-        std::cerr << "Runtime error: " << e.what() << current_line_number << "\n\n\n";
+        std::cerr << "Runtime error: " << e.what() << "   at line number :  "<< current_line_number << "\n\n\n";
 
         return;
       }
