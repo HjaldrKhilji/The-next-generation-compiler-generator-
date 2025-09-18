@@ -118,7 +118,7 @@ inline void operator ^= (settings_for_semantical_rules a, settings_for_semantica
 struct Semantical_analyzer_config_entry {
 
   std::reference_wrapper < std::string > name_of_non_term_symbol_to_check;
-  std::reference_wrapper < std::string > the_pattern_to_check;
+  std::string the_pattern_to_check;
   settings_for_semantical_rules all_settings;
 
   unsigned int minimum_amount_of_matches;
@@ -161,6 +161,14 @@ class All_non_terminal_entries {
     return map_for_fast_retrival_of_entries.at(sub_symbol_name).get().pattern;
 
   }
+  std::reference_wrapper < std::string > get_parmenant_name_of_nested_non_term_symbol_pattern(std::string sub_symbol_name) {
+    if (!map_for_fast_retrival_of_entries.contains(sub_symbol_name)) {
+      throw std::runtime_error("no pattern founds, output is undefined!");
+    }
+
+    return map_for_fast_retrival_of_entries.at(sub_symbol_name).get().name;
+
+  }
   void add_nested_non_term_symbol_to_the_newest_entry(std::string sub_symbol_name) {
     //call only after calling get_pattern_of_nested_non_term_symbol_pattern to make sure the string does exist
     auto & newest_entry = list_of_all_non_term_entries_for_fast_traversal.back();
@@ -170,7 +178,8 @@ class All_non_terminal_entries {
 
   }
 
-  void add_semantic_rule_for_newest_sub_entry(Semantical_analyzer_config_entry semantical_rule_entry) {
+  void add_semantic_rule_for_newest_sub_entry(const Semantical_analyzer_config_entry&& semantical_rule_entry) {//I am using const rvalue reference to force the programmer
+    //to first gather all information, and then built the object using that in the same line as calling the function
     auto & newest_entry = list_of_all_non_term_entries_for_fast_traversal.back();;
     if (newest_entry.sub_entries.size() > newest_entry.Semantical_analysis_rules.size()) {
       //this means thats it the first semantic entry for the nested name
@@ -185,22 +194,31 @@ class All_non_terminal_entries {
   }
 
   void print_all_content() {
+    std::cout<<"number of entries: "<<list_of_all_non_term_entries_for_fast_traversal.size()<<std::endl;
     for (auto current_entry: list_of_all_non_term_entries_for_fast_traversal) {
+      std::cout<<"current entry:"<<std::endl;
       std::cout << current_entry.name << " ";
       std::cout << current_entry.pattern << " ";
       int index = 0;
-      for (auto wrapped_sub_entries = current_entry.sub_entries.begin(); wrapped_sub_entries + index != current_entry.sub_entries.end(); index++) {
+      std::cout<<"syntaxical data:"<<std::endl;
+      for (auto wrapped_sub_entries = current_entry.sub_entries.begin(); wrapped_sub_entries+index != current_entry.sub_entries.end(); ++index) {
+      std::cout<<"number of nested entries in current entry: "<<current_entry.sub_entries.size()<<std::endl;
+  
 
         auto unwrapped_sub_entries = wrapped_sub_entries[index].get();
         std::cout << unwrapped_sub_entries.name << unwrapped_sub_entries.pattern << " ";
-        // for (auto semantic_rules_in_sub_entries: current_entry.Semantical_analysis_rules[index]) {
-        //   std::cout << semantic_rules_in_sub_entries.name_of_non_term_symbol_to_check.get() << " " << semantic_rules_in_sub_entries.the_pattern_to_check.get() << " " <<
-        //     semantic_rules_in_sub_entries.minimum_amount_of_matches << " " << semantic_rules_in_sub_entries.maximum_amount_of_matches;
+        std::cout<<"semantic data of every syntaxical data:"<<std::endl;
 
-        // }
+        for (auto semantic_rules_in_sub_entries: current_entry.Semantical_analysis_rules[index]) {
+            std::cout<<"number of semantic rules for current nested entry in current entry: "<< current_entry.Semantical_analysis_rules[index].size()<<std::endl;
+
+          std::cout << semantic_rules_in_sub_entries.name_of_non_term_symbol_to_check.get() << " " << semantic_rules_in_sub_entries.the_pattern_to_check << " " <<
+            semantic_rules_in_sub_entries.minimum_amount_of_matches << " " << semantic_rules_in_sub_entries.maximum_amount_of_matches<<std::endl;;
+
+        }
 
       }
-      std::cout << std::endl;
+      std::cout <<"next entry(if any):"<< std::endl;
     }
   }
   private: using reference_to_string = std::reference_wrapper < std::string > ;
@@ -286,7 +304,7 @@ class Compiler {
     all_entries.add_nested_non_term_symbol_to_the_newest_entry(name);
 
     where_is_it_found += pattern_corrresponding_to_nested_name.length();
-    // semantical_analyzer_entry_reader(); cant use it yet because the mechanism still has bugs
+    semantical_analyzer_entry_reader(); 
 
   }
   void escape_backslash_capital_u_by_reading_nested_symbols(std::string & input_string, size_t & where_is_it_found) {
@@ -440,12 +458,13 @@ class Compiler {
       raw_config_info
     }, minimum_amount_of_Matches, maximum_amount_of_matches);
     all_entries.add_semantic_rule_for_newest_sub_entry(Semantical_analyzer_config_entry {
-      non_terminal_name_to_search_inside,
+      all_entries.get_parmenant_name_of_nested_non_term_symbol_pattern(non_terminal_name_to_search_inside),
       semantic_pattern_to_check,
       fully_parsed_config,
       minimum_amount_of_Matches,
       maximum_amount_of_matches
     });
+
 
   }
 
