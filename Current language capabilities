@@ -1,15 +1,16 @@
 //this file changes fast
-The current language capabilities is at stage one, which is the most basic stage:
-you give a non term symbol name, and pattern
-the pattern can contian \A to add nested patterns, in which case the nested pattern will replace \A
-this is the basic base for lexical analysis config.
-I am still working on semantical analysis which I will complete soon, 2 days to be exact because I am not gonna be working on my code tomorrow.
-
-current language stage 1 capability is nothing special:
-non_term_name_1 regex_pattern
-non_term_name_2 regex_pattern\Asecond part non_term_name1
-and so on
-
-the input is parsed into the central data structure to store all entries
-in my case I am taking input for two entries, and then simply printing the content of the table.
-the code in main() is purely for testing!
+the code in main is purely for testing and showing what my code can currently do.
+for example if you input this into my program now:
+a a
+b b\A a a kharquas +
+you will get:
+number of entries: 2
+current entry:
+a (a) syntaxical data:
+next entry(if any):
+current entry:
+b (b(a)) syntaxical data:
+number of nested entries in current entry: 1
+a(a) semantic data of every syntaxical data:
+number of semantic rules for current nested entry in current entry: 1
+a (kharquas) 1 0
