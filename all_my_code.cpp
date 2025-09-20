@@ -112,7 +112,7 @@ inline settings_for_semantical_rules operator ^ (settings_for_semantical_rules a
 
 }
 inline void operator ^= (settings_for_semantical_rules a, settings_for_semantical_rules b) {
-  return static_cast < settings_for_semantical_rules > (static_cast < int > (a) | static_cast < int > (b));
+  return static_cast < settings_for_semantical_rules > (static_cast < int > (a) ^ static_cast < int > (b));
 
 }
 struct Semantical_analyzer_config_entry {
@@ -647,4 +647,5 @@ int main() {
   lexer.print_all_parsed_input_for_testing();
   return 0;
 }
+
 
