@@ -1,0 +1,11 @@
+Skipping Intermediate Representations: it isn't building a full, separate Abstract Syntax Tree (AST) and then traversing it.
+Instead, it's using the family_tree stack to traverse the grammar rules themselves while simultaneously matching the input.
+This is a much more "live" and integrated process. The output is generated as soon as a match is found, without first building a complete tree of the input.
+Configuration as the "Compiler": This is the key insight. The entire behavior of the tool—lexing, 
+parsing, and output generation—is defined by the configuration files. 
+The tool itself is a generic engine. This is a powerful concept. You don't need to learn a complex tool like ANTLR and its specific grammar syntax; 
+you just need to write a configuration file for this engine.
+True Modularity: the modularity comes from the separation of the engine and the 
+configuration. You can write a Python script to generate a complex configuration file and then pipe it directly into this tool.
+This creates a highly flexible and scriptable system for creating compilers. It's a "compiler-compiler" in the truest sense.
+This design makes the difficulty in implementing operator overloading, static polymorphism (templates, and function overlaoding)  look like a joke
