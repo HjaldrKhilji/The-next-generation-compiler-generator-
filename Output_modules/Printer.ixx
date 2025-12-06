@@ -1,0 +1,163 @@
+module;
+#include <iostream>
+
+#include <cstdlib>
+
+#include <fstream>
+
+#include <map>
+
+#include <bitset>
+
+#include <regex>
+
+#include <sstream>
+
+#include <string>
+
+#include<stack>
+
+#include <vector>
+
+#include<functional>
+
+export module printer;
+import all_declarations;
+using absolute_base::Semantical_analyzer_config_entry;
+using absolute_base::Non_terminal_name_entry;
+using absolute_base::Siblings;
+
+
+  
+export namespace printing_tools {
+
+    class Printer : public absolute_base::Base_printer {
+    public:
+
+        void additional_setup_for_family_tree() {
+            int current_sibling_index = (*output_config.end()).sub_entries.size() - 1;
+            if (current_sibling_index == -1) {
+                std::runtime_error("no root found");
+            }
+            Siblings current_generation =
+            { (*output_config.end()).sub_entries, current_sibling_index };
+            absolute_base::dig_to_the_leaves_of_the_family_tree(current_generation, &family_tree);
+        }
+        Printer(std::ostream* a, absolute_base::All_non_terminal_entries& b, std::string c) :output_config{ b }, output{ a }
+        {
+            additional_setup_for_family_tree();
+        }
+        //     ~functions to apply options on output data~
+
+
+        std::string::size_type option_to_replicate_output(const std::string& output_config, std::string::size_type position, std::string * output_data_to_append_to) {
+            int number_of_times_to_replicate;
+            std::string::size_type 
+            charactors_processed = absolute_base::read_integer_from_string_at_a_position<int>(output_config, position ,&number_of_times_to_replicate);
+            for (int i = 0; i < number_of_times_to_replicate; i++) {
+                *output_data_to_append_to += *output_data_to_append_to;
+
+            }
+            return position + charactors_processed;
+
+        }
+        
+        std::string::size_type option_to_change_output_stream(const std::string& output_config, std::string::size_type position, std::string* output_data) {
+            const char file_name_end_charactor = ':';
+            size_t delimiter_position = output_config.find(file_name_end_charactor, position);
+            std::string file_name = output_config.substr(position, delimiter_position);
+            output = new std::ofstream{ file_name };
+            return delimiter_position+1;//+1 is to skip the delemiter_position index itself
+        }
+        std::string::size_type option_to_decrypt(const std::string& output_config, std::string::size_type position, std::string* output_data) {
+
+            //      ~       ###TODO LATER###     ~
+            return 0;
+
+        }
+        std::string::size_type option_to_encrypt(const std::string& output_config, std::string::size_type position, std::string* output_data) {
+
+            //      ~       ###TODO LATER###     ~
+            return 0;
+
+        }
+        std::string::size_type option_to_hash(const std::string& output_config, std::string::size_type position, std::string* output_data) {
+
+            //      ~       ###TODO LATER###     ~
+            return 0;
+
+        }
+
+
+        //     ~end of functions to apply options on output data~
+
+        
+        void output_driver(std::string string_to_output, const Non_terminal_name_entry& output_config_entry, int current_generation) {
+            if (absolute_base::semantic_checks(output_config_entry.all_semantical_analysis_rules[current_generation]) != true) {
+                throw std::runtime_error{ "semantic checks on output string failed!" };
+
+            }
+            using absolute_base::Operations_on_output_data;
+            std::string::size_type position=0;
+            
+            std::string all_output_options_set = output_config_entry.output_config_data.substr(position, number_of_currently_defined_options);
+
+            for(int i=0; i< number_of_currently_defined_options; ++i){
+                if (all_output_options_set[i] == charactors_representing_each_option[i]) {
+                    operations_upon_to_run_upon_charactors_found[i](output_config_entry.output_config_data, position, &string_to_output);
+               }
+            
+            }
+            *output << string_to_output;
+            
+            
+        }
+        
+        bool print(std::string output_data, const Non_terminal_name_entry& output_config_entry) override {
+            if (!family_tree.empty()) {
+                Siblings current_generation = family_tree.top();
+                family_tree.pop();
+                int current_sibling_index = current_generation.get_current_sibling_index();
+
+                absolute_base::dig_to_the_leaves_of_the_family_tree(current_generation, &family_tree);
+                
+                output_driver(output_data, output_config_entry, current_generation);
+            }
+            else {
+                throw std::runtime_error{ "nothing is left to output" };
+            }
+        
+        }
+        //function for the very special case of dynamically loading new options
+        void add_a_new_option(Function_wrapper_type* operation_to_run, char charactor_representing_option) {
+            std::vector<char>& vec = charactors_representing_each_option;
+            if (std::find(vec.begin(), vec.end(), charactor_representing_option) == vec.end()) {
+                vec.push_back(charactor_representing_option);
+                operations_upon_to_run_upon_charactors_found.push_back(operation_to_run);
+                ++number_of_currently_defined_options;
+            }
+            else {
+                throw std::runtime_error{ "charactor representing your option is not available" };
+            }
+        }
+    private:
+        absolute_base::All_non_terminal_entries& output_config;
+
+        std::ostream* output;
+        
+
+        std::stack< Siblings > family_tree{};
+
+        //   ~VERY PRIVATE DATA MEMBERS, ONLY FOR IMPLEMENTORS OF THIS MODULE, USAGE:TO LOAD NEW FUNCTIONS FROM DYNAMICALLY LINKED LIBRARIES ~
+        size_t number_of_currently_defined_options = 5;
+        using absolute_base::Function_wrapper_type;
+        using Function_w_t = Function_wrapper_type;
+        std::vector<Function_w_t> operations_upon_to_run_upon_charactors_found{&option_to_replicate_output, &option_to_change_output_stream, &option_to_decript, &option_to_encrypt, &option_to_hash};
+        std::vector<char> charactors_representing_each_option = {'1', '2', '3', '4', '5' };
+
+
+
+
+    };
+
+};
