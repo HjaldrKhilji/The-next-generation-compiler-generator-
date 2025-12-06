@@ -1,16 +1,1 @@
-//this file changes fast
-the code in main is purely for testing and showing what my code can currently do.
-for example if you input this into my program now:
-a a
-b b\A a a kharquas +
-you will get:
-number of entries: 2
-current entry:
-a (a) syntaxical data:
-next entry(if any):
-current entry:
-b (b(a)) syntaxical data:
-number of nested entries in current entry: 1
-a(a) semantic data of every syntaxical data:
-number of semantic rules for current nested entry in current entry: 1
-a (kharquas) 1 0
+nothing works for now, I just added new files, and a completely new structure, i will now debug everything, make a cmake file, and the test.cpp.
