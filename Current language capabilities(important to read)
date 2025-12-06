@@ -1,1 +1,2 @@
-nothing works for now, I just added new files, and a completely new structure, i will now debug everything, make a cmake file, and write code for test.cpp.
+nothing works for now, I just added new files, and a completely new structure, i will now debug everything, make a cmake file, design a error logging(using exception handling and
+meant to be used only by the compiler tool itself) and write code for test.cpp.
