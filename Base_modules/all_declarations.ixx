@@ -147,7 +147,9 @@ again these are just my opinion, dont judge
             };
             std::vector < std::reference_wrapper < Non_terminal_name_entry >> sub_entries;
             std::vector < std::vector < Semantical_analyzer_config_entry >> all_semantical_analysis_rules;
-
+            ~Non_terminal_name_entry() = default;//for supressing warnings of implicitly deleted destructor
+            Non_terminal_name_entry(Non_terminal_name_entry&) = delete;//copying would be expensive, hence I delete the copy function
+            Non_terminal_name_entry(Non_terminal_name_entry&&) = default;//moving, however, wont be so I allowed it
         };
         class Siblings {
         private:
@@ -170,8 +172,8 @@ again these are just my opinion, dont judge
             int set_current_subling_index(int a) {
                 current_sibling_index = a;
             }
-            Non_terminal_name_entry get_current_sibling() {
-                return Representation.get()[current_sibling_index].get();
+            Non_terminal_name_entry& get_current_sibling() {
+                return (Representation.get())[current_sibling_index].get();
             }
             bool check_if_current_sibling_has_no_children() {
                 return get_current_sibling().sub_entries.empty();
