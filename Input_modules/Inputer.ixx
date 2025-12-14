@@ -104,7 +104,7 @@ export namespace input_tools {
 
             }
         private:
-            absolute_base::Base_printer& output;
+            absolute_base::Base_printer& output;//this member should be passed the same istream as this class is
             absolute_base::All_non_terminal_entries& config_regex_info;
             std::string raw_input;
             std::istream& input_stream;
