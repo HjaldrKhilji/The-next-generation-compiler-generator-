@@ -128,9 +128,8 @@ again these are just my opinion, dont judge
         }
 
         struct Semantical_analyzer_config_entry {
-
-            std::reference_wrapper < std::string > name_of_non_term_symbol_to_check;
             std::string the_pattern_to_check;
+            std::reference_wrapper < std::string > name_of_non_term_symbol_to_check;
             Settings_for_semantical_rules all_settings;
 
             unsigned int minimum_amount_of_matches;
@@ -138,7 +137,7 @@ again these are just my opinion, dont judge
             bool check_pattern(std::string text);
         };
         struct Non_terminal_name_entry {
-
+            
             std::string name;
             union {
                 std::string pattern;
@@ -201,7 +200,7 @@ again these are just my opinion, dont judge
 
 
         }
-        bool semantic_checks(const std::vector < Semantical_analyzer_config_entry >& check_info, std::string text) {
+        bool semantic_checks(const std::vector < Semantical_analyzer_config_entry >& check_info,  std::string text) {
             
             for (auto x : check_info) {
                 if (x.check_pattern(text) == false) {
@@ -210,11 +209,12 @@ again these are just my opinion, dont judge
             }
             return true;
         }
-        using Option_function_signature = std::string::size_type(const std::string&, std::string::size_type, std::string*);
-        using Function_wrapper_type = std::function<Option_function_signature>;
+        
         class Base_printer {
         public:
             virtual bool print(std::string string_to_output, const Non_terminal_name_entry& output_config_entry) = 0;
+            
+
 
         };
         class All_non_terminal_entries {
