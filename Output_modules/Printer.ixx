@@ -32,7 +32,7 @@ using absolute_base::Siblings;
 export namespace printing_tools {
 
     class Printer : public absolute_base::Base_printer {
-    public:
+    private:
 
         void additional_setup_for_family_tree() {
             int current_sibling_index = (*output_config.end()).sub_entries.size() - 1;
@@ -43,10 +43,7 @@ export namespace printing_tools {
             { (*output_config.end()).sub_entries, current_sibling_index };
             absolute_base::dig_to_the_leaves_of_the_family_tree(current_generation, &family_tree);
         }
-        Printer(std::ostream* a, absolute_base::All_non_terminal_entries& b, std::string c) :output_config{ b }, output{ a }
-        {
-            additional_setup_for_family_tree();
-        }
+        
         //     ~functions to apply options on output data~
 
 
@@ -66,9 +63,24 @@ export namespace printing_tools {
             const char file_name_end_charactor = ':';
             size_t delimiter_position = output_config.find(file_name_end_charactor, position);
             std::string file_name = output_config.substr(position, delimiter_position);
+            if (is_output_owned) {
+                delete output;
+            }
             output = new std::ofstream{ file_name };
             return delimiter_position+1;//+1 is to skip the delemiter_position index itself
         }
+
+        std::string::size_type option_to_change_input_stream(const std::string& output_config, std::string::size_type position, std::string* output_data) {
+            const char file_name_end_charactor = ':';
+            size_t delimiter_position = output_config.find(file_name_end_charactor, position);
+            std::string file_name = output_config.substr(position, delimiter_position);
+            if (is_input_owned) {
+                delete input;
+            }
+            input = new std::ifstream{ file_name };
+            return delimiter_position + 1;//+1 is to skip the delemiter_position index itself
+        }
+        
         std::string::size_type option_to_decrypt(const std::string& output_config, std::string::size_type position, std::string* output_data) {
 
             //      ~       ###TODO LATER###     ~
@@ -88,7 +100,6 @@ export namespace printing_tools {
 
         }
 
-
         //     ~end of functions to apply options on output data~
 
         
@@ -97,7 +108,6 @@ export namespace printing_tools {
                 throw std::runtime_error{ "semantic checks on output string failed!" };
 
             }
-            using absolute_base::Operations_on_output_data;
             std::string::size_type position=0;
             
             std::string all_output_options_set = output_config_entry.output_config_data.substr(position, number_of_currently_defined_options);
@@ -128,32 +138,48 @@ export namespace printing_tools {
             }
         
         }
-        //function for the very special case of dynamically loading new options
-        void add_a_new_option(Function_wrapper_type* operation_to_run, char charactor_representing_option) {
-            std::vector<char>& vec = charactors_representing_each_option;
-            if (std::find(vec.begin(), vec.end(), charactor_representing_option) == vec.end()) {
-                vec.push_back(charactor_representing_option);
-                operations_upon_to_run_upon_charactors_found.push_back(operation_to_run);
-                ++number_of_currently_defined_options;
+        
+        public:
+            //function for the very special case of dynamically loading new options
+            void add_a_new_option(Function_wrapper_type* operation_to_run, char charactor_representing_option) {
+                std::vector<char>& vec = charactors_representing_each_option;
+                if (std::find(vec.begin(), vec.end(), charactor_representing_option) == vec.end()) {
+                    vec.push_back(charactor_representing_option);
+                    operations_upon_to_run_upon_charactors_found.push_back(operation_to_run);
+                    ++number_of_currently_defined_options;
+                }
+                else {
+                    throw std::runtime_error{ "charactor representing your option is not available" };
+                }
             }
-            else {
-                throw std::runtime_error{ "charactor representing your option is not available" };
+            Printer(std::ostream* a absolute_base::All_non_terminal_entries& b, std::istream* d) : output{ a }, output_config{ b }, input{ d }
+            {
+                additional_setup_for_family_tree();
             }
-        }
+            ~Printer() {
+                if (is_output_owned) {
+                    delete output;
+                }
+                if (is_input_owned) {
+                    delete input;
+                }
+                    
+            }
     private:
         absolute_base::All_non_terminal_entries& output_config;
 
         std::ostream* output;
-        
-
+        bool is_output_owned ;
+        std::istream *input;
+        bool is_input_owned;
         std::stack< Siblings > family_tree{};
 
         //   ~VERY PRIVATE DATA MEMBERS, ONLY FOR IMPLEMENTORS OF THIS MODULE, USAGE:TO LOAD NEW FUNCTIONS FROM DYNAMICALLY LINKED LIBRARIES ~
-        size_t number_of_currently_defined_options = 5;
+        size_t number_of_currently_defined_options = 6;
         using absolute_base::Function_wrapper_type;
         using Function_w_t = Function_wrapper_type;
-        std::vector<Function_w_t> operations_upon_to_run_upon_charactors_found{&option_to_replicate_output, &option_to_change_output_stream, &option_to_decript, &option_to_encrypt, &option_to_hash};
-        std::vector<char> charactors_representing_each_option = {'1', '2', '3', '4', '5' };
+        std::vector<Function_w_t> operations_upon_to_run_upon_charactors_found{&option_to_replicate_output, &option_to_change_output_stream,&option_to_change_input_stream, &option_to_decript, &option_to_encrypt, &option_to_hash};
+        std::vector<char> charactors_representing_each_option = {'1', '2', '3', '4', '5', '6'};
 
 
 
