@@ -41,14 +41,14 @@ export namespace input_tools {
                 if (semantical_checks.empty() != true) {
                     //if its empty then it means that we are in the node that has
                     //no sub nodes, hence no semantic rules.
-                    if (absolute_base::semantic_checks(semantical_checks, match_info[0]) != true) {
+                    if (absolute_base::semantic_checks(semantical_checks, match_info[0].str()) != true) {
                         throw std::runtime_error("semantic checks failed on stream of charactors of type: " + entry_to_match.name);
                     }
                 }
 
 
                 raw_input.erase(match_info.position(), match_info.length());
-                output.print(std::move(match_info[0]), entry_to_match);
+                output.print(match_info[0].str(), entry_to_match);
                 //the work asked(by my ownself) for below is done:
                 //OUTPUT SECTION:
                 //feed match_info[0] to the output class, because only the output class gets to deal with what happens next
