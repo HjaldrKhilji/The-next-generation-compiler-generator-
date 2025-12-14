@@ -35,7 +35,7 @@ bool absolute_base::Semantical_analyzer_config_entry::check_pattern(std::string 
             }
             if (all_settings && Settings_for_semantical_rules::check_exact)
             {
-                if (maximum_amount_of_matches <number_of_matches>minimum_amount_of_matches) {
+                if ((maximum_amount_of_matches <number_of_matches) && (number_of_matches> minimum_amount_of_matches)) {
                     return false;
                 }
                 else {
