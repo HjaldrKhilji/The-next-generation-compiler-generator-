@@ -14,7 +14,7 @@ set(MODULE_SOURCES
 
 )
 # Source files from the 'src' directory
-file(GLOB SRC_FILES "/Base_modules/src/*.cpp")
+file(GLOB SRC_FILES "Base_modules/src/*.cpp")
 
 
 # The main entry point file
