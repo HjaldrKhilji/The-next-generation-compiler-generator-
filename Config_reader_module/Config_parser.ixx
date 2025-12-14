@@ -101,7 +101,7 @@ export   namespace config_parsing_tools {
                //    semantic rule read for the nested non-terminal.
                 constexpr size_t size_of_common_escape_charactors = 2;
 
-                std::string name = common_functions::read_identifier(line_stream);
+                std::string name = absolute_base::read_identifier(line_stream);
                 all_entries.add_nested_non_term_symbol_to_the_newest_entry(name);
                 input_string.replace(
                     where_is_it_found,
@@ -129,7 +129,7 @@ export   namespace config_parsing_tools {
                   //    semantic rule read for the nested non-terminal.
                 constexpr size_t size_of_common_escape_charactors = 2;
 
-                std::string name = common_functions::read_identifier(line_stream);
+                std::string name = absolute_base::read_identifier(line_stream);
                 std::string& the_nested_non_term_entry_pattern = all_entries.get_pattern_of_nested_non_term_symbol_pattern(name);
                 input_string.replace(
                     where_is_it_found,
@@ -153,7 +153,7 @@ export   namespace config_parsing_tools {
                 constexpr int size_of_common_escape_charactors = 1;
                 std::string raw_config;
                 line_stream >> std::skipws >> raw_config;
-                common_functions::escape_string(
+                absolute_base::escape_string(
                     raw_config, {
                       "+",
                       "*",
@@ -207,7 +207,7 @@ export   namespace config_parsing_tools {
                 constexpr size_t size_of_common_escape_charactors = 2;
                 std::string semantic_pattern_to_check;
                 line_stream >> std::skipws >> semantic_pattern_to_check;
-                common_functions::escape_string(
+                absolute_base::escape_string(
                     semantic_pattern_to_check, {
                       "\\\\",
                       "\\S",
@@ -320,7 +320,7 @@ export   namespace config_parsing_tools {
                     return;
                 }
                 line_stream.putback(c);
-                std::string non_terminal_name_to_search_inside = common_functions::read_identifier(line_stream);
+                std::string non_terminal_name_to_search_inside = absolute_base::read_identifier(line_stream);
                 std::string semantic_pattern_to_check = take_space_terminated_input_and_escape_it();
                 unsigned int minimum_amount_of_Matches = 0;
                 unsigned int maximum_amount_of_matches = 0; //only used if settings_for_semantic_rules dosent have check_atleast on.
@@ -365,7 +365,7 @@ export   namespace config_parsing_tools {
                 //the non_terminal_pattern in this function will be a regex expression for input derived class and a custom pattern for output derived class.
                 //by custom, I mean, the meaning of that pattern for the output class wil be defined by me 
                 constexpr size_t size_of_common_escape_charactors = 2;
-                std::string non_terminal_name = common_functions::read_identifier(line_stream);
+                std::string non_terminal_name = absolute_base::read_identifier(line_stream);
                 std::string non_terminal_pattern;
                 line_stream >> std::skipws >> non_terminal_pattern;
                 all_entries.add_non_term_symbol_name(non_terminal_name);
@@ -375,7 +375,7 @@ export   namespace config_parsing_tools {
                 //\\A, and push that name into   current_non_terminal_name_entry
                 //notice where_is_it_found variable is updated in each lambda for the next loop
                 //to read content after the text replaced.
-                common_functions::escape_string(
+                absolute_base::escape_string(
                     non_terminal_pattern, {
                       "\\\\",
                       "\\N",
@@ -486,12 +486,14 @@ export   namespace config_parsing_tools {
             
             Config_reader(std::istream& a) :input_stream(a) {}
         private:
-            absolute_base::All_non_terminal_entries all_entries;
-            int current_line_number_for_read_index;//user should not be able to change this, in any operation other than parsing config
-            int current_line_number_for_access;//user should not be able to change this, without the get or set functions, and this is used
-            // as a index to get parsed data
+            absolute_base::All_non_terminal_entries all_entries{};
             std::istringstream line_stream{ "" };
             std::istream& input_stream;
+            int current_line_number_for_read_index{0};//user should not be able to change this, in any operation other than parsing config
+            int current_line_number_for_access{0};//user should not be able to change this, without the get or set functions, and this is used
+            // as a index to get parsed data
+            
         };
     }  
  
+
