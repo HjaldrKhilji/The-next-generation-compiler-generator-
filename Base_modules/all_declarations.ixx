@@ -94,14 +94,7 @@ again these are just my opinion, dont judge
         };
         using Underlying_type_of_settings_for_semantical_rules = std::underlying_type_t<Settings_for_semantical_rules>;
 
-        enum class Operations_on_output_data : short {
-            replicate = 1,
-            change_output = 2,
-            decrypt = 4,
-            encrypt = 8,
-            hash = 16
-        };
-        using Underlying_type_of_operations_on_output_data = std::underlying_type_t<Settings_for_semantical_rules>;
+      
         //     ~Functions for enum class Settings_for_semantical_rules~ 
 
         bool operator&&(Settings_for_semantical_rules a, Settings_for_semantical_rules b) {
@@ -134,37 +127,6 @@ again these are just my opinion, dont judge
             return a;
         }
 
-        //     ~Functions for enum class Operations_on_output_data~ 
-
-        bool operator&&(Operations_on_output_data a, Operations_on_output_data b) {
-            using underlying_t = Underlying_type_of_operations_on_output_data;
-            return static_cast<bool>(
-                static_cast<underlying_t>(a) & static_cast<underlying_t>(b)
-                );
-        }
-
-        Operations_on_output_data operator|(Operations_on_output_data a, Operations_on_output_data b) {
-            using underlying_t = Underlying_type_of_operations_on_output_data;
-            return static_cast<Operations_on_output_data>(
-                static_cast<underlying_t>(a) | static_cast<underlying_t>(b)
-                );
-        }
-
-        Operations_on_output_data& operator|=(Operations_on_output_data& a, Operations_on_output_data b) {
-            a = a | b;
-            return a;
-        }
-        Operations_on_output_data operator^(Operations_on_output_data a, Operations_on_output_data b) {
-            using underlying_t = Underlying_type_of_operations_on_output_data;
-            return static_cast<Operations_on_output_data>(
-                static_cast<underlying_t>(a) ^ static_cast<underlying_t>(b)
-                );
-        }
-
-        Operations_on_output_data& operator^=(Operations_on_output_data& a, Operations_on_output_data b) {
-            a = a ^ b;
-            return a;
-        }
         struct Semantical_analyzer_config_entry {
 
             std::reference_wrapper < std::string > name_of_non_term_symbol_to_check;
