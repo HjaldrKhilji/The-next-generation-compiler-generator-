@@ -75,7 +75,7 @@ again these are just my opinion, dont judge
             const std::vector < escape_charactor_function_wrapper_type >
             function_to_be_run_for_each);
         std::string read_identifier(std::istringstream& line_stream);
-        template<typename T>
+        template <std::integral T>
         std::string::size_type read_integer_from_string_at_a_position(const std::string& source, std::string::size_type position, T* integer_read);
 
     }
