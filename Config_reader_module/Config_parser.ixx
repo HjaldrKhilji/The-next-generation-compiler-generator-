@@ -39,7 +39,7 @@ export   namespace config_parsing_tools {
                 size_t size_of_the_replacement_of_escape_string;
 
                 size_t size_of_escape_charactor;
-                Function_object_to_escape_escape_charactors(std::string&& y, size_t x) : string_to_be_replaced_with{
+                Function_object_to_escape_escape_charactors(std::string y, size_t x) : string_to_be_replaced_with{
                   y
                 },
                     size_of_the_replacement_of_escape_string{
@@ -258,7 +258,7 @@ export   namespace config_parsing_tools {
                     return "(" + std::move(semantic_pattern_to_check) + ")";
             }
 
-            void parse_config_for_semantic_entry(absolute_base::Settings_for_semantical_rules* settings_for_current_config, std::istringstream&& input_stream, unsigned int* minimum_amount_of_Matches, unsigned int* maximum_amount_of_matches) {
+            void parse_config_for_semantic_entry(absolute_base::Settings_for_semantical_rules* settings_for_current_config, std::istringstream input_stream, unsigned int* minimum_amount_of_Matches, unsigned int* maximum_amount_of_matches) {
                 //precondition: settings_for_current_config, line_stream,minimum_amount_of_Matches reference, and maximum_amount_of_matches are an references to objects
                 //  that actually exists
                 //precondition: line_stream has to be in readable condition(if it has been tempered with(by reading) before and then passed as a rvalue reference using std::move())
