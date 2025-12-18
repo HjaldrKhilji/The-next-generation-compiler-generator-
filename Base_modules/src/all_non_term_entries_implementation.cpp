@@ -172,13 +172,13 @@ void absolute_base::All_non_terminal_entries::add_non_term_symbol_name(std::stri
     if (newest_entry.sub_entries.size() -1 == newest_entry.all_semantical_analysis_rules.size()) {
       //this means thats it the first semantic entry for the nested name
       newest_entry.all_semantical_analysis_rules.push_back(std::vector < Semantical_analyzer_config_entry > {
-        semantical_rule_entry
+        std::move(semantical_rule_entry)
       });
       return;
     }
     if (newest_entry.sub_entries.size()  == newest_entry.all_semantical_analysis_rules.size()) 
     {
-    newest_entry.all_semantical_analysis_rules.back().push_back(semantical_rule_entry);
+    newest_entry.all_semantical_analysis_rules.back().push_back(  std::move(semantical_rule_entry));
     }
     else{
       std::cerr<<"count mismatch between the amount of entries in \"all_semantical_analysis_rules\"  and \"sub_entries\" data members of the newest entry"<<std::endl;
