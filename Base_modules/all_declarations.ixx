@@ -13,6 +13,7 @@ module;
 #include <vector>
 #include <deque>
 #include<stack>
+#include<concepts>
 export module all_declarations;//for c++ noobs, including myself, the module name dosent have to be the same as file name.
 
 //The reasons that I have so many incomplete todos is because my program's design is still evolving, tho the principle remains, hence I cant make my code readable before I finsih my design.
@@ -143,12 +144,19 @@ again these are just my opinion, dont judge
                 std::string pattern;
                 std::string output_config_data;
                 //keep the type of both as std::string !!!!!
+            
             };
-            std::vector < std::reference_wrapper < Non_terminal_name_entry >> sub_entries;
-            std::vector < std::vector < Semantical_analyzer_config_entry >> all_semantical_analysis_rules;
+            using sub_entry_type = std::vector < std::reference_wrapper < Non_terminal_name_entry >>; 
+            sub_entry_type sub_entries;
+            using all_semantical_analysis_rules_type = std::vector < std::vector < Semantical_analyzer_config_entry >>;
+
+            all_semantical_analysis_rules_type all_semantical_analysis_rules;
             ~Non_terminal_name_entry() {}//for supressing warnings of implicitly deleted destructor
-            Non_terminal_name_entry(Non_terminal_name_entry&) = delete;//copying would be expensive, hence I delete the copy function
+            Non_terminal_name_entry(const Non_terminal_name_entry&) = default;
+            Non_terminal_name_entry(Non_terminal_name_entry&) = default;
             Non_terminal_name_entry(Non_terminal_name_entry&&) = default;//moving, however, wont be so I allowed it
+            Non_terminal_name_entry(std::string a, std::string b, sub_entry_type c, all_semantical_analysis_rules_type d) :name{a}, pattern{b}, sub_entries{c}, all_semantical_analysis_rules{d}
+            {}
         };
         class Siblings {
         private:
@@ -228,8 +236,8 @@ again these are just my opinion, dont judge
               void add_semantic_rule_for_newest_sub_entry(const Semantical_analyzer_config_entry&& semantical_rule_entry);//this is my favorite(I spend 4 days on making this), so all it does is that it finds the latest entry from the fast traversal list, then finds the latest sub entry in that, and adds this semantic rule entry for that sub entry 
               std::reference_wrapper < std::string > get_parmenant_name_of_nested_non_term_symbol_pattern(std::string sub_symbol_name);//returns the permanent reference to a non term name
               void print_all_content();
-              Non_terminal_name_entry get_current_non_term_entry(int index);//simply gets the non term entry at the given index
-              Non_terminal_name_entry get_current_nested_non_term_entry(int index_for_nested_non_term, int index);//simple gets the nested non term entry at the given indexes, or in [index][index_for_nested_non_term]
+              Non_terminal_name_entry& get_current_non_term_entry(int index);//simply gets the non term entry at the given index
+              Non_terminal_name_entry& get_current_nested_non_term_entry(int index_for_nested_non_term, int index);//simple gets the nested non term entry at the given indexes, or in [index][index_for_nested_non_term]
               using ReverseIt = std::reverse_iterator<std::deque < Non_terminal_name_entry >::iterator>;
 
               ReverseIt begin() {
@@ -242,7 +250,6 @@ again these are just my opinion, dont judge
                   return list_of_all_non_term_entries_for_fast_traversal.rend();
 
               };
-
 
         private:
             //this type isnt a Value oriented type, but rather a reference type to a large
