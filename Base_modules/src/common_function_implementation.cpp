@@ -51,8 +51,8 @@ module all_declarations;
      return identifier;
 
  }
- template<typename T>
- std::string::size_type  common_functions::read_integer_from_string_at_a_position(const std::string& source, std::string::size_type position, T* integer_read) {} {
+ template<std::integral T>
+ std::string::size_type  common_functions::read_integer_from_string_at_a_position(const std::string& source, std::string::size_type position, T* integer_read) {
     static_assert(std::is_integral_v<T>, "Template parameter T must be an integral type.");
     //      ~raw ugly optimization that i had to do for the sake of optimization~
     //try to ignore this ugly code as much as possible, and avoid touching it too, please, unless you have to ofcourse.
