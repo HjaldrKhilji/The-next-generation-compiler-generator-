@@ -443,7 +443,7 @@ export   namespace config_parsing_tools {
                 return line_stream;
             }
         public:
-            absolute_base::Non_terminal_name_entry get_current_entry() { return all_entries.get_current_non_term_entry(current_line_number_for_access); }
+            absolute_base::Non_terminal_name_entry& get_current_entry() { return all_entries.get_current_non_term_entry(current_line_number_for_access); }
             void change_current_entry_index(int new_index) { current_line_number_for_access = new_index; }
             void decrement_current_entry_index(int number_to_use_to_decrement_index) { current_line_number_for_access -= number_to_use_to_decrement_index; }
             void increment_current_entry_index(int number_to_use_to_increment_index) { current_line_number_for_access += number_to_use_to_increment_index; }
@@ -496,4 +496,3 @@ export   namespace config_parsing_tools {
         };
     }  
  
-
