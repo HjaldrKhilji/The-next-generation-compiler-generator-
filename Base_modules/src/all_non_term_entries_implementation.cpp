@@ -61,7 +61,7 @@ void absolute_base::All_non_terminal_entries::print_all_content() {
     //precondition:*this's  invariant is valid
     
     std::cout << "number of entries: " << list_of_all_non_term_entries_for_fast_traversal.size() << std::endl;
-    for (auto current_entry : list_of_all_non_term_entries_for_fast_traversal) {
+    for (const absolute_base::Non_terminal_name_entry &current_entry : list_of_all_non_term_entries_for_fast_traversal) {
         std::cout << "current entry:" << std::endl;
         std::cout << current_entry.name << " ";
         std::cout << current_entry.pattern << " ";
@@ -70,7 +70,7 @@ void absolute_base::All_non_terminal_entries::print_all_content() {
         for (auto wrapped_sub_entries = current_entry.sub_entries.begin(); wrapped_sub_entries + index != current_entry.sub_entries.end(); ++index) {
             std::cout << "number of nested entries in current entry: " << current_entry.sub_entries.size() << std::endl;
 
-            auto unwrapped_sub_entries = wrapped_sub_entries[index].get();
+            auto &unwrapped_sub_entries = wrapped_sub_entries[index].get();
             std::cout << unwrapped_sub_entries.name << unwrapped_sub_entries.pattern << " ";
             std::cout << "semantic data of every syntaxical data:" << std::endl;
 
@@ -95,9 +95,9 @@ void absolute_base::All_non_terminal_entries::add_non_term_symbol_name(std::stri
 
     list_of_all_non_term_entries_for_fast_traversal.push_back(Non_terminal_name_entry {
       name,
-      {},
-      {},
-      {}
+      "",
+     Non_terminal_name_entry::sub_entry_type{},
+      Non_terminal_name_entry::all_semantical_analysis_rules_type{}
     });
 
   }
@@ -185,13 +185,13 @@ void absolute_base::All_non_terminal_entries::add_non_term_symbol_name(std::stri
       throw std::runtime_error("add_semantic_rule_for_newest_sub_entry error");
     }
   }
-  absolute_base::Non_terminal_name_entry absolute_base::All_non_terminal_entries::get_current_non_term_entry(int index) {
+  absolute_base::Non_terminal_name_entry& absolute_base::All_non_terminal_entries::get_current_non_term_entry(int index) {
       //precondition:index is not negative and list_of_all_non_term_entries_for_fast_traversal is in a valid state
       //postcondition: returns a non term entry at the given index to the caller
       return list_of_all_non_term_entries_for_fast_traversal[index];
 
   }
-  absolute_base::Non_terminal_name_entry absolute_base::All_non_terminal_entries::get_current_nested_non_term_entry(int index_for_nested_non_term, int index) {
+  absolute_base::Non_terminal_name_entry& absolute_base::All_non_terminal_entries::get_current_nested_non_term_entry(int index_for_nested_non_term, int index) {
       //precondition:the given indexes are not negative and list_of_all_non_term_entries_for_fast_traversal is in a valid state
     //postcondition: returns a nested non term entry at the index "[index][index_for_nested_non_term]"
       return list_of_all_non_term_entries_for_fast_traversal[index].sub_entries[index_for_nested_non_term].get();
