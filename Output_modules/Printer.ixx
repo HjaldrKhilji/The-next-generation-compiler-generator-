@@ -39,12 +39,12 @@ export namespace printing_tools {
         using Option_functions_wrapper_type = std::string::size_type (Printer::*)(const std::string&, std::string::size_type, std::string*);
         
         void additional_setup_for_family_tree() {
-            int current_sibling_index = (*all_config.begin()).sub_entries.size() - 1;
+            int current_sibling_index = (*all_config->begin()).sub_entries.size() - 1;
             if (current_sibling_index == -1) {
                 std::runtime_error("no root found");
             }
             Siblings current_generation =
-            { (*all_config.begin()).sub_entries, current_sibling_index };
+            { (*all_config->begin()).sub_entries, current_sibling_index };
             absolute_base::dig_to_the_leaves_of_the_family_tree(current_generation, &family_tree);
         }
 
@@ -67,10 +67,7 @@ export namespace printing_tools {
             const char file_name_end_charactor = ':';
             size_t delimiter_position = output_config.find(file_name_end_charactor, position);
             std::string file_name = output_config.substr(position, delimiter_position);
-            if (is_output_owned) {
-                delete output;
-            }
-            is_output_owned = true;
+            
             output = new std::ofstream{ file_name };
             return delimiter_position + 1;//+1 is to skip the delemiter_position index itself
         }
@@ -79,11 +76,7 @@ export namespace printing_tools {
             const char file_name_end_charactor = ':';
             size_t delimiter_position = output_config.find(file_name_end_charactor, position);
             std::string file_name = output_config.substr(position, delimiter_position);
-            if (is_input_owned) {
-                delete input;
-            }
             input = new std::ifstream{ file_name };
-            is_input_owned = true;
             return delimiter_position + 1;//+1 is to skip the delemiter_position index itself
         }
 
@@ -184,17 +177,12 @@ export namespace printing_tools {
                 throw std::runtime_error{ "charactor representing your option is not available" };
             }
         }
-        Printer(std::ostream* a,  absolute_base::All_non_terminal_entries& b, absolute_base::All_non_terminal_entries& c, std::istream* d, bool e, bool f) : output{ a }, all_config{b}, all_config_for_input{ c }, input{d}, is_output_owned{e}, is_input_owned{f}
+        Printer(std::ostream* a, std::unique_ptr<absolute_base::All_non_terminal_entries> b, std::shared_ptr<absolute_base::All_non_terminal_entries> c, std::istream* d) : output{ a }, all_config{b}, all_config_for_input{ c }, input{d}
         {
             additional_setup_for_family_tree();
         }
         ~Printer() {
-            if (is_output_owned) {
-                delete output;
-            }
-            if (is_input_owned) {
-                delete input;
-            }
+            
 
         }
         Printer(Printer&) = default;
@@ -202,13 +190,12 @@ export namespace printing_tools {
     private:
         std::ostream* output;
 
-        absolute_base::All_non_terminal_entries& all_config;
-        absolute_base::All_non_terminal_entries& all_config_for_input;
+        std::unique_ptr<absolute_base::All_non_terminal_entries> all_config;
+        std::shared_ptr<absolute_base::All_non_terminal_entries> all_config_for_input;
 
         
-        std::istream* input;
-        bool is_output_owned;
-        bool is_input_owned;
+        std::istream** input;
+        
         std::stack< Siblings > family_tree{};
 
         //   ~VERY PRIVATE DATA MEMBERS, ONLY FOR IMPLEMENTORS OF THIS MODULE, USAGE:TO LOAD NEW FUNCTIONS FROM DYNAMICALLY LINKED LIBRARIES ~
