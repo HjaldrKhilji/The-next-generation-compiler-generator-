@@ -5,27 +5,9 @@
 import Inputer;
 import Printer;
 import Config_parser;
+import absolute_base;
 
-template<typename T, typename type_to_stream=std::string>
-concept OutputFileStream = requires(T & os, type_to_stream  & s) {
-	
-	{ os } -> std::same_as<std::ofstream&>;
-	{ os<< s } -> std::same_as<std::ostream&>;
-	
-};
-template<typename T, typename type_to_stream = std::string>
-concept IntputFileStream = requires(T & is, type_to_stream & s) {
-
-	{ is } -> std::same_as<std::ifstream&>;
-	{ is >> s } -> std::same_as<std::istream&>;
-	
-};
-
-template<typename T, typename type_to_stream = std::string>
-concept streamable_File = OutputFileStream<T, type_to_stream> || IntputFileStream<T, type_to_stream>;
-
-
-template<streamable_File File_Stream_type>
+template<absolute_base::Streamable File_Stream_type>
 File_Stream_type* file_stream_intializater(std::string input_file_name)  {
 	File_Stream_type* input_file_stream = new File_Stream_type{ input_file_name };
 		if (!input_file_stream.is_open()) {
@@ -66,7 +48,7 @@ namespace driver {
             All_non_terminal_entries* All_non_terminal_entries_for_input_config = new All_non_terminal_entries{ std::move(input_config.get_all_entries_by_l_reference()) };
 
             Config_reader output_config =  Config_reader(file_stream_intializater<std::ifstream>(b));
-            All_non_terminal_entries* All_non_terminal_entries_for_input_config = new All_non_terminal_entries{ std::move(input_config.get_all_entries_by_l_reference()) };
+            All_non_terminal_entries* All_non_terminal_entries_for_input_config = new All_non_terminal_entries{ std::move(output_config.get_all_entries_by_l_reference()) };
 
             std::ifstream* input =  file_stream_intializater<std::ifstream>(c);
             std::ofstream* output = file_stream_intializater<std::ofstream>(d);
