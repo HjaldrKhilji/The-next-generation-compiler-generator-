@@ -12,7 +12,7 @@ module;
 module all_declarations;
 
 
- void common_functions::escape_string(std::string & input_string,
+ void common_functions::escape_string(std::string * input_string,
     const std::vector < std::string > & strings_to_be_replaced,
       const std::vector < common_functions::escape_charactor_function_wrapper_type >
         function_to_be_run_for_each) {
@@ -25,25 +25,25 @@ module all_declarations;
       //that has the same index as the element whose match is found.
       //UGLY LOW LEVEL CODE ALERT: DONT TOUCH THIS UGLY CODE, UNLESS YOU REALLY REALLY HAVE TO CHANGE IT!!!!!!!
       size_t position_of_the_match_found_last = 0;
-      while ((position_of_the_match_found_last = input_string.find(
+      while ((position_of_the_match_found_last = input_string->find(
           strings_to_be_replaced[index],
           position_of_the_match_found_last)) != std::string::npos) {
-        function_to_be_run_for_each[index](input_string,
-          position_of_the_match_found_last);
+        function_to_be_run_for_each[index](&input_string,
+          &position_of_the_match_found_last);
       }
     }
   }
- std::string common_functions::read_identifier(std::istringstream& line_stream) {
+ std::string common_functions::read_identifier(std::istringstream* line_stream) {
      //precondition: line_stream is in a valid state and is not empty
      //post condition: std::string preceded by list of ignored white spaces, and terminated by a non alpha numeric character that is not a underscore
      //is returned
      ///post condition : line_stream argument's state is changed to have the property "std::skipws" set.
      std::string identifier;
      char c;
-     line_stream >> std::skipws >> c; //skipping whitespaces
-     line_stream.putback(c);
-     for (; line_stream >> std::noskipws >> c && (isalnum(c) || c == '_'); identifier += c);
-     line_stream.putback(c);
+     *line_stream >> std::skipws >> c; //skipping whitespaces
+     *line_stream.putback(c);
+     for (; *line_stream >> std::noskipws >> c && (isalnum(c) || c == '_'); identifier += c);
+     *line_stream.putback(c);
      if (identifier.empty()) {
          std::cerr << "empty non terminal symbol name" << std::endl;
          throw std::runtime_error("read_identifier error");
