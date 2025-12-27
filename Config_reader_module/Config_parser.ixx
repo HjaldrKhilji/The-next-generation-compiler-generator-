@@ -13,12 +13,12 @@ module;
 
 #include <vector>
 #include <climits>
-export module Input_config;
+export module Config_parser;
 
-import all_declarations;
+import All_declarations;
 
 export   namespace config_parsing_tools {
-        class Config_reader : public absolute_base::Base_class_for_all_parts_requiring_input {
+        class Config_reader  {
             //Config_reader is also used for output config parsing, though it was originaly
             // meant only for config parsing for input, the only difference in the use
             // of using it for input, vs using it for output, really, just is,
@@ -49,16 +49,16 @@ export   namespace config_parsing_tools {
                       x
                 } {
                 }
-                void operator()(std::string& input_string, size_t& where_is_it_found) {
-                    input_string.replace(where_is_it_found,
+                void operator()(std::string* input_string, size_t* where_is_it_found) {
+                    input_string->replace(*where_is_it_found,
                         size_of_escape_charactor, string_to_be_replaced_with);
-                    where_is_it_found += size_of_the_replacement_of_escape_string;
+                    *where_is_it_found += size_of_the_replacement_of_escape_string;
                 }
             };
 
 
 
-            void escape_backslash_capital_n(std::string& input_string, size_t& where_is_it_found) {
+            void escape_backslash_capital_n(std::string* input_string, size_t *where_is_it_found) {
                 // Precondition 1: The input stream named line_stream is in a valid state for reading.
              // Precondition 2: `input_string` is a valid string object.
              // Precondition 3: `where_is_it_found` is a valid index within `input_string`
@@ -73,8 +73,8 @@ export   namespace config_parsing_tools {
 
                 std::string temp_input = get_raw_input();
 
-                input_string.replace(
-                    where_is_it_found,
+                input_string->replace(
+                    *where_is_it_found,
                     size_of_common_escape_charactors,
                     temp_input);
 
@@ -82,7 +82,7 @@ export   namespace config_parsing_tools {
 
             //used for nested non term regex expression construction:
 
-            void escape_backslash_capital_a_by_reading_nested_symbols(std::string& input_string, size_t& where_is_it_found) {
+            void escape_backslash_capital_a_by_reading_nested_symbols(std::string* input_string, size_t* where_is_it_found) {
                 // Precondition 1: The input stream named line_stream is in a valid state for reading.
                // Precondition 2: The non-terminal entry name read from the stream
                // must correspond to an entry that already exists in the global non-terminal
@@ -101,10 +101,10 @@ export   namespace config_parsing_tools {
                //    semantic rule read for the nested non-terminal.
                 constexpr size_t size_of_common_escape_charactors = 2;
 
-                std::string name = absolute_base::read_identifier(line_stream);
+                std::string name = absolute_base::read_identifier(&line_stream);
                 all_entries.add_nested_non_term_symbol_to_the_newest_entry(name);
-                input_string.replace(
-                    where_is_it_found,
+                input_string->replace(
+                    *where_is_it_found,
                     size_of_common_escape_charactors, "");
 
 
@@ -112,7 +112,7 @@ export   namespace config_parsing_tools {
 
             }
             //used ( as of 11/18/2025 only ) for semantic rules regex expression construction:
-            void escape_backslash_capital_u_by_reading_nested_symbols(std::string& input_string, size_t& where_is_it_found) {
+            void escape_backslash_capital_u_by_reading_nested_symbols(std::string* input_string, size_t* where_is_it_found) {
                 // Precondition 1: The input stream named line_stream is in a valid state for reading.
                   // Precondition 2: The non-terminal entry name read from the stream
                       // must correspond to an entry that already exists in the global non-terminal
@@ -129,10 +129,10 @@ export   namespace config_parsing_tools {
                   //    semantic rule read for the nested non-terminal.
                 constexpr size_t size_of_common_escape_charactors = 2;
 
-                std::string name = absolute_base::read_identifier(line_stream);
+                std::string name = absolute_base::read_identifier(&line_stream);
                 std::string& the_nested_non_term_entry_pattern = all_entries.get_pattern_of_nested_non_term_symbol_pattern(name);
-                input_string.replace(
-                    where_is_it_found,
+                input_string->replace(
+                    *where_is_it_found,
                     size_of_common_escape_charactors, the_nested_non_term_entry_pattern);
 
                 where_is_it_found += the_nested_non_term_entry_pattern.length();
@@ -154,7 +154,7 @@ export   namespace config_parsing_tools {
                 std::string raw_config;
                 line_stream >> std::skipws >> raw_config;
                 absolute_base::escape_string(
-                    raw_config, {
+                    &raw_config, {
                       "+",
                       "*",
                       "?"
@@ -208,7 +208,7 @@ export   namespace config_parsing_tools {
                 std::string semantic_pattern_to_check;
                 line_stream >> std::skipws >> semantic_pattern_to_check;
                 absolute_base::escape_string(
-                    semantic_pattern_to_check, {
+                    &semantic_pattern_to_check, {
                       "\\\\",
                       "\\S",
                       "\\t",
@@ -247,10 +247,10 @@ export   namespace config_parsing_tools {
                         1
                       },
                       [this](std::string& input_string, size_t& where_found) {
-                        this->escape_backslash_capital_n(input_string, where_found);
+                        this->escape_backslash_capital_n(&input_string, &where_found);
                       },
                       [this](std::string& input_string, size_t& where_found) {
-                        this->escape_backslash_capital_u_by_reading_nested_symbols(input_string, where_found);
+                        this->escape_backslash_capital_u_by_reading_nested_symbols(&input_string, &where_found);
                       }
                     //size of ) is one hence I wrote 1 in the second argument
                     });
@@ -320,7 +320,7 @@ export   namespace config_parsing_tools {
                     return;
                 }
                 line_stream.putback(c);
-                std::string non_terminal_name_to_search_inside = absolute_base::read_identifier(line_stream);
+                std::string non_terminal_name_to_search_inside = absolute_base::read_identifier(&line_stream);
                 std::string semantic_pattern_to_check = take_space_terminated_input_and_escape_it();
                 unsigned int minimum_amount_of_Matches = 0;
                 unsigned int maximum_amount_of_matches = 0; //only used if settings_for_semantic_rules dosent have check_atleast on.
@@ -344,9 +344,8 @@ export   namespace config_parsing_tools {
                 //precondition: valid state of the input stream named input_stream
                 //post condition, return input exactly as it was outputed, and increment current_line_number
                 std::string raw_input{};
-                std::getline(input_stream, raw_input);
+                std::getline(*input_stream, raw_input);
 
-                current_line_number_for_read_index++;//usefull for printing the line number, if needed in say need for ... error handling
                 return raw_input;
             }
             void parse_raw_input() {
@@ -365,7 +364,7 @@ export   namespace config_parsing_tools {
                 //the non_terminal_pattern in this function will be a regex expression for input derived class and a custom pattern for output derived class.
                 //by custom, I mean, the meaning of that pattern for the output class wil be defined by me 
                 constexpr size_t size_of_common_escape_charactors = 2;
-                std::string non_terminal_name = absolute_base::read_identifier(line_stream);
+                std::string non_terminal_name = absolute_base::read_identifier(&line_stream);
                 std::string non_terminal_pattern;
                 line_stream >> std::skipws >> non_terminal_pattern;
                 all_entries.add_non_term_symbol_name(non_terminal_name);
@@ -376,7 +375,7 @@ export   namespace config_parsing_tools {
                 //notice where_is_it_found variable is updated in each lambda for the next loop
                 //to read content after the text replaced.
                 absolute_base::escape_string(
-                    non_terminal_pattern, {
+                    &non_terminal_pattern, {
                       "\\\\",
                       "\\N",
                       "\\n",
@@ -391,7 +390,7 @@ export   namespace config_parsing_tools {
                         size_of_common_escape_charactors
                       },
                       [this](std::string& input_string, size_t& where_found) {
-                        this->escape_backslash_capital_n(input_string, where_found);
+                        this->escape_backslash_capital_n(&input_string, where_found);
                       }
 
                       ,
@@ -417,7 +416,7 @@ export   namespace config_parsing_tools {
                         size_of_common_escape_charactors
                       },
                       [this](std::string& input_string, size_t& where_found) {
-                        this->escape_backslash_capital_a_by_reading_nested_symbols(input_string, where_found);
+                        this->escape_backslash_capital_a_by_reading_nested_symbols(&input_string, &where_found);
                       }
 
                     }
@@ -443,12 +442,8 @@ export   namespace config_parsing_tools {
                 return line_stream;
             }
         public:
-            absolute_base::Non_terminal_name_entry& get_current_entry() { return all_entries.get_current_non_term_entry(current_line_number_for_access); }
-            void change_current_entry_index(int new_index) { current_line_number_for_access = new_index; }
-            void decrement_current_entry_index(int number_to_use_to_decrement_index) { current_line_number_for_access -= number_to_use_to_decrement_index; }
-            void increment_current_entry_index(int number_to_use_to_increment_index) { current_line_number_for_access += number_to_use_to_increment_index; }
-            int get_current_entry_index() { return current_line_number_for_access; }
-            void print_all_parsed_input_for_testing() override {
+
+            void print_all_parsed_input_for_testing()  {
                 //postcondition: simply prints the information for every non term entry, which contains the non term entries,  nested entries of those non term entries,
                 //  and the semantic rules of those nested entries
 
@@ -456,7 +451,7 @@ export   namespace config_parsing_tools {
             }
 
 
-            void get_and_parse_input() override {
+            void get_and_parse_input()  {
 
                 //post_condition: the input for a single non term entry is taken, along side the nested non term entries in that non term entry, and the semantical rules for each
                 //non term entry in that non term entry, all exceptions that occurred in doing so have also been handled
@@ -465,7 +460,7 @@ export   namespace config_parsing_tools {
                 do {
                     try {
                         change_current_line();
-
+                        
                     }
                     catch (const std::ios_base::failure& e) {
                         //Todo
@@ -479,19 +474,24 @@ export   namespace config_parsing_tools {
                     }
                     //notice an extra flush using std::endl isnt required while using cerr stream in the code above because cerr is flush automatically
                 } while (line_stream.good() == true);
-
+                line_stream.clear();
+                line_stream.str("");
             } // parse the whole file
 
 
             
-            Config_reader(std::istream& a) :input_stream(a) {}
+            Config_reader(std::istream* a) :input_stream(a) {}
+            
+            Config_reader(Config_reader&) = default;
+            Config_reader(Config_reader&&) = default;
+             absolute_base::All_non_terminal_entries& get_all_entries_by_l_reference() const {
+                return all_entries;
+            }
         private:
-            absolute_base::All_non_terminal_entries all_entries{};
+            absolute_base::All_non_terminal_entries_implementation all_entries{};
             std::istringstream line_stream{ "" };
-            std::istream& input_stream;
-            int current_line_number_for_read_index{0};//user should not be able to change this, in any operation other than parsing config
-            int current_line_number_for_access{0};//user should not be able to change this, without the get or set functions, and this is used
-            // as a index to get parsed data
+            std::unique_ptr<std::istream> input_stream;
+           
             
         };
     }  
