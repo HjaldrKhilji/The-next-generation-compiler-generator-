@@ -14,7 +14,7 @@ module;
 #include<deque>
 
 module all_declarations;
-using Iterator_for_list_of_entries = absolute_base::All_non_terminal_entries_implementation::Iterator_for_list_of_entries;
+using  absolute_base::All_non_terminal_entries_implementation::Iterator_for_list_of_entries; 
 using absolute_base::Settings_for_semantical_rules;
 using absolute_base::All_non_terminal_entries_implementation;
 
