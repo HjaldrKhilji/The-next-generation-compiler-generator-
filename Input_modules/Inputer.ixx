@@ -25,7 +25,7 @@ export namespace input_tools {
         private:
             void get_raw_input() {
                 std::string lineInput;
-                std::getline(**input_stream, lineInput);
+                std::getline(*input_stream, lineInput);
                 raw_input.append(lineInput);
 
             }
@@ -48,7 +48,7 @@ export namespace input_tools {
 
 
                 raw_input.erase(match_info.position(), match_info.length());
-                output.print(match_info[0].str(), entry_to_match);
+                output_manager.print(match_info[0].str(), entry_to_match);
                 //the work asked(by my ownself) for below is done:
                 //OUTPUT SECTION:
                 //feed match_info[0] to the output class, because only the output class gets to deal with what happens next
@@ -95,8 +95,9 @@ export namespace input_tools {
 
 
         public:
+            using Stream_handler_ptr = absolute_base::Streamable_manager<std::istream>;
             Input_reader(std::istream* a) = delete;
-            Input_reader(std::istream* const * a, const absolute_base::Base_printer& b, const absolute_base::All_non_terminal_entries& c) :input_stream(a), output{ b }, all_config{ c } {}
+            Input_reader(Stream_handler_ptr a, const absolute_base::Base_printer& b, const absolute_base::All_non_terminal_entries& c) :input_stream{ a }, output_manager{ b }, all_config{ c } {}
 
             
 
@@ -107,10 +108,10 @@ export namespace input_tools {
             Input_reader(Input_reader&) = default;
             Input_reader(Input_reader&&) = default;
         private:
-            absolute_base::Base_printer& output;//this member should be passed the same istream as this class is
+            absolute_base::Base_printer& output_manager;//this member should be passed the same istream as this class is
              absolute_base::All_non_terminal_entries&  all_config;
             std::string raw_input;
-            std::istream* const * input_stream;
+            const Stream_handler_ptr input_stream;
            
         };
     };
