@@ -14,7 +14,7 @@ module;
 #include <deque>
 #include<stack>
 #include<concepts>
-export module all_declarations;//for c++ noobs, including myself, the module name dosent have to be the same as file name.
+export module All_declarations;//for c++ noobs, including myself, the module name dosent have to be the same as file name.
 
 //The reasons that I have so many incomplete todos is because my program's design is still evolving, tho the principle remains, hence I cant make my code readable before I finsih my design.
 //gcc dosent support import std; , so I didnt use it
@@ -70,12 +70,12 @@ again these are just my opinion, dont judge
 // so yeah thats all the reasons that I have
     namespace common_functions {
         using escape_charactor_function_wrapper_type = std::function < void(
-            std::string& input_string, size_t& where_is_it_found) >;
-        void escape_string(std::string& input_string,
+            std::string* input_string, size_t* where_is_it_found) >;
+        void escape_string(std::string* input_string,
             const std::vector < std::string >& strings_to_be_replaced,
             const std::vector < escape_charactor_function_wrapper_type >
             function_to_be_run_for_each);
-        std::string read_identifier(std::istringstream& line_stream);
+        std::string read_identifier(std::istringstream* line_stream);
         template <std::integral T>
         std::string::size_type read_integer_from_string_at_a_position(const std::string& source, std::string::size_type position, T* integer_read);
 
@@ -158,6 +158,7 @@ again these are just my opinion, dont judge
             Non_terminal_name_entry(std::string a, std::string b, sub_entry_type c, all_semantical_analysis_rules_type d) :name{a}, pattern{b}, sub_entries{c}, all_semantical_analysis_rules{d}
             {}
         };
+        
         class Siblings {
         private:
             //keep the data members are lightweight as possible because I am passing them by value in other parts of the code.
@@ -195,6 +196,68 @@ again these are just my opinion, dont judge
 
 
         };
+
+        class All_non_terminal_entries {
+            using ReverseIt = std::reverse_iterator<std::deque < Non_terminal_name_entry >::iterator>;
+            virtual ReverseIt end() = 0;
+            virtual ReverseIt begin() = 0;
+            virtual void add_a_child_to_entry(absolute_base::Non_terminal_name_entry* entry_to_be_added_to, absolute_base::Non_terminal_name_entry&& entry_to_add) = 0;
+            virtual void add_semantic_rule_to_entry(absolute_base::Non_terminal_name_entry* entry_to_be_added_to,  Semantical_analyzer_config_entry&& semantical_rule_entry, int sibling_index) = 0;
+            virtual void remove_entry( absolute_base::Non_terminal_name_entry* entry_to_add) = 0;
+            virtual void remove_latest_semantic_rule_for_entry(absolute_base::Non_terminal_name_entry* entry_to_remove, int sibling_index) = 0;
+            virtual void remove_all_semantic_rules_for_entry(absolute_base::Non_terminal_name_entry* entry_to_remove, std::string pattern_to_remove_all_occurances_of, int sibling_index)=0;
+            virtual ReverseIt end()=0;
+            virtual ReverseIt begin()=0;
+
+        };
+        class All_non_terminal_entries_implementation : public  All_non_terminal_entries {
+            //the traversal begin() returns the last element, and end() returns one before the
+            //first element, thats because the last entry will be the one that the user of this
+            //structure will PROBABLY traverse from.
+        public: void add_non_term_symbol_name(std::string name);//this adds the non term symbol only to fast traversal list
+              void add_non_term_pattern_for_newest_entry(std::string pattern);//this adds the newest element to the fast search map as well, after it has enter the pattern into the newest element traversal list
+              std::string& get_pattern_of_nested_non_term_symbol_pattern(std::string sub_symbol_name);//this gets the pattern for a name, from the map, and the reason I say for nested non term symbol is because it is generally used for finding the symbols for nested non term symbols
+              void add_nested_non_term_symbol_to_the_newest_entry(std::string sub_symbol_name);//this just takes a string, which it assumes to be the name of a non term symbol, and finds the non term symbol(from the map), and adds it's reference into the nested non term symbol list of the newest entry
+              void add_semantic_rule_for_newest_sub_entry(const Semantical_analyzer_config_entry&& semantical_rule_entry);//this is my favorite(I spend 4 days on making this), so all it does is that it finds the latest entry from the fast traversal list, then finds the latest sub entry in that, and adds this semantic rule entry for that sub entry 
+              std::reference_wrapper < std::string > get_parmenant_name_of_nested_non_term_symbol_pattern(std::string sub_symbol_name);//returns the permanent reference to a non term name
+              void print_all_content();
+              Non_terminal_name_entry& get_current_non_term_entry(int index);//simply gets the non term entry at the given index
+              Non_terminal_name_entry& get_current_nested_non_term_entry(int index_for_nested_non_term, int index);//simple gets the nested non term entry at the given indexes, or in [index][index_for_nested_non_term]
+              using ReverseIt = std::reverse_iterator<std::deque < Non_terminal_name_entry >::iterator>;
+
+              ReverseIt end() override{
+                  return list_of_all_non_term_entries_for_fast_traversal.rbegin();
+
+
+
+              }
+              ReverseIt begin() override{
+                  return list_of_all_non_term_entries_for_fast_traversal.rend();
+
+              }
+              using Iterator_for_list_of_entries = std::deque<absolute_base::Non_terminal_name_entry>::iterator;
+        private:
+            //this type isnt a Value oriented type, but rather a reference type to a large
+            // global "database" of the entire program.
+            //the three types and aliases are just implementation details, please ignore it tho, if you arent implementing this class.
+            using Reference_to_string = std::reference_wrapper < std::string >;
+            using Reference_to_Non_terminal_name_entry = std::reference_wrapper < Non_terminal_name_entry >;
+            struct Function_object_class_to_compare_underlying_objects_of_a_reference {
+                bool operator()(const std::reference_wrapper < std::string >& a,
+                    const std::reference_wrapper < std::string >& b) const {
+                    return a.get() < b.get();
+                }
+            };
+
+            //it should be obvious that the map is for fast lookups, and deque is for fast traversal:
+            
+            std::map < Reference_to_string,
+                iterator_for_list_of_entries,
+                Function_object_class_to_compare_underlying_objects_of_a_reference > map_for_fast_retrival_of_entries;
+            std::deque < Non_terminal_name_entry > list_of_all_non_term_entries_for_fast_traversal;
+
+        };
+
         void dig_to_the_leaves_of_the_family_tree(Siblings current_generation, std::stack< Siblings>* family_tree) {
 
 
@@ -225,61 +288,6 @@ again these are just my opinion, dont judge
 
 
         };
-        class All_non_terminal_entries {
-            //the traversal begin() returns the last element, and end() returns one before the
-            //first element, thats because the last entry will be the one that the user of this
-            //structure will PROBABLY traverse from.
-        public: void add_non_term_symbol_name(std::string name);//this adds the non term symbol only to fast traversal list
-              void add_non_term_pattern_for_newest_entry(std::string pattern);//this adds the newest element to the fast search map as well, after it has enter the pattern into the newest element traversal list
-              std::string& get_pattern_of_nested_non_term_symbol_pattern(std::string sub_symbol_name);//this gets the pattern for a name, from the map, and the reason I say for nested non term symbol is because it is generally used for finding the symbols for nested non term symbols
-              void add_nested_non_term_symbol_to_the_newest_entry(std::string sub_symbol_name);//this just takes a string, which it assumes to be the name of a non term symbol, and finds the non term symbol(from the map), and adds it's reference into the nested non term symbol list of the newest entry
-              void add_semantic_rule_for_newest_sub_entry(const Semantical_analyzer_config_entry&& semantical_rule_entry);//this is my favorite(I spend 4 days on making this), so all it does is that it finds the latest entry from the fast traversal list, then finds the latest sub entry in that, and adds this semantic rule entry for that sub entry 
-              std::reference_wrapper < std::string > get_parmenant_name_of_nested_non_term_symbol_pattern(std::string sub_symbol_name);//returns the permanent reference to a non term name
-              void print_all_content();
-              Non_terminal_name_entry& get_current_non_term_entry(int index);//simply gets the non term entry at the given index
-              Non_terminal_name_entry& get_current_nested_non_term_entry(int index_for_nested_non_term, int index);//simple gets the nested non term entry at the given indexes, or in [index][index_for_nested_non_term]
-              using ReverseIt = std::reverse_iterator<std::deque < Non_terminal_name_entry >::iterator>;
-
-              ReverseIt begin() {
-                  return list_of_all_non_term_entries_for_fast_traversal.rbegin();
-
-
-
-              };
-              ReverseIt end() {
-                  return list_of_all_non_term_entries_for_fast_traversal.rend();
-
-              };
-
-        private:
-            //this type isnt a Value oriented type, but rather a reference type to a large
-            // global "database" of the entire program.
-            //the three types and aliases are just implementation details, please ignore it tho, if you arent implementing this class.
-            using Reference_to_string = std::reference_wrapper < std::string >;
-            using Reference_to_Non_terminal_name_entry = std::reference_wrapper < Non_terminal_name_entry >;
-            struct Function_object_class_to_compare_underlying_objects_of_a_reference {
-                bool operator()(const std::reference_wrapper < std::string >& a,
-                    const std::reference_wrapper < std::string >& b) const {
-                    return a.get() < b.get();
-                }
-            };
-
-            //it should be obvious that the map is for fast lookups, and deque is for fast traversal:
-            std::map < Reference_to_string,
-                Reference_to_Non_terminal_name_entry,
-                Function_object_class_to_compare_underlying_objects_of_a_reference > map_for_fast_retrival_of_entries;
-            std::deque < Non_terminal_name_entry > list_of_all_non_term_entries_for_fast_traversal;
-
-        };
-        class Base_class_for_all_parts_requiring_input {//this class wont be implemented, but instead inherited by another module that would finally implement it after inheriting the signature.
-            //that module will also export this module
-        public:
-
-
-            virtual void print_all_parsed_input_for_testing() = 0;
-            virtual void get_and_parse_input() = 0;//fetches and parses all lines using current line, and handle all the exceptions thrown while trying to do so, my advice to the implementor
-            //is to define separate functions for each errors, and pass the state needed to fix that error to that function.
-
-
-        };
+        
+        
     };
