@@ -23,8 +23,8 @@ module;
 
 #include<initializer_list>
 
-export module printer;
-import all_declarations;
+export module Printer;
+import All_declarations;
 using absolute_base::Semantical_analyzer_config_entry;
 using absolute_base::Non_terminal_name_entry;
 using absolute_base::Siblings;
@@ -39,12 +39,12 @@ export namespace printing_tools {
         using Option_functions_wrapper_type = std::string::size_type (Printer::*)(const std::string&, std::string::size_type, std::string*);
         
         void additional_setup_for_family_tree() {
-            int current_sibling_index = (*output_config.end()).sub_entries.size() - 1;
+            int current_sibling_index = (*all_config.begin()).sub_entries.size() - 1;
             if (current_sibling_index == -1) {
                 std::runtime_error("no root found");
             }
             Siblings current_generation =
-            { (*output_config.end()).sub_entries, current_sibling_index };
+            { (*all_config.begin()).sub_entries, current_sibling_index };
             absolute_base::dig_to_the_leaves_of_the_family_tree(current_generation, &family_tree);
         }
 
@@ -105,7 +105,33 @@ export namespace printing_tools {
             return 0;
 
         }
+        std::string::size_type option_to_remove_nested_entry_to_latest_sub_entry_for_output_config(const std::string& output_config, std::string::size_type position, std::string* output_data) {
 
+        }    
+        std::string::size_type option_to_remove_nested_entry_to_latest_sub_entry_for_input_config(const std::string& output_config, std::string::size_type position, std::string* output_data) {
+
+        }
+        std::string::size_type option_to_remove_nested_semantical_entry_to_latest_sub_entry_for_output_config(const std::string& output_config, std::string::size_type position, std::string* output_data) {
+
+        }
+        std::string::size_type option_to_remove_nested_semantical_entry_to_latest_sub_entry_for_input_config(const std::string& output_config, std::string::size_type position, std::string* output_data) {
+
+        }
+        std::string::size_type option_to_add_nested_entry_to_latest_sub_entry_for_output_config(const std::string& output_config, std::string::size_type position, std::string* output_data) {
+
+        }
+        std::string::size_type option_to_add_nested_entry_to_latest_sub_entry_for_input_config(const std::string& output_config, std::string::size_type position, std::string* output_data) {
+
+        }
+        std::string::size_type option_to_add_nested_semantical_entry_to_latest_sub_entry_for_output_config(const std::string& output_config, std::string::size_type position, std::string* output_data) {
+
+        } 
+        std::string::size_type option_to_add_nested_semantical_entry_to_latest_sub_entry_for_input_config(const std::string& output_config, std::string::size_type position, std::string* output_data) {
+
+        }
+        std::string::size_type print(const std::string& output_config, std::string::size_type position, std::string* output_data) {
+        
+        }
         //     ~end of functions to apply options on output data~
 
 
@@ -158,7 +184,7 @@ export namespace printing_tools {
                 throw std::runtime_error{ "charactor representing your option is not available" };
             }
         }
-        Printer(std::ostream* a, absolute_base::All_non_terminal_entries& b, std::istream* d, bool e, bool f) : output{ a }, output_config{ b }, input{ d }, is_output_owned{e}, is_input_owned{f}
+        Printer(std::ostream* a,  absolute_base::All_non_terminal_entries& b, absolute_base::All_non_terminal_entries& c, std::istream* d, bool e, bool f) : output{ a }, all_config{b}, all_config_for_input{ c }, input{d}, is_output_owned{e}, is_input_owned{f}
         {
             additional_setup_for_family_tree();
         }
@@ -171,10 +197,14 @@ export namespace printing_tools {
             }
 
         }
+        Printer(Printer&) = default;
+        Printer(Printer&&) = default;
     private:
-        absolute_base::All_non_terminal_entries& output_config;
-
         std::ostream* output;
+
+        absolute_base::All_non_terminal_entries& all_config;
+        absolute_base::All_non_terminal_entries& all_config_for_input;
+
         
         std::istream* input;
         bool is_output_owned;
@@ -182,17 +212,26 @@ export namespace printing_tools {
         std::stack< Siblings > family_tree{};
 
         //   ~VERY PRIVATE DATA MEMBERS, ONLY FOR IMPLEMENTORS OF THIS MODULE, USAGE:TO LOAD NEW FUNCTIONS FROM DYNAMICALLY LINKED LIBRARIES ~
-        size_t number_of_currently_defined_options = 6;
+        size_t number_of_currently_defined_options = 14;
         std::vector<Option_functions_wrapper_type> operations_upon_to_run_upon_charactors_found = {
               & Printer::option_to_replicate_output,
               & Printer::option_to_change_output_stream,
               & Printer::option_to_change_input_stream,
+              & Printer::option_to_remove_nested_entry_to_latest_sub_entry_for_output_config,
+              & Printer::option_to_remove_nested_entry_to_latest_sub_entry_for_input_config,
+              & Printer::option_to_remove_nested_semantical_entry_to_latest_sub_entry_for_output_config,
+              & Printer::option_to_remove_nested_semantical_entry_to_latest_sub_entry_for_input_config,
+              & Printer::option_to_add_nested_entry_to_latest_sub_entry_for_output_config,
+              & Printer::option_to_add_nested_entry_to_latest_sub_entry_for_input_config,
+              & Printer::option_to_add_nested_semantical_entry_to_latest_sub_entry_for_output_config,
+              & Printer::option_to_add_nested_semantical_entry_to_latest_sub_entry_for_input_config,
+              & Printer::print,
               & Printer::option_to_decrypt,
               & Printer::option_to_encrypt,
               & Printer::option_to_hash
         };
 
-        std::vector<char> charactors_representing_each_option = {'1', '2', '3', '4', '5', '6'};
+        std::vector<char> charactors_representing_each_option = { '0','1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
 
 
