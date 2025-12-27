@@ -14,6 +14,8 @@ module;
 #include <deque>
 #include<stack>
 #include<concepts>
+#include <memory>
+
 export module All_declarations;//for c++ noobs, including myself, the module name dosent have to be the same as file name.
 
 //The reasons that I have so many incomplete todos is because my program's design is still evolving, tho the principle remains, hence I cant make my code readable before I finsih my design.
@@ -80,7 +82,54 @@ again these are just my opinion, dont judge
         std::string::size_type read_integer_from_string_at_a_position(const std::string& source, std::string::size_type position, T* integer_read);
 
     }
+    namespace common_concepts {
+
+        template<typename T, typename type_to_stream = std::string>
+        concept OutputStream = requires(T & os, type_to_stream & s) {
+
+            { os } -> std::same_as<std::ostream&>;
+            { os << s } -> std::same_as<std::ostream&>;
+
+        };
+        template<typename T, typename type_to_stream = std::string>
+        concept InputStream = requires(T & is, type_to_stream & s) {
+
+            { is } -> std::same_as<std::istream&>;
+            { is >> s } -> std::same_as<std::istream&>;
+
+        };
+
+        template<typename T, typename type_to_stream = std::string>
+        concept Streamable = OutputStream<T, type_to_stream> || InputStream<T, type_to_stream>;
+
+    }
+    namespace low_level_memory_management {
+        using common_concepts::Streamable;
+        template<Streamable T>
+        class Streamable_manager {
+        public:
+            using Shared_T_ptr= std::shared_ptr<T>;
+
+            Streamable_manager(std::shared_ptr<Stream_holder> holder) : holder(holder) {}
+
+            void switchToNewStream(T* new_stream) {
+                // Automatically cleans up the old stream if this was the last reference
+                *holder = Shared_T_ptr{ new_stream };
+                std::cout << "[Manager] Stream updated.\n";
+            }
+            T& operator*() const {
+                return **holder;
+            }
+            Streamable_manager(std::shared_ptr<Shared_T_ptr> a):holder{a}{}
+            //the rest of constructors(and destructor) are default, hence you dont need to worry about "under the hood" memory management .
+        private:
+            std::shared_ptr<Shared_T_ptr> holder;
+        };
+
+    }
     export namespace absolute_base {
+        using common_concepts::Streamable;
+        using low_level_memory_management::Streamable_manager;
 
         using common_functions::escape_string;
         using common_functions::read_identifier;
@@ -252,7 +301,7 @@ again these are just my opinion, dont judge
             //it should be obvious that the map is for fast lookups, and deque is for fast traversal:
             
             std::map < Reference_to_string,
-                iterator_for_list_of_entries,
+                Iterator_for_list_of_entries,
                 Function_object_class_to_compare_underlying_objects_of_a_reference > map_for_fast_retrival_of_entries;
             std::deque < Non_terminal_name_entry > list_of_all_non_term_entries_for_fast_traversal;
 
