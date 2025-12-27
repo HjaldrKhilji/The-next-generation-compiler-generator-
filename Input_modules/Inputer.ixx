@@ -14,18 +14,18 @@ module;
 #include<regex>
 #include<stack>
 export module Inputer;
-import all_declarations;
+import All_declarations;
 using absolute_base::Semantical_analyzer_config_entry;
 using absolute_base::Non_terminal_name_entry;
 using absolute_base::Siblings;
 using absolute_base::Non_terminal_name_entry;
 export namespace input_tools {
    
-        class Input_reader : public absolute_base::Base_class_for_all_parts_requiring_input {
+        class Input_reader {
         private:
             void get_raw_input() {
                 std::string lineInput;
-                std::getline(input_stream, lineInput);
+                std::getline(**input_stream, lineInput);
                 raw_input.append(lineInput);
 
             }
@@ -61,12 +61,12 @@ export namespace input_tools {
 
                 static std::stack< Siblings > family_tree{};
                 if (want_to_initialize_loop == true) {
-                    int current_sibling_index = (*config_regex_info.end()).sub_entries.size() - 1;
+                    int current_sibling_index = (*all_config.begin()).sub_entries.size() - 1;
                     if (current_sibling_index == -1) {
                         std::runtime_error("no root found");
                     }
                     Siblings current_generation =
-                        { (*config_regex_info.end()).sub_entries, current_sibling_index};
+                        { (*(all_config.begin())).sub_entries, current_sibling_index};
                     absolute_base::dig_to_the_leaves_of_the_family_tree(current_generation, &family_tree);
                     check_regex_in_current_raw_input(current_generation.get_current_sibling(), current_generation.get_semantic_rules_for_current_sibling());
                     scan_family_tree_regex_pattern_of_root(false);
@@ -95,7 +95,8 @@ export namespace input_tools {
 
 
         public:
-            Input_reader(std::istream& a, absolute_base::Base_printer& b, absolute_base::All_non_terminal_entries& c) :input_stream(a), output{ b }, config_regex_info{ c } {}
+            Input_reader(std::istream* a) = delete;
+            Input_reader(std::istream* const * a, const absolute_base::Base_printer& b, const absolute_base::All_non_terminal_entries& c) :input_stream(a), output{ b }, all_config{ c } {}
 
             
 
@@ -103,11 +104,13 @@ export namespace input_tools {
                 scan_family_tree_regex_pattern_of_root(true);
 
             }
+            Input_reader(Input_reader&) = default;
+            Input_reader(Input_reader&&) = default;
         private:
             absolute_base::Base_printer& output;//this member should be passed the same istream as this class is
-            absolute_base::All_non_terminal_entries& config_regex_info;
+             absolute_base::All_non_terminal_entries&  all_config;
             std::string raw_input;
-            std::istream& input_stream;
+            std::istream* const * input_stream;
            
         };
     };
