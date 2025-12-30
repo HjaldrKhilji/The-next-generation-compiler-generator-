@@ -441,17 +441,8 @@ export   namespace config_parsing_tools {
                 //I have yet to find a use for this function, but I thought it is important for the future maintainer to just have this very trivial function
                 return line_stream;
             }
-        public:
 
-            void print_all_parsed_input_for_testing()  {
-                //postcondition: simply prints the information for every non term entry, which contains the non term entries,  nested entries of those non term entries,
-                //  and the semantic rules of those nested entries
-
-                all_entries.print_all_content();
-            }
-
-
-            void get_and_parse_input()  {
+            void get_and_parse_input() {
 
                 //post_condition: the input for a single non term entry is taken, along side the nested non term entries in that non term entry, and the semantical rules for each
                 //non term entry in that non term entry, all exceptions that occurred in doing so have also been handled
@@ -460,7 +451,7 @@ export   namespace config_parsing_tools {
                 do {
                     try {
                         change_current_line();
-                        
+
                     }
                     catch (const std::ios_base::failure& e) {
                         //Todo
@@ -479,8 +470,18 @@ export   namespace config_parsing_tools {
             } // parse the whole file
 
 
+        public:
+
+            void print_all_parsed_input_for_testing()  {
+                //postcondition: simply prints the information for every non term entry, which contains the non term entries,  nested entries of those non term entries,
+                //  and the semantic rules of those nested entries
+
+                all_entries.print_all_content();
+            }
+
+
             
-            Config_reader(std::istream* a) :input_stream(a) {}
+            Config_reader(std::istream* a) :input_stream(a) { get_and_parse_input(); }
             
             Config_reader(Config_reader&) = default;
             Config_reader(Config_reader&&) = default;
