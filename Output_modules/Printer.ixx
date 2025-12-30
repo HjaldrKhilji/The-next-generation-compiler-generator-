@@ -22,7 +22,7 @@ module;
 #include<functional>
 
 #include<initializer_list>
-
+#include<memory>
 export module Printer;
 import All_declarations;
 using absolute_base::Semantical_analyzer_config_entry;
@@ -39,12 +39,12 @@ export namespace printing_tools {
         using Option_functions_wrapper_type = std::string::size_type (Printer::*)(const std::string&, std::string::size_type, std::string*);
         
         void additional_setup_for_family_tree() {
-            int current_sibling_index = (*all_config->begin()).sub_entries.size() - 1;
+            int current_sibling_index = (*all_config_output->begin()).sub_entries.size() - 1;
             if (current_sibling_index == -1) {
                 std::runtime_error("no root found");
             }
             Siblings current_generation =
-            { (*all_config->begin()).sub_entries, current_sibling_index };
+            { (*all_config_output->begin()).sub_entries, current_sibling_index };
             absolute_base::dig_to_the_leaves_of_the_family_tree(current_generation, &family_tree);
         }
 
@@ -68,7 +68,7 @@ export namespace printing_tools {
             size_t delimiter_position = output_config.find(file_name_end_charactor, position);
             std::string file_name = output_config.substr(position, delimiter_position);
             
-            output = new std::ofstream{ file_name };
+            output.switchToNewStream(new std::ofstream{ file_name });
             return delimiter_position + 1;//+1 is to skip the delemiter_position index itself
         }
 
@@ -76,7 +76,7 @@ export namespace printing_tools {
             const char file_name_end_charactor = ':';
             size_t delimiter_position = output_config.find(file_name_end_charactor, position);
             std::string file_name = output_config.substr(position, delimiter_position);
-            input = new std::ifstream{ file_name };
+            input.switchToNewStream( new std::ifstream{ file_name });
             return delimiter_position + 1;//+1 is to skip the delemiter_position index itself
         }
 
@@ -177,7 +177,9 @@ export namespace printing_tools {
                 throw std::runtime_error{ "charactor representing your option is not available" };
             }
         }
-        Printer(std::ostream* a, std::unique_ptr<absolute_base::All_non_terminal_entries> b, std::shared_ptr<absolute_base::All_non_terminal_entries> c, std::istream* d) : output{ a }, all_config{b}, all_config_for_input{ c }, input{d}
+        using Input_stream_handler_ptr = absolute_base::Streamable_manager<std::istream, std::shared_ptr>;
+        using Output_stream_handler_ptr = absolute_base::Streamable_manager<std::ostream, std::unique_ptr>;
+        Printer(Output_stream_handler_ptr a,  std::unique_ptr<absolute_base::All_non_terminal_entries> b, std::shared_ptr<absolute_base::All_non_terminal_entries> c, Input_stream_handler_ptr  d) : output{ a }, all_config_output{b}, all_config_for_input{ c }, input{d}
         {
             additional_setup_for_family_tree();
         }
@@ -188,13 +190,15 @@ export namespace printing_tools {
         Printer(Printer&) = default;
         Printer(Printer&&) = default;
     private:
-        std::ostream* output;
+        
 
-        std::unique_ptr<absolute_base::All_non_terminal_entries> all_config;
+        Output_stream_handler_ptr output;
+
+        std::unique_ptr<absolute_base::All_non_terminal_entries> all_config_output;
         std::shared_ptr<absolute_base::All_non_terminal_entries> all_config_for_input;
 
         
-        std::istream** input;
+        Input_stream_handler_ptr input;
         
         std::stack< Siblings > family_tree{};
 
