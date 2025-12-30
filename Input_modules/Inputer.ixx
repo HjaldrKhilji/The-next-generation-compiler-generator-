@@ -13,6 +13,8 @@ module;
 #include <vector>
 #include<regex>
 #include<stack>
+#include<memory>
+
 export module Inputer;
 import All_declarations;
 using absolute_base::Semantical_analyzer_config_entry;
@@ -95,7 +97,7 @@ export namespace input_tools {
 
 
         public:
-            using Stream_handler_ptr = absolute_base::Streamable_manager<std::istream>;
+            using Input_stream_handler_ptr = absolute_base::Streamable_manager<std::istream, std::shared_ptr>;
             Input_reader(std::istream* a) = delete;
             Input_reader(Stream_handler_ptr a, const absolute_base::Base_printer& b, const absolute_base::All_non_terminal_entries& c) :input_stream{ a }, output_manager{ b }, all_config{ c } {}
 
@@ -109,9 +111,9 @@ export namespace input_tools {
             Input_reader(Input_reader&&) = default;
         private:
             absolute_base::Base_printer& output_manager;//this member should be passed the same istream as this class is
-             absolute_base::All_non_terminal_entries&  all_config;
+            absolute_base::All_non_terminal_entries&  all_config;
             std::string raw_input;
-            const Stream_handler_ptr input_stream;
+            const Input_stream_handler_ptr input_stream;
            
         };
     };
