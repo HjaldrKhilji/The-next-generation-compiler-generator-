@@ -39,7 +39,7 @@ export namespace printing_tools {
         
        
         template<bool search>
-        void return_non_terminal_entry(const std::string& output_config, std::string::size_type* position, absolute_base::All_non_terminal_entries* list_of_entries_to_find_it_in);
+        inline Non_terminal_name_entry* return_non_terminal_entry(const std::string& output_config, std::string::size_type* position, absolute_base::All_non_terminal_entries* list_of_entries_to_find_it_in);
         template<> 
          void return_non_terminal_entry<true>(const std::string& output_config, std::string::size_type* position, absolute_base::All_non_terminal_entries* list_of_entries_to_find_it_in) {
             std::string non_terminal_entry_name = absolute_base::read_string_from_string_at_a_position(output_config, position);
@@ -58,10 +58,10 @@ export namespace printing_tools {
 
 
         template<bool check>
-        inline absolute_base::Semantical_analyzer_config_entry* return_non_terminal_entry(const std::string& output_config, std::string::size_type* position, const Sibling& entry_containing_semantic_entry);
+        inline absolute_base::Semantical_analyzer_config_entry* return_semantic_entry(const std::string& output_config, std::string::size_type* position, const Sibling& entry_containing_semantic_entry);
         
         template<>
-        inline absolute_base::Semantical_analyzer_config_entry* return_non_terminal_entry<true>(const std::string& output_config, std::string::size_type* position, const Sibling& entry_containing_semantic_entry, absolute_base::Non_terminal_name_entry* list_of_entries_to_find_it_in) {
+        inline absolute_base::Semantical_analyzer_config_entry* return_semantic_entry<true>(const std::string& output_config, std::string::size_type* position, const Sibling& entry_containing_semantic_entry, absolute_base::Non_terminal_name_entry* list_of_entries_to_find_it_in) {
             std::string semantic_entry_pattern = absolute_base::read_string_from_string_at_a_position(output_config, position);
             auto entry_found = std::find_if(entry_containing_semantic_entry->begin(), entry_containing_semantic_entry->end(),
                 [&semantic_entry_pattern](absolute_base::Non_terminal_name_entry current_entry) {
@@ -71,7 +71,7 @@ export namespace printing_tools {
             return entry_found;
         }
         template<>
-        inline absolute_base::Semantical_analyzer_config_entry* return_non_terminal_entry<true>(const std::string& output_config, std::string::size_type* position, const Sibling& entry_containing_semantic_entry, absolute_base::Non_terminal_name_entry* list_of_entries_to_find_it_in) {
+        inline absolute_base::Semantical_analyzer_config_entry* return_semantic_entry<true>(const std::string& output_config, std::string::size_type* position, const Sibling& entry_containing_semantic_entry, absolute_base::Non_terminal_name_entry* list_of_entries_to_find_it_in) {
             return entry_containing_semantic_entry.end();
         }
         
@@ -166,6 +166,7 @@ export namespace printing_tools {
             read_single_entry_and_push_it_as_the_sub_entry_an_the_entry_passed<list_of_entries_to_find_it_in>(entry);
 
         }
+
         
         //     ~end of functions to apply options on output data~
 
@@ -245,8 +246,6 @@ export namespace printing_tools {
         
         std::stack< Siblings > family_tree{};
 
-        //   ~VERY PRIVATE DATA MEMBERS, ONLY FOR IMPLEMENTORS OF THIS MODULE, USAGE:TO LOAD NEW FUNCTIONS FROM DYNAMICALLY LINKED LIBRARIES ~
-        size_t number_of_currently_defined_options = 14;
         std::vector<std::pair<char, Option_functions_wrapper_type>> operations_upon_to_run_upon_charactors_found = {
               '1', & Printer::option_to_replicate_output,
               '2', & Printer::option_to_change_output_stream,
