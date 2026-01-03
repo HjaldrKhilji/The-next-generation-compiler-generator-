@@ -58,7 +58,7 @@ export namespace printing_tools {
 
 
         template<bool check>
-        inline absolute_base::Semantical_analyzer_config_entry* return_semantic_entry(const std::string& output_config, std::string::size_type* position, const Sibling& entry_containing_semantic_entry);
+        inline absolute_base::Semantical_analyzer_config_entry* return_semantic_entry(const std::string& output_config, std::string::size_type* position, const Sibling& entry_containing_semantic_entry, absolute_base::Non_terminal_name_entry* list_of_entries_to_find_it_in);
         
         template<>
         inline absolute_base::Semantical_analyzer_config_entry* return_semantic_entry<true>(const std::string& output_config, std::string::size_type* position, const Sibling& entry_containing_semantic_entry, absolute_base::Non_terminal_name_entry* list_of_entries_to_find_it_in) {
