@@ -178,12 +178,14 @@ export namespace printing_tools {
             std::string::size_type position = 0;
 
             std::string all_output_options_set = output_config_entry.output_config_data.substr(position, number_of_currently_defined_options);
-
-            for (auto &x: operations_upon_to_run_upon_charactors_found) {
-                if (all_output_options_set[i] == charactors_representing_each_option[i]) {
-                    x(output_config_entry.output_config_data, position, &string_to_output);
+            
+            for (char option_charactor : all_output_options_set) {
+                for (auto const& pair : operations_upon_to_run_upon_charactors_found) {
+                    if (option_charactor == pair.first) {
+                        (this->*pair.second)(output_config_entry.output_config_data, position, &string_to_output);
+                        break; // We found the move; go to the next character in the config
+                    }
                 }
-
             }
             
 
@@ -245,17 +247,17 @@ export namespace printing_tools {
 
         //   ~VERY PRIVATE DATA MEMBERS, ONLY FOR IMPLEMENTORS OF THIS MODULE, USAGE:TO LOAD NEW FUNCTIONS FROM DYNAMICALLY LINKED LIBRARIES ~
         size_t number_of_currently_defined_options = 14;
-        std::vector<Option_functions_wrapper_type> operations_upon_to_run_upon_charactors_found = {
-              & Printer::option_to_replicate_output,
-              & Printer::option_to_change_output_stream,
-              & Printer::option_to_change_input_stream,
-              & Printer::print_output,
-              & Printer::option_to_decrypt,
-              & Printer::option_to_encrypt,
-              & Printer::option_to_hash
+        std::vector<std::pair<char, Option_functions_wrapper_type>> operations_upon_to_run_upon_charactors_found = {
+              '1', & Printer::option_to_replicate_output,
+              '2', & Printer::option_to_change_output_stream,
+              '3', & Printer::option_to_change_input_stream,
+              '4', & Printer::print_output,
+              '5', & Printer::option_to_decrypt,
+              '6', & Printer::option_to_encrypt,
+              '7', & Printer::option_to_hash
         };
 
-        std::vector<char> charactors_representing_each_option = { '0','1', '2', '3', '4', '5', '6', '7'};
+       
 
 
 
