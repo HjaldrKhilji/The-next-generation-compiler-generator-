@@ -25,9 +25,10 @@ void All_non_terminal_entries_implementation::add_a_child_to_entry
     }
     map_for_fast_retrival_of_entries[entry_to_be_added_to->name]->sub_entry.push_back(std::move(entry_to_add));
 }
-void All_non_terminal_entries_implementation::add_semantic_rule_to_entry(absolute_base::Non_terminal_name_entry* entry_to_be_added_to,  Semantical_analyzer_config_entry&& semantical_rule_entry, int sibling_index) override {
-    auto& semantic_rules_for_entry = entry_to_remove.all_semantical_analysis_rules[sibling_index];
-    semantic_rules_for_entry.push_back(std::move(semantical_rule_entry));
+void All_non_terminal_entries_implementation::add_semantic_rule_to_entry(absolute_base::Non_terminal_name_entry* entry_to_be_added_to,  Semantical_analyzer_config_entry&& semantical_rule_entry, int sibling_index, int semantic_entry_index) override {
+    auto& semantic_rules_for_entry = entry_to_be_added_to.all_semantical_analysis_rules[sibling_index];
+    semantic_rules_for_entry.insert(semantic_rules_for_entry.begin() + semantic_entry_index, std::move(semantical_rule_entry));
+
 }
 void All_non_terminal_entries_implementation::remove_entry
 (absolute_base::Non_terminal_name_entry* entry_to_remove) override {
@@ -42,15 +43,12 @@ void All_non_terminal_entries_implementation::remove_entry
     
 }
 
-void All_non_terminal_entries_implementation::remove_latest_semantic_rule_for_entry(absolute_base::Non_terminal_name_entry* entry_to_remove, int sibling_index) override {
-    auto& semantic_rules_for_entry = entry_to_remove.all_semantical_analysis_rules[sibling_index];
-    semantic_rules_for_entry.pop_back();  
+void All_non_terminal_entries_implementation::remove_semantic_rule_of_entry(absolute_base::Non_terminal_name_entry* entry_to_remove_from, int sibling_index, int index_of_semantic_rule) override {
+    auto& semantic_rules_for_entry = entry_to_remove_from.all_semantical_analysis_rules[sibling_index];
+    semantic_rules_for_entry.erase(v.begin() + index_of_semantic_rule);
 }
 
-void All_non_terminal_entries_implementation::remove_all_semantic_rules_for_entry(absolute_base::Non_terminal_name_entry* entry_to_remove,const std::string pattern_to_remove_all_occurances_of, int sibling_index) override {
-    auto& semantic_rules_for_entry = entry_to_remove.all_semantical_analysis_rules[sibling_index];
-    words.erase(std::remove(vector_to_remove_all_occurances_in.begin(), vector_to_remove_all_occurances_in.end(), pattern_to_remove_all_occurances_of), vector_to_remove_all_occurances_in.end());
-}
+
 bool absolute_base::Semantical_analyzer_config_entry::check_pattern(std::string text) {
     std::regex pattern{ the_pattern_to_check };
     
