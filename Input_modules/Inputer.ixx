@@ -70,7 +70,7 @@ export namespace input_tools {
                     Siblings current_generation =
                         { (*(all_config.begin())).sub_entries, current_sibling_index};
                     absolute_base::dig_to_the_leaves_of_the_family_tree(current_generation, &family_tree);
-                    check_regex_in_current_raw_input(current_generation.get_current_sibling(), current_generation.get_semantic_rules_for_current_sibling());
+                    check_regex_in_current_raw_input(*(current_generation.get_current_sibling()), current_generation.get_semantic_rules_for_current_sibling());
                     scan_family_tree_regex_pattern_of_root(false);
                 }
                 else {
@@ -79,7 +79,7 @@ export namespace input_tools {
                         family_tree.pop();
                         int current_sibling_index = current_generation.get_current_sibling_index();
                         absolute_base::dig_to_the_leaves_of_the_family_tree(current_generation, &family_tree);
-                        check_regex_in_current_raw_input(current_generation.get_current_sibling(), current_generation.get_semantic_rules_for_current_sibling());
+                        check_regex_in_current_raw_input(*(current_generation.get_current_sibling()), current_generation.get_semantic_rules_for_current_sibling());
                         scan_family_tree_regex_pattern_of_root(false);
 
                     }
