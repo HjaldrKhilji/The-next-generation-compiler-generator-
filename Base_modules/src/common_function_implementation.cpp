@@ -52,14 +52,23 @@ module all_declarations;
 
  }
  template<std::integral T>
- std::string::size_type  common_functions::read_integer_from_string_at_a_position(const std::string& source, std::string::size_type position, T* integer_read) {
+ T  common_functions::read_integer_from_string_at_a_position(const std::string& source, std::string::size_type* position) {
     static_assert(std::is_integral_v<T>, "Template parameter T must be an integral type.");
     //      ~raw ugly optimization that i had to do for the sake of optimization~
     //try to ignore this ugly code as much as possible, and avoid touching it too, please, unless you have to ofcourse.
     const char* start_ptr = source.c_str() + position;
     char* end_ptr;
     constexpr int base_of_the_number_being_read = 10;
-    *integer_read = std::strtol(start_ptr, &end_ptr, base_of_the_number_being_read);
-    return end_ptr - start_ptr;
+    int integer_read = std::strtol(start_ptr, &end_ptr, base_of_the_number_being_read);
+
+    static_cast<T>(*position) = end_ptr - start_ptr;
+    return integer_read;
     //      ~end of all raw ugly optimization that i had to do for the sake of optimization~ 
 }
+ std::string common_functions::read_string_from_string_at_a_position(const std::string& source_string, std::string::size_type* position) {
+     char file_name_end_charactor = source_string[*position];
+     size_t delimiter_position = source_string.find(file_name_end_charactor, *position);
+     std::string file_name = source_string.substr(*position, delimiter_position);
+     *position = delimiter_position;
+     return file_name;
+ }
