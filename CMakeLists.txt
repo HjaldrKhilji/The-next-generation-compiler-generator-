@@ -11,6 +11,7 @@ set(MODULE_SOURCES
     Config_reader_module/Config_parser.ixx
     Input_modules/Inputer.ixx
     Output_modules/Printer.ixx
+    Driver_module/Driver_module.ixx
 
 )
 # Source files from the 'src' directory
