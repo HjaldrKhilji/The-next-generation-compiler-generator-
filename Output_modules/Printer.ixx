@@ -328,43 +328,15 @@ export namespace printing_tools {
         
         std::stack< Siblings > family_tree{};
 
-        // --- Basic Entry Management (Search vs Contextual) ---
-    // Template: <bool search, absolute_base::All_non_terminal_entries Printer::*list>
-    { 'a', &Printer::add_entry<true, &Printer::all_config_for_input> },
-    { 'b', &Printer::add_entry<false, &Printer::all_config_for_input> },
-    { 'c', &Printer::remove_entry<true, &Printer::all_config_for_input> },
-    { 'd', &Printer::remove_entry<false, &Printer::all_config_for_input> },
-
-    // --- Semantic Entry Management (The 8-Way Permutations) ---
-    // Template: <bool find_parent, bool find_nested_technique, bool check_semantic, absolute_base::All_non_terminal_entries Printer::*list>
-
-    // Character mapping for ADD_SEMANTIC_ENTRY
-    { '1', &Printer::add_semantic_entry_to_non_term_entry_passed<true,  true,  true,  &Printer::all_config_for_input> },
-    { '2', &Printer::add_semantic_entry_to_non_term_entry_passed<true,  true,  false, &Printer::all_config_for_input> },
-    { '3', &Printer::add_semantic_entry_to_non_term_entry_passed<true,  false, true,  &Printer::all_config_for_input> },
-    { '4', &Printer::add_semantic_entry_to_non_term_entry_passed<true,  false, false, &Printer::all_config_for_input> },
-    { '5', &Printer::add_semantic_entry_to_non_term_entry_passed<false, true,  true,  &Printer::all_config_for_input> },
-    { '6', &Printer::add_semantic_entry_to_non_term_entry_passed<false, true,  false, &Printer::all_config_for_input> },
-    { '7', &Printer::add_semantic_entry_to_non_term_entry_passed<false, false, true,  &Printer::all_config_for_input> },
-    { '8', &Printer::add_semantic_entry_to_non_term_entry_passed<false, false, false, &Printer::all_config_for_input> },
-
-    // Character mapping for REMOVE_SEMANTIC_ENTRY
-    { 'A', &Printer::remove_semantic_entry_to_non_term_entry_passed<true,  true,  true,  &Printer::all_config_for_input> },
-    { 'B', &Printer::remove_semantic_entry_to_non_term_entry_passed<true,  true,  false, &Printer::all_config_for_input> },
-    { 'C', &Printer::remove_semantic_entry_to_non_term_entry_passed<true,  false, true,  &Printer::all_config_for_input> },
-    { 'D', &Printer::remove_semantic_entry_to_non_term_entry_passed<true,  false, false, &Printer::all_config_for_input> },
-    { 'E', &Printer::remove_semantic_entry_to_non_term_entry_passed<false, true,  true,  &Printer::all_config_for_input> },
-    { 'F', &Printer::remove_semantic_entry_to_non_term_entry_passed<false, true,  false, &Printer::all_config_for_input> },
-    { 'G', &Printer::remove_semantic_entry_to_non_term_entry_passed<false, false, true,  &Printer::all_config_for_input> },
-    { 'H', &Printer::remove_semantic_entry_to_non_term_entry_passed<false, false, false, &Printer::all_config_for_input> },
-
-    // --- Stream & Logic Options ---
-    { 'R', &Printer::option_to_replicate_output },
-    { 'S', &Printer::option_to_change_output_stream },
-    { 'I', &Printer::option_to_change_input_stream },
-    { 'P', &Printer::print_output }
-//used AI for the text of this vector initializer. XDDDD
-       
+                std::vector<std::pair<char, Option_functions_wrapper_type>> operations_upon_to_run_upon_charactors_found = {
+              '1', & Printer::option_to_replicate_output,
+              '2', & Printer::option_to_change_output_stream,
+              '3', & Printer::option_to_change_input_stream,
+              '4', & Printer::print_output,
+              '5', & Printer::option_to_decrypt,
+              '6', & Printer::option_to_encrypt,
+              '7', & Printer::option_to_hash
+        };
 
 
 
