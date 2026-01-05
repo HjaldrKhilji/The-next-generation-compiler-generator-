@@ -336,8 +336,8 @@ std::vector<std::pair<char, Option_functions_wrapper_type>> operations_upon_to_r
     // --- Entry Management (a-d) ---
     { 'a', &Printer::add_entry<true,  &Printer::all_config_for_input> }, 
     { 'b', &Printer::add_entry<false, &Printer::all_config_for_input> }, 
-    { 'c', &Printer::remove_entry<true,  &Printer::all_config_for_input> }, 
-    { 'd', &Printer::remove_entry<false, &Printer::all_config_for_input> },
+    { 'c', &Printer::remove_entry<true,  &Printer::all_config_for_output> }, 
+    { 'd', &Printer::remove_entry<false, &Printer::all_config_for_output> },
 
     // --- Add Semantic Rules (1-8) ---
     { '1', &Printer::add_semantic_entry_to_non_term_entry_passed<true,  true,  true,  &Printer::all_config_for_input> },
