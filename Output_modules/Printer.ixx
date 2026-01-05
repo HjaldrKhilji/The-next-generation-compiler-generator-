@@ -328,15 +328,78 @@ export namespace printing_tools {
         
         std::stack< Siblings > family_tree{};
 
-                std::vector<std::pair<char, Option_functions_wrapper_type>> operations_upon_to_run_upon_charactors_found = {
-              '1', & Printer::option_to_replicate_output,
-              '2', & Printer::option_to_change_output_stream,
-              '3', & Printer::option_to_change_input_stream,
-              '4', & Printer::print_output,
-              '5', & Printer::option_to_decrypt,
-              '6', & Printer::option_to_encrypt,
-              '7', & Printer::option_to_hash
-        };
+std::vector<std::pair<char, Option_functions_wrapper_type>> operations_upon_to_run_upon_charactors_found = {
+    // ========================================================================
+    // --- INPUT CONFIGURATION (&Printer::all_config_for_input) ---
+    // ========================================================================
+    
+    // --- Entry Management (a-d) ---
+    { 'a', &Printer::add_entry<true,  &Printer::all_config_for_input> }, 
+    { 'b', &Printer::add_entry<false, &Printer::all_config_for_input> }, 
+    { 'c', &Printer::remove_entry<true,  &Printer::all_config_for_input> }, 
+    { 'd', &Printer::remove_entry<false, &Printer::all_config_for_input> },
+
+    // --- Add Semantic Rules (1-8) ---
+    { '1', &Printer::add_semantic_entry_to_non_term_entry_passed<true,  true,  true,  &Printer::all_config_for_input> },
+    { '2', &Printer::add_semantic_entry_to_non_term_entry_passed<true,  true,  false, &Printer::all_config_for_input> },
+    { '3', &Printer::add_semantic_entry_to_non_term_entry_passed<true,  false, true,  &Printer::all_config_for_input> },
+    { '4', &Printer::add_semantic_entry_to_non_term_entry_passed<true,  false, false, &Printer::all_config_for_input> },
+    { '5', &Printer::add_semantic_entry_to_non_term_entry_passed<false, true,  true,  &Printer::all_config_for_input> },
+    { '6', &Printer::add_semantic_entry_to_non_term_entry_passed<false, true,  false, &Printer::all_config_for_input> },
+    { '7', &Printer::add_semantic_entry_to_non_term_entry_passed<false, false, true,  &Printer::all_config_for_input> },
+    { '8', &Printer::add_semantic_entry_to_non_term_entry_passed<false, false, false, &Printer::all_config_for_input> },
+
+    // --- Remove Semantic Rules (A-H) ---
+    { 'A', &Printer::remove_semantic_entry_to_non_term_entry_passed<true,  true,  true,  &Printer::all_config_for_input> },
+    { 'B', &Printer::remove_semantic_entry_to_non_term_entry_passed<true,  true,  false, &Printer::all_config_for_input> },
+    { 'C', &Printer::remove_semantic_entry_to_non_term_entry_passed<true,  false, true,  &Printer::all_config_for_input> },
+    { 'D', &Printer::remove_semantic_entry_to_non_term_entry_passed<true,  false, false, &Printer::all_config_for_input> },
+    { 'E', &Printer::remove_semantic_entry_to_non_term_entry_passed<false, true,  true,  &Printer::all_config_for_input> },
+    { 'F', &Printer::remove_semantic_entry_to_non_term_entry_passed<false, true,  false, &Printer::all_config_for_input> },
+    { 'G', &Printer::remove_semantic_entry_to_non_term_entry_passed<false, false, true,  &Printer::all_config_for_input> },
+    { 'H', &Printer::remove_semantic_entry_to_non_term_entry_passed<false, false, false, &Printer::all_config_for_input> },
+
+    // ========================================================================
+    // --- OUTPUT CONFIGURATION (&Printer::all_config_for_output) ---
+    // ========================================================================
+    
+    // --- Entry Management (e-h) ---
+    { 'e', &Printer::add_entry<true,  &Printer::all_config_for_output> }, 
+    { 'f', &Printer::add_entry<false, &Printer::all_config_for_output> }, 
+    { 'g', &Printer::remove_entry<true,  &Printer::all_config_for_output> }, 
+    { 'h', &Printer::remove_entry<false, &Printer::all_config_for_output> },
+
+    // --- Add Semantic Rules (Symbols used to avoid collision with 1-8) ---
+    { '!', &Printer::add_semantic_entry_to_non_term_entry_passed<true,  true,  true,  &Printer::all_config_for_output> },
+    { '@', &Printer::add_semantic_entry_to_non_term_entry_passed<true,  true,  false, &Printer::all_config_for_output> },
+    { '#', &Printer::add_semantic_entry_to_non_term_entry_passed<true,  false, true,  &Printer::all_config_for_output> },
+    { '$', &Printer::add_semantic_entry_to_non_term_entry_passed<true,  false, false, &Printer::all_config_for_output> },
+    { '%', &Printer::add_semantic_entry_to_non_term_entry_passed<false, true,  true,  &Printer::all_config_for_output> },
+    { '^', &Printer::add_semantic_entry_to_non_term_entry_passed<false, true,  false, &Printer::all_config_for_output> },
+    { '&', &Printer::add_semantic_entry_to_non_term_entry_passed<false, false, true,  &Printer::all_config_for_output> },
+    { '*', &Printer::add_semantic_entry_to_non_term_entry_passed<false, false, false, &Printer::all_config_for_output> },
+
+    // --- Remove Semantic Rules (I-P used to avoid collision with A-H) ---
+    { 'I', &Printer::remove_semantic_entry_to_non_term_entry_passed<true,  true,  true,  &Printer::all_config_for_output> },
+    { 'J', &Printer::remove_semantic_entry_to_non_term_entry_passed<true,  true,  false, &Printer::all_config_for_output> },
+    { 'K', &Printer::remove_semantic_entry_to_non_term_entry_passed<true,  false, true,  &Printer::all_config_for_output> },
+    { 'L', &Printer::remove_semantic_entry_to_non_term_entry_passed<true,  false, false, &Printer::all_config_for_output> },
+    { 'M', &Printer::remove_semantic_entry_to_non_term_entry_passed<false, true,  true,  &Printer::all_config_for_output> },
+    { 'N', &Printer::remove_semantic_entry_to_non_term_entry_passed<false, true,  false, &Printer::all_config_for_output> },
+    { 'O', &Printer::remove_semantic_entry_to_non_term_entry_passed<false, false, true,  &Printer::all_config_for_output> },
+    { 'P', &Printer::remove_semantic_entry_to_non_term_entry_passed<false, false, false, &Printer::all_config_for_output> },
+
+    // ========================================================================
+    // --- GENERAL OPERATIONS ---
+    // ========================================================================
+    { 'R', &Printer::option_to_replicate_output },
+    { 'S', &Printer::option_to_change_output_stream }, 
+    { 'T', &Printer::option_to_change_input_stream }, 
+    { 'U', &Printer::print_output }
+};
+
+
+
 
 
 
