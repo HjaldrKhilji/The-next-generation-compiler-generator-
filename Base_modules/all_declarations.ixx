@@ -78,9 +78,8 @@ again these are just my opinion, dont judge
             const std::vector < escape_charactor_function_wrapper_type >
             function_to_be_run_for_each);
         std::string read_identifier(std::istringstream* line_stream);
-        template <std::integral T>
         template<std::integral T>
-        T  common_functions::read_integer_from_string_at_a_position(const std::string& source, std::string::size_type* position);
+        T  read_integer_from_string_at_a_position(const std::string& source, std::string::size_type* position);
         std::string read_string_from_string_at_a_position(const std::string& source_string, std::string::size_type* position);
   
     namespace common_concepts {
