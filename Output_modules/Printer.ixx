@@ -98,9 +98,10 @@ export namespace printing_tools {
 
             
             for (char option_charactor :  output_config_entry.output_config_data) {
+            ++position;//changing index in ouptut_config
                 for (auto const& pair : operations_upon_to_run_upon_charactors_found) {
                     if (option_charactor == pair.first) {
-                        ++position;
+                        ++position;//skipping the option charactor
                         (this->*pair.second)(output_config_entry.output_config_data, position, &string_to_output);
                         break; // We found the move; go to the next character in the config
                     }
