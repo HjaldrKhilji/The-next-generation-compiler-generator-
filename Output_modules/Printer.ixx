@@ -1,28 +1,29 @@
 module;
-#include <iostream>
-
-#include <cstdlib>
-
-#include <fstream>
-
-#include <map>
-
-#include <bitset>
-
-#include <regex>
-
-#include <sstream>
-
+// For string manipulation and positions
 #include <string>
+#include <string_view>
 
-#include<stack>
+// For I/O operations and the spanstream used in parse_raw_input
+#include <iostream>
+#include <fstream>
+#include <spanstream> 
 
+// For data structures
 #include <vector>
+#include <stack>
+#include <map>
+#include <utility> // For std::pair
 
-#include<functional>
+// For memory management
+#include <memory>
 
-#include<initializer_list>
-#include<memory>
+// For algorithms (std::find) and error handling
+#include <algorithm>
+#include <stdexcept>
+
+// For span support (C++20)
+#include <span>
+// I used AI to keep track of the headers needed
 export module Printer;
 import All_declarations;
 import Config_parser;
@@ -35,105 +36,30 @@ using absolute_base::Siblings;
   
 export namespace printing_tools {
 
+    
     namespace helper_templates_for_options {
-        
+       template <typename Type_to_read>
+       Type_to_read read_from_string(const std::string& output_config, std::string::size_type* position);
+       template <>
+       Type_to_read read_from_string<std::string>(const std::string& output_config, std::string::size_type* position) {
        
-        template<bool search>
-        inline Non_terminal_name_entry* return_non_terminal_entry(const std::string& output_config, std::string::size_type* position, absolute_base::All_non_terminal_entries* list_of_entries_to_find_it_in);
-        template<> 
-         void return_non_terminal_entry<true>(const std::string& output_config, std::string::size_type* position, absolute_base::All_non_terminal_entries* list_of_entries_to_find_it_in) {
-            std::string non_terminal_entry_name = absolute_base::read_string_from_string_at_a_position(output_config, position);
-            auto entry_found = std::find_if(list_of_entries_to_find_it_in->begin(), list_of_entries_to_find_it_in->end(),
-                [&non_terminal_entry_name](absolute_base::Non_terminal_name_entry current_entry) {
-                    return current_entry.name == non_terminal_entry_name;
-                }
-            );
-            if (entry_found != list_of_entries_to_find_it_in->end()) {
-                throw std::runtime_error{ "semantic entry not found (PRINTER ERROR)" };
+           return read_string_from_string_at_a_position(output_config, position);
 
-            }
-            return entry_found;
-        }
-        template<>
-        inline Non_terminal_name_entry* return_non_terminal_entry<false>(const std::string& output_config, std::string::size_type* position, absolute_base::All_non_terminal_entries* list_of_entries_to_find_it_in) {
-            if (!list_of_entries_to_find_it_in->size()) {
-                throw std::runtime_error{ "semantic entry not found (PRINTER ERROR)" };
-            }
-            return *(list_of_entries_to_find_it_in->begin());
-        }
+       }
+       template <>
+       Type_to_read read_from_string<long long int>(const std::string& output_config, std::string::size_type* position) {
+
+           return read_number_from_string_at_a_position(output_config, position);
+
+       }
+       template <>
+       Type_to_read read_from_string<long double>(const std::string& output_config, std::string::size_type* position) {
+
+           return read_number_from_string_at_a_position(output_config, position);
+
+       }
 
 
-
-        template<bool check>
-        inline int return_semantic_entry_helper(const std::string& output_config, std::string::size_type* position, const Sibling& entry_containing_semantic_entry, absolute_base::All_non_terminal_entries* list_of_entries_to_find_it_in);
-        
-        template<>
-        int return_semantic_entry_helper<true>(const std::string& output_config, std::string::size_type* position, const Sibling& entry_containing_semantic_entry, absolute_base::All_non_terminal_entries* list_of_entries_to_find_it_in) {
-            std::string semantic_entry_pattern = absolute_base::read_string_from_string_at_a_position(output_config, position);
-            int index{ 0 };
-            auto entry_found = std::find_if(entry_containing_semantic_entry->begin(), entry_containing_semantic_entry->end(),
-                [&semantic_entry_pattern, &index](Non_terminal_name_entry current_entry) {
-                    index++;
-                    return current_entry.the_pattern_to_check == semantic_entry_pattern;
-                }
-            );
-            if (entry_found != entry_containing_semantic_entry.end()) {
-                throw std::runtime_error{ "semantic entry not found (PRINTER ERROR)" };
-            }
-            return index;
-        }
-        template<>
-        inline int return_semantic_entry_helper<true>(const std::string& output_config, std::string::size_type* position, const Sibling& entry_containing_semantic_entry, Non_terminal_name_entry* list_of_entries_to_find_it_in) {
-            if (!entry_containing_semantic_entry.size()) {
-                throw std::runtime_error{ "semantic entry not found (PRINTER ERROR)" };
-            }
-            return entry_containing_semantic_entry.size()-1;
-        }
-        template<bool find_non_term_entry_using_number_or_name>
-        int find_sub_entry_index(const Non_terminal_name_entry& entry, const std:string& output_config, int* position);
-        template<>
-        inline int find_sub_entry_index<true>(const Non_terminal_name_entry& entry, const std::string& output_config,int *position) {
-           return common_functions::read_integer_from_string_at_a_position<int>(output_config, position);
-            
-        }
-        template<>
-            int find_sub_entry_index<false>(const Non_terminal_name_entry& entry, const std::string & output_config, , int* position) {
-                std::string non_terminal_entry_name = absolute_base::read_string_from_string_at_a_position(output_config, position);
-                int counter{ 0 };
-                auto entry_found = std::find_if(entry.sub_entries.begin(), entry.sub_entries.end(),
-                    [&non_terminal_entry_name, &counter](absolute_base::Non_terminal_name_entry current_entry) {
-                        counter++;
-                        return current_entry.get().name == non_terminal_entry_name;
-                    }
-
-                );
-                if (entry_found != entry.sub_entries.end()) {
-                    throw std::runtime_error{ "sub_entry not found (PRINTER ERROR)" };
-                }
-                return counter;
-        }
-            struct indexes_and_non_term_entry {
-                int sibling_index;
-                int semantic_entry_index;
-                Non_terminal_name_entry* non_term_entry;
-            };
-        template<bool find_parent_entry,bool find_nested_non_term_entry_using_number_or_name, bool check_semantic_entry>
-        indexes_and_non_term_entry return_semantic_entry_index(const std::string& output_config, std::string::size_type* position, absolute_base::All_non_terminal_entries* list_of_entries_to_find_it_in) {
-        Non_terminal_name_entry* entry = return_non_terminal_entry<find_parent_entry>(output_config, position, list_of_entries_to_find_it_in);
-
-        int sibling_index=
-    read_integer_from_string_at_a_position<int>(output_config, 
-        find_sub_entry_index<find_nested_non_term_entry_using_number_or_name>
-        {*entry, *output_config, position}
-        );
-        Siblings entry_in_sibling_state{ entry->sub_entries, sibling_index };
-        int semantic_index= return_semantic_entry_helper<check_semantic_entry>
-     (output_config, position, entry_in_sibling_state, list_of_entries_to_find_it_in);
-        return indexes{ sibling_index, semantic_index, entry };
-        }
-
-
-       
         }
 
     class Printer : public absolute_base::Base_printer {
@@ -161,97 +87,97 @@ export namespace printing_tools {
             absolute_base::dig_to_the_leaves_of_the_family_tree(current_generation, &family_tree);
         }
 
-        //     ~functions to apply options on output data~
+        namespace options {
+            //     ~functions to apply options on output data~
 
 
-        std::string::size_type option_to_replicate_output(const std::string& output_config, std::string::size_type position, std::string* output_data_to_append_to) {
-            int number_of_times_to_replicate= absolute_base::read_integer_from_string_at_a_position<int>(output_config, &position);
-            for (int i = 0; i < number_of_times_to_replicate; i++) {
-                *output_data_to_append_to += *output_data_to_append_to;
+            std::string::size_type option_to_replicate_output(const std::string& output_config, std::string::size_type position, std::string* output_data_to_append_to) {
+                int number_of_times_to_replicate = absolute_base::read_number_from_string_at_a_position<int>(output_config, &position);
+                for (int i = 0; i < number_of_times_to_replicate; i++) {
+                    *output_data_to_append_to += *output_data_to_append_to;
+
+                }
+                return position + charactors_processed;
 
             }
-            return position + charactors_processed;
+
+            std::string::size_type option_to_change_output_stream(const std::string& output_config, std::string::size_type position, std::string* output_data) {
+
+
+                std::string file_name = absolute_base::read_string_from_string_at_a_position(output_config, &position);
+
+                output.switchToNewStream(new std::ofstream{ file_name });
+                return delimiter_position + 1;//+1 is to skip the delemiter_position index itself
+            }
+
+            std::string::size_type option_to_change_input_stream(const std::string& output_config, std::string::size_type position, std::string* output_data) {
+                std::string file_name = absolute_base::read_string_from_string_at_a_position(output_config, &position);
+                input.switchToNewStream(new std::ifstream{ file_name });
+                return delimiter_position + 1;//+1 is to skip the delemiter_position index itself
+            }
+
+            std::string::size_type option_to_decrypt(const std::string& output_config, std::string::size_type position, std::string* output_data) {
+
+                //      ~       ###TODO LATER###     ~
+                return 0;
+
+            }
+            std::string::size_type option_to_encrypt(const std::string& output_config, std::string::size_type position, std::string* output_data) {
+
+                //      ~       ###TODO LATER###     ~
+                return 0;
+
+            }
+            std::string::size_type option_to_hash(const std::string& output_config, std::string::size_type position, std::string* output_data) {
+
+                //      ~       ###TODO LATER###     ~
+                return 0;
+
+            }
+
+            std::string::size_type print_output(const std::string& output_config, std::string::size_type position, std::string* output_data) {
+                *output << output_data;
+            }
+            template<bool search, absolute_base::All_non_terminal_entries Printer::* list_of_entries_to_find_it_in>
+            void remove_entry(const std::string& output_config, std::string::size_type* position, std::string* output_data) {
+
+                Non_terminal_name_entry* non_term_entry = return_non_terminal_entry<search>(output_config, position, list_of_entries_to_find_it_in);
+                this->list_of_entries_to_find_it_in->remove_entry(non_term_entry);
+
+            }
+            template<bool search, absolute_base::All_non_terminal_entries Printer::* list_of_entries_to_find_it_in>
+            void add_entry(const std::string& output_config, std::string::size_type* position, std::string* output_data) {
+
+                Non_terminal_name_entry* non_term_entry = return_non_terminal_entry<search>(output_config, position, list_of_entries_to_find_it_in);
+                read_single_entry_and_push_it_as_the_sub_entry_an_the_entry_passed<this->list_of_entries_to_find_it_in>(non_term_entry);
+
+            }
+
+            template<bool find_parent_entry, bool find_nested_entry_technique, bool check_semantic_entry, absolute_base::All_non_terminal_entries Printer::* list_of_entries_to_find_it_in>
+            void add_semantic_entry_to_non_term_entry_passed(const std::string& output_config, std::string::size_type* position, std::string* output_data) {
+                indexes_and_non_term_entry info_needed = return_semantic_entry
+                    <find_parent_entry, find_nested_entry_technique, check_semantic_entry>
+                    (output_config, position, this->list_of_entries_to_find_it_in);
+                std::span<char> sub_span{ output_config.data() + *position, output_config.size() - *position) };
+
+                Semantical_analyzer_config_entry semantic_entry =
+                    config_parsing_tools::Config_reader_helper::return_semantical_analyzer_entry(
+                        sub_span, this->list_of_entries_to_find_it_in
+                    );
+                this->list_of_entries_to_find_it_in->add_semantic_rule_to_entry(info_needed.non_term_entry, std::move(semantic_entry), info_needed.sibling_index, info_needed.semantic_entry_index);
+
+            }
+            template<bool find_parent_entry, bool find_nested_entry_technique, bool check_semantic_entry, absolute_base::All_non_terminal_entries Printer::* list_of_entries_to_find_it_in>
+
+            void remove_semantic_entry_to_non_term_entry_passed(const std::string& output_config, std::string::size_type* position, std::string* output_data) {
+                indexes_and_non_term_entry info_needed = return_semantic_entry
+                    <find_parent_entry, find_nested_entry_technique, check_semantic_entry>
+                    (output_config, position, this->list_of_entries_to_find_it_in);
+                this->list_of_entries_to_find_it_in->remove_latest_semantic_rule_for_entry(info_needed.non_term_entry, info_needed.sibling_index, info_needed.semantic_entry_index);
+
+            }
 
         }
-
-        std::string::size_type option_to_change_output_stream(const std::string& output_config, std::string::size_type position, std::string* output_data) {
-            
-            
-            std::string file_name = absolute_base::read_string_from_string_at_a_position(output_config, &position);
-            
-            output.switchToNewStream(new std::ofstream{ file_name });
-            return delimiter_position + 1;//+1 is to skip the delemiter_position index itself
-        }
-
-        std::string::size_type option_to_change_input_stream(const std::string& output_config, std::string::size_type position, std::string* output_data) {
-            std::string file_name = absolute_base::read_string_from_string_at_a_position(output_config, &position);
-            input.switchToNewStream( new std::ifstream{ file_name });
-            return delimiter_position + 1;//+1 is to skip the delemiter_position index itself
-        }
-
-        std::string::size_type option_to_decrypt(const std::string& output_config, std::string::size_type position, std::string* output_data) {
-
-            //      ~       ###TODO LATER###     ~
-            return 0;
-
-        }
-        std::string::size_type option_to_encrypt(const std::string& output_config, std::string::size_type position, std::string* output_data) {
-
-            //      ~       ###TODO LATER###     ~
-            return 0;
-
-        }
-        std::string::size_type option_to_hash(const std::string& output_config, std::string::size_type position, std::string* output_data) {
-
-            //      ~       ###TODO LATER###     ~
-            return 0;
-
-        }
-        
-        std::string::size_type print_output(const std::string& output_config, std::string::size_type position, std::string* output_data) {
-            *output << output_data;
-        }
-        template<bool search, absolute_base::All_non_terminal_entries Printer::*list_of_entries_to_find_it_in>
-        void remove_entry(const std::string& output_config, std::string::size_type* position, std::string* output_data) {
-            
-            Non_terminal_name_entry* non_term_entry = return_non_terminal_entry<search>(output_config, position, list_of_entries_to_find_it_in);
-            this->list_of_entries_to_find_it_in->remove_entry(non_term_entry);
-
-        }
-        template<bool search, absolute_base::All_non_terminal_entries Printer::* list_of_entries_to_find_it_in>
-        void add_entry(const std::string& output_config, std::string::size_type* position, std::string* output_data) {
-
-            Non_terminal_name_entry* non_term_entry = return_non_terminal_entry<search>(output_config, position, list_of_entries_to_find_it_in);
-            read_single_entry_and_push_it_as_the_sub_entry_an_the_entry_passed<this->list_of_entries_to_find_it_in>(non_term_entry);
-
-        }
-
-        template<bool find_parent_entry, bool find_nested_entry_technique, bool check_semantic_entry, absolute_base::All_non_terminal_entries Printer::* list_of_entries_to_find_it_in>
-        void add_semantic_entry_to_non_term_entry_passed(const std::string& output_config, std::string::size_type* position, std::string* output_data) {
-            indexes_and_non_term_entry info_needed = return_semantic_entry
-                <find_parent_entry, find_nested_entry_technique, check_semantic_entry>
-                (output_config, position, this->list_of_entries_to_find_it_in);
-            std::span<char> sub_span{ output_config.data() + *position, output_config.size() - *position) };
-
-            Semantical_analyzer_config_entry semantic_entry =
-                config_parsing_tools::Config_reader_helper::return_semantical_analyzer_entry(
-                    sub_span, this->list_of_entries_to_find_it_in
-                );
-        this->list_of_entries_to_find_it_in->add_semantic_rule_to_entry(info_needed.non_term_entry, std::move(semantic_entry), info_needed.sibling_index, info_needed.semantic_entry_index);
-        
-        }        
-        template<bool find_parent_entry, bool find_nested_entry_technique, bool check_semantic_entry, absolute_base::All_non_terminal_entries Printer::* list_of_entries_to_find_it_in>
-
-        void remove_semantic_entry_to_non_term_entry_passed(const std::string& output_config, std::string::size_type* position, std::string* output_data) {
-            indexes_and_non_term_entry info_needed = return_semantic_entry
-                <find_parent_entry, find_nested_entry_technique, check_semantic_entry>
-                (output_config, position, this->list_of_entries_to_find_it_in);
-            this->list_of_entries_to_find_it_in->remove_latest_semantic_rule_for_entry(info_needed.non_term_entry, info_needed.sibling_index, info_needed.semantic_entry_index);
-
-        }
-
-        //     ~end of functions to apply options on output data~
-
 
         void output_driver(std::string string_to_output, const Non_terminal_name_entry& output_config_entry, int current_generation) {
             if (absolute_base::semantic_checks(output_config_entry.all_semantical_analysis_rules[current_generation], string_to_output) != true) {
@@ -328,78 +254,77 @@ export namespace printing_tools {
         
         std::stack< Siblings > family_tree{};
 
-std::vector<std::pair<char, Option_functions_wrapper_type>> operations_upon_to_run_upon_charactors_found = {
-    // ========================================================================
-    // --- INPUT CONFIGURATION (&Printer::all_config_for_input) ---
-    // ========================================================================
-    
-    // --- Entry Management (a-d) ---
-    { 'a', &Printer::add_entry<true,  &Printer::all_config_for_input> }, 
-    { 'b', &Printer::add_entry<false, &Printer::all_config_for_input> }, 
-    { 'c', &Printer::remove_entry<true,  &Printer::all_config_for_input> }, 
-    { 'd', &Printer::remove_entry<false, &Printer::all_config_for_input> },
+        std::vector<std::pair<char, Option_functions_wrapper_type>> operations_upon_to_run_upon_charactors_found = {
+            // ========================================================================
+            // --- INPUT CONFIGURATION (&Printer::all_config_for_input) ---
+            // ========================================================================
 
-    // --- Add Semantic Rules (1-8) ---
-    { '1', &Printer::add_semantic_entry_to_non_term_entry_passed<true,  true,  true,  &Printer::all_config_for_input> },
-    { '2', &Printer::add_semantic_entry_to_non_term_entry_passed<true,  true,  false, &Printer::all_config_for_input> },
-    { '3', &Printer::add_semantic_entry_to_non_term_entry_passed<true,  false, true,  &Printer::all_config_for_input> },
-    { '4', &Printer::add_semantic_entry_to_non_term_entry_passed<true,  false, false, &Printer::all_config_for_input> },
-    { '5', &Printer::add_semantic_entry_to_non_term_entry_passed<false, true,  true,  &Printer::all_config_for_input> },
-    { '6', &Printer::add_semantic_entry_to_non_term_entry_passed<false, true,  false, &Printer::all_config_for_input> },
-    { '7', &Printer::add_semantic_entry_to_non_term_entry_passed<false, false, true,  &Printer::all_config_for_input> },
-    { '8', &Printer::add_semantic_entry_to_non_term_entry_passed<false, false, false, &Printer::all_config_for_input> },
+            // --- Entry Management (a-d) ---
+            { 'a', &Printer::options::add_entry<true,  &Printer::all_config_for_input> },
+            { 'b', &Printer::options::add_entry<false, &Printer::all_config_for_input> },
+            { 'c', &Printer::options::remove_entry<true,  &Printer::all_config_for_input> },
+            { 'd', &Printer::options::remove_entry<false, &Printer::all_config_for_input> },
 
-    // --- Remove Semantic Rules (A-H) ---
-    { 'A', &Printer::remove_semantic_entry_to_non_term_entry_passed<true,  true,  true,  &Printer::all_config_for_input> },
-    { 'B', &Printer::remove_semantic_entry_to_non_term_entry_passed<true,  true,  false, &Printer::all_config_for_input> },
-    { 'C', &Printer::remove_semantic_entry_to_non_term_entry_passed<true,  false, true,  &Printer::all_config_for_input> },
-    { 'D', &Printer::remove_semantic_entry_to_non_term_entry_passed<true,  false, false, &Printer::all_config_for_input> },
-    { 'E', &Printer::remove_semantic_entry_to_non_term_entry_passed<false, true,  true,  &Printer::all_config_for_input> },
-    { 'F', &Printer::remove_semantic_entry_to_non_term_entry_passed<false, true,  false, &Printer::all_config_for_input> },
-    { 'G', &Printer::remove_semantic_entry_to_non_term_entry_passed<false, false, true,  &Printer::all_config_for_input> },
-    { 'H', &Printer::remove_semantic_entry_to_non_term_entry_passed<false, false, false, &Printer::all_config_for_input> },
+            // --- Add Semantic Rules (1-8) ---
+            { '1', &Printer::options::add_semantic_entry_to_non_term_entry_passed<true,  true,  true,  &Printer::all_config_for_input> },
+            { '2', &Printer::options::add_semantic_entry_to_non_term_entry_passed<true,  true,  false, &Printer::all_config_for_input> },
+            { '3', &Printer::options::add_semantic_entry_to_non_term_entry_passed<true,  false, true,  &Printer::all_config_for_input> },
+            { '4', &Printer::options::add_semantic_entry_to_non_term_entry_passed<true,  false, false, &Printer::all_config_for_input> },
+            { '5', &Printer::options::add_semantic_entry_to_non_term_entry_passed<false, true,  true,  &Printer::all_config_for_input> },
+            { '6', &Printer::options::add_semantic_entry_to_non_term_entry_passed<false, true,  false, &Printer::all_config_for_input> },
+            { '7', &Printer::options::add_semantic_entry_to_non_term_entry_passed<false, false, true,  &Printer::all_config_for_input> },
+            { '8', &Printer::options::add_semantic_entry_to_non_term_entry_passed<false, false, false, &Printer::all_config_for_input> },
 
-    // ========================================================================
-    // --- OUTPUT CONFIGURATION (&Printer::all_config_for_output) ---
-    // ========================================================================
-    
-    // --- Entry Management (e-h) ---
-    { 'e', &Printer::add_entry<true,  &Printer::all_config_for_output> }, 
-    { 'f', &Printer::add_entry<false, &Printer::all_config_for_output> }, 
-    { 'g', &Printer::remove_entry<true,  &Printer::all_config_for_output> }, 
-    { 'h', &Printer::remove_entry<false, &Printer::all_config_for_output> },
+            // --- Remove Semantic Rules (A-H) ---
+            { 'A', &Printer::options::remove_semantic_entry_to_non_term_entry_passed<true,  true,  true,  &Printer::all_config_for_input> },
+            { 'B', &Printer::options::remove_semantic_entry_to_non_term_entry_passed<true,  true,  false, &Printer::all_config_for_input> },
+            { 'C', &Printer::options::remove_semantic_entry_to_non_term_entry_passed<true,  false, true,  &Printer::all_config_for_input> },
+            { 'D', &Printer::options::remove_semantic_entry_to_non_term_entry_passed<true,  false, false, &Printer::all_config_for_input> },
+            { 'E', &Printer::options::remove_semantic_entry_to_non_term_entry_passed<false, true,  true,  &Printer::all_config_for_input> },
+            { 'F', &Printer::options::remove_semantic_entry_to_non_term_entry_passed<false, true,  false, &Printer::all_config_for_input> },
+            { 'G', &Printer::options::remove_semantic_entry_to_non_term_entry_passed<false, false, true,  &Printer::all_config_for_input> },
+            { 'H', &Printer::options::remove_semantic_entry_to_non_term_entry_passed<false, false, false, &Printer::all_config_for_input> },
 
-    // --- Add Semantic Rules (Symbols used to avoid collision with 1-8) ---
-    { '!', &Printer::add_semantic_entry_to_non_term_entry_passed<true,  true,  true,  &Printer::all_config_for_output> },
-    { '@', &Printer::add_semantic_entry_to_non_term_entry_passed<true,  true,  false, &Printer::all_config_for_output> },
-    { '#', &Printer::add_semantic_entry_to_non_term_entry_passed<true,  false, true,  &Printer::all_config_for_output> },
-    { '$', &Printer::add_semantic_entry_to_non_term_entry_passed<true,  false, false, &Printer::all_config_for_output> },
-    { '%', &Printer::add_semantic_entry_to_non_term_entry_passed<false, true,  true,  &Printer::all_config_for_output> },
-    { '^', &Printer::add_semantic_entry_to_non_term_entry_passed<false, true,  false, &Printer::all_config_for_output> },
-    { '&', &Printer::add_semantic_entry_to_non_term_entry_passed<false, false, true,  &Printer::all_config_for_output> },
-    { '*', &Printer::add_semantic_entry_to_non_term_entry_passed<false, false, false, &Printer::all_config_for_output> },
+            // ========================================================================
+            // --- OUTPUT CONFIGURATION (&Printer::all_config_for_output) ---
+            // ========================================================================
 
-    // --- Remove Semantic Rules (I-P used to avoid collision with A-H) ---
-    { 'I', &Printer::remove_semantic_entry_to_non_term_entry_passed<true,  true,  true,  &Printer::all_config_for_output> },
-    { 'J', &Printer::remove_semantic_entry_to_non_term_entry_passed<true,  true,  false, &Printer::all_config_for_output> },
-    { 'K', &Printer::remove_semantic_entry_to_non_term_entry_passed<true,  false, true,  &Printer::all_config_for_output> },
-    { 'L', &Printer::remove_semantic_entry_to_non_term_entry_passed<true,  false, false, &Printer::all_config_for_output> },
-    { 'M', &Printer::remove_semantic_entry_to_non_term_entry_passed<false, true,  true,  &Printer::all_config_for_output> },
-    { 'N', &Printer::remove_semantic_entry_to_non_term_entry_passed<false, true,  false, &Printer::all_config_for_output> },
-    { 'O', &Printer::remove_semantic_entry_to_non_term_entry_passed<false, false, true,  &Printer::all_config_for_output> },
-    { 'P', &Printer::remove_semantic_entry_to_non_term_entry_passed<false, false, false, &Printer::all_config_for_output> },
+            // --- Entry Management (e-h) ---
+            { 'e', &Printer::options::add_entry<true,  &Printer::all_config_for_output> },
+            { 'f', &Printer::options::add_entry<false, &Printer::all_config_for_output> },
+            { 'g', &Printer::options::remove_entry<true,  &Printer::all_config_for_output> },
+            { 'h', &Printer::options::remove_entry<false, &Printer::all_config_for_output> },
 
-    // ========================================================================
-    // --- GENERAL OPERATIONS ---
-    // ========================================================================
-    { 'R', &Printer::option_to_replicate_output },
-    { 'S', &Printer::option_to_change_output_stream }, 
-    { 'T', &Printer::option_to_change_input_stream }, 
-    { 'U', &Printer::print_output }
-};
+            // --- Add Semantic Rules (Symbols used to avoid collision with 1-8) ---
+            { '!', &Printer::options::add_semantic_entry_to_non_term_entry_passed<true,  true,  true,  &Printer::all_config_for_output> },
+            { '@', &Printer::options::add_semantic_entry_to_non_term_entry_passed<true,  true,  false, &Printer::all_config_for_output> },
+            { '#', &Printer::options::add_semantic_entry_to_non_term_entry_passed<true,  false, true,  &Printer::all_config_for_output> },
+            { '$', &Printer::options::add_semantic_entry_to_non_term_entry_passed<true,  false, false, &Printer::all_config_for_output> },
+            { '%', &Printer::options::add_semantic_entry_to_non_term_entry_passed<false, true,  true,  &Printer::all_config_for_output> },
+            { '^', &Printer::options::add_semantic_entry_to_non_term_entry_passed<false, true,  false, &Printer::all_config_for_output> },
+            { '&', &Printer::options::add_semantic_entry_to_non_term_entry_passed<false, false, true,  &Printer::all_config_for_output> },
+            { '*', &Printer::options::add_semantic_entry_to_non_term_entry_passed<false, false, false, &Printer::all_config_for_output> },
 
+            // --- Remove Semantic Rules (I-P used to avoid collision with A-H) ---
+            { 'I', &Printer::options::remove_semantic_entry_to_non_term_entry_passed<true,  true,  true,  &Printer::all_config_for_output> },
+            { 'J', &Printer::options::remove_semantic_entry_to_non_term_entry_passed<true,  true,  false, &Printer::all_config_for_output> },
+            { 'K', &Printer::options::remove_semantic_entry_to_non_term_entry_passed<true,  false, true,  &Printer::all_config_for_output> },
+            { 'L', &Printer::options::remove_semantic_entry_to_non_term_entry_passed<true,  false, false, &Printer::all_config_for_output> },
+            { 'M', &Printer::options::remove_semantic_entry_to_non_term_entry_passed<false, true,  true,  &Printer::all_config_for_output> },
+            { 'N', &Printer::options::remove_semantic_entry_to_non_term_entry_passed<false, true,  false, &Printer::all_config_for_output> },
+            { 'O', &Printer::options::remove_semantic_entry_to_non_term_entry_passed<false, false, true,  &Printer::all_config_for_output> },
+            { 'P', &Printer::options::remove_semantic_entry_to_non_term_entry_passed<false, false, false, &Printer::all_config_for_output> },
 
+            // ========================================================================
+            // --- GENERAL OPERATIONS ---
+            // ========================================================================
+            { 'R', &Printer::options::option_to_replicate_output },
+            { 'S', &Printer::options::option_to_change_output_stream },
+            { 'T', &Printer::options::option_to_change_input_stream },
+            { 'U', &Printer::options::print_output }
+        };
 
+       
 
 
 
