@@ -186,11 +186,11 @@ export namespace printing_tools {
             }
             std::string::size_type position = 0;
 
-            std::string all_output_options_set = output_config_entry.output_config_data.substr(position, number_of_currently_defined_options);
             
-            for (char option_charactor : all_output_options_set) {
+            for (char option_charactor :  output_config_entry.output_config_data) {
                 for (auto const& pair : operations_upon_to_run_upon_charactors_found) {
                     if (option_charactor == pair.first) {
+                        ++position;
                         (this->*pair.second)(output_config_entry.output_config_data, position, &string_to_output);
                         break; // We found the move; go to the next character in the config
                     }
