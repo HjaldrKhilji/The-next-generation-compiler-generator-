@@ -11,7 +11,9 @@ module;
 #include <cctype>       // For isalnum (character classification)
 #include <cstdlib>      // For std::strtoll and std::strtold
 #include <stdexcept>    // For std::runtime_error
-// I used AI to keep track of the headers needed
+#include<charconv>
+// I used AI to keep track of the headers needed 
+
 module all_declarations;
 
 
@@ -46,7 +48,7 @@ module all_declarations;
      *line_stream >> std::skipws >> c; //skipping whitespaces
      line_stream->putback(c);
      for (; *line_stream >> std::noskipws >> c && (isalnum(c) || c == '_'); identifier += c);
-     *line_stream.putback(c);
+     line_stream->putback(c);
      if (identifier.empty()) {
          std::cerr << "empty non terminal symbol name" << std::endl;
          throw std::runtime_error{"read_identifier error"};
