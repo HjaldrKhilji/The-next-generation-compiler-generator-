@@ -55,62 +55,24 @@ module all_declarations;
 
  }
 
- namespace helpers_for_read_number_from_string_at_a_position {
-     template <typename T>
-     concept floating_pointer = std::is_floating_point_v<T>;
-     T return_t_if_number_smaller_than_long_double(T a, long double source) {
-
-         if (std::isnan(source)) {
-             //case 1: if source is an input by the user then the user typed nan 
-             //case 2: if the source isnt an input then the source is just invalid due to some previous operation on source
-             throw std::runtime_error("NAN floating point encountered");
-         }
-         if (source > std::numeric_limits<T>::max() || source < std::numeric_limits<T>::lowest()) {
-             throw std::runtime_error{
-                 "Error: Source floating point value (" + std::to_string(source) +
-                 ") is outside the limits of the target type (Max: " +
-                 std::to_string(std::numeric_limits<T>::max()) + ", Min: " +
-                 std::to_string(std::numeric_limits<T>::min()) + ")"
-             };
-         }
-         else { return  static_cast<T>(source); }
-     }
-     template <std::integral T>
-     T return_t_if_number_smaller_than_long_long_int(T a, long long int source) {
-         if (source > std::numeric_limits<T>::max() || source < std::numeric_limits<T>::min()) {
-             throw std::runtime_error{
-                 "Error: Source integer value (" + std::to_string(source) +
-                 ") is outside the limits of the target type (Max: " +
-                 std::to_string(std::numeric_limits<T>::max()) + ", Min: " +
-                 std::to_string(std::numeric_limits<T>::min()) + ")"
-             };
-         }
-         else { return static_cast<T>(source); }
-     }
- }
  template <common_functions::Numeric T>
- T  common_functions::read_number_from_string_at_a_position(const std::string& source, std::string::size_type* position){
-     using helpers_for_read_number_from_string_at_a_position;
-     //      ~raw ugly optimization that i had to do for the sake of optimization~
-    //try to ignore this ugly code as much as possible, and avoid touching it too, please, unless you have to ofcourse.
-     const char* start_ptr = source.c_str() + position;
-     char* end_ptr;
-     constexpr int base_of_the_number_being_read = 10;
-      if constexpr  (std::is_integral_v<T>) {
-         auto number_read = std::strtoll(start_ptr, &end_ptr, base_of_the_number_being_read);
-         static_cast<T>(*position) = end_ptr - start_ptr;
-         return return_t_if_number_smaller_than_long_long_int<T>(number_read);
-     }
-      else if constexpr (std::is_floating_point_v<T>) {
-         auto number_read = std::strtold(start_ptr, &end_ptr, base_of_the_number_being_read);
-         static_cast<T>(*position) = end_ptr - start_ptr;
-         return return_t_if_number_smaller_than_long_double<T>(number_read);
+T common_functions::read_number_from_string_at_a_position(const std::string& source, std::string::size_type* position) {
+    T result;
+    const char* start = source.data() + *position;
+    const char* end = source.data() + source.size();
 
-     }
+    auto [read_till, status] = std::from_chars(start, end, result);
 
+    if (status == std::errc::invalid_argument) {
+        throw std::runtime_error("Not a number at this position.");
+    } else if (status == std::errc::result_out_of_range) {
+        throw std::runtime_error("Number exceeds type limits.");
+    }
+
+    // Advance the position based on how many characters were consumed
+    *position += (read_till - start);
     
-     //      ~end of all raw ugly optimization that i had to do for the sake of optimization~ 
-    
+    return result;
 }
  std::string common_functions::read_string_from_string_at_a_position(const std::string& source_string, std::string::size_type* position) {
      char file_name_end_charactor = source_string[*position];
