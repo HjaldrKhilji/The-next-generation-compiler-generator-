@@ -1,20 +1,25 @@
 module;
+// Basic types and I/O
+#include <string>
 #include <iostream>
-
-#include<functional>
-
-#include <map>
-
-
 #include <sstream>
 
-#include <string>
-
+// Containers
 #include <vector>
 #include <deque>
-#include<stack>
-#include<concepts>
-#include <memory>
+#include <map>
+#include <stack>
+
+// Functional and Utility
+#include <functional> // For std::function and std::reference_wrapper
+#include <utility>    // For std::move and std::pair
+#include <iterator>   // For std::reverse_iterator
+#include <type_traits>// For std::underlying_type_t and std::is_arithmetic_v
+
+// C++20 Concepts support
+#include <concepts>   // For std::same_as, std::convertible_to, etc.
+// I used AI to keep track of the headers needed
+
 
 export module All_declarations;//for c++ noobs, including myself, the module name dosent have to be the same as file name.
 
@@ -78,8 +83,11 @@ again these are just my opinion, dont judge
             const std::vector < escape_charactor_function_wrapper_type >
             function_to_be_run_for_each);
         std::string read_identifier(std::istringstream* line_stream);
-        template<std::integral T>
-        T  read_integer_from_string_at_a_position(const std::string& source, std::string::size_type* position);
+        template <typename T>
+        concept Numeric = std::is_arithmetic_v<T>;
+
+        template<Numeric T>
+        T  read_number_from_string_at_a_position(const std::string& source, std::string::size_type* position);
         std::string read_string_from_string_at_a_position(const std::string& source_string, std::string::size_type* position);
   
     namespace common_concepts {
@@ -143,6 +151,7 @@ again these are just my opinion, dont judge
     export namespace absolute_base {
         using common_concepts::Streamable;
         using low_level_memory_management::Streamable_manager;
+        using common_functions::Numeric;
 
         using common_functions::escape_string;
         using common_functions::read_identifier;
