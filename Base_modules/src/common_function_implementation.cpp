@@ -2,7 +2,7 @@ module;
 
 #include <string>       // For std::string, .find(), .substr(), std::to_string
 #include <vector>       // For std::vector in escape_string
-#include <sstream>      // For std::istringstream
+#include <spanstream>      // For std::spanstream
 #include <iostream>     // For std::cerr, std::endl
 #include <concepts>     // For std::integral and C++20 concept support
 #include <type_traits>  // For std::is_floating_point_v, std::is_integral_v
@@ -36,7 +36,7 @@ module all_declarations;
       }
     }
   }
- std::string common_functions::read_identifier(std::istringstream* line_stream) {
+ std::string common_functions::read_identifier(std::spanstream* line_stream) {
      //precondition: line_stream is in a valid state and is not empty
      //post condition: std::string preceded by list of ignored white spaces, and terminated by a non alpha numeric character that is not a underscore
      //is returned
