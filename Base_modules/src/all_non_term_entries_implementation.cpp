@@ -1,17 +1,18 @@
 module;
-#include <iostream>
+#include <string>           // For std::string
+#include <vector>           // For std::vector in semantic rules
+#include <deque>            // Often used for "list_of_all_non_term_entries_for_fast_traversal"
+#include <map>              // For map_for_fast_retrival_of_entries
+#include <unordered_map>    // Alternative if using hash maps
+#include <regex>            // For std::regex, std::sregex_iterator
+#include <iterator>         // For std::distance and iterators
+#include <iostream>         // For std::cout, std::cerr
+#include <stdexcept>        // For std::runtime_error
+#include <utility>          // For std::move
+#include <functional>       // For std::reference_wrapper
+#include <algorithm>        // For iterator arithmetic and algorithms
+// I used AI to keep track of the headers needed
 
-
-#include <map>
-
-
-#include <sstream>
-
-#include <string>
-
-#include <vector>
-#include<regex>
-#include<deque>
 
 module all_declarations;
 using  absolute_base::All_non_terminal_entries_implementation::Iterator_for_list_of_entries; 
