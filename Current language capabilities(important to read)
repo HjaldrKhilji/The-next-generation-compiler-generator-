@@ -1,2 +1,3 @@
-nothing works for now, I just added new files, and a completely new structure, i will now debug everything, make a cmake file, design a error logging(using exception handling and
-meant to be used only by the compiler tool itself) and write code for test.cpp.
+nothing works for now, I will finish the core part of it within a few weeks, replace standard regexes with optimized (non standard) ones, and at last debug all my code
+I will use a seperate modules for regexes where the interface will be stable but the underlying library used to implement it can change if needed.
+main focus right now is Output_modules and adding options.
