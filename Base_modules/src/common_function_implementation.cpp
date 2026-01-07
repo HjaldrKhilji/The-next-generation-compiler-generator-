@@ -31,7 +31,7 @@ module all_declarations;
       while ((position_of_the_match_found_last = input_string->find(
           strings_to_be_replaced[index],
           position_of_the_match_found_last)) != std::string::npos) {
-        function_to_be_run_for_each[index](&input_string,
+        function_to_be_run_for_each[index](input_string,
           &position_of_the_match_found_last);
       }
     }
