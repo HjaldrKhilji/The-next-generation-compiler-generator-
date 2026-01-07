@@ -15,10 +15,11 @@ set(MODULE_SOURCES
 
 )
 # Source files from the 'src' directories
-file(GLOB SRC_FILES 
+file(SRC_FILES 
 "Base_modules/src/all_non_term_entries_implementation.cpp"
 "Base_modules/src/common_function_implementation.cpp"
 "Output_modules/src/helper_option_templates_for_managing_list_of_non_term_entries_implementation.cpp"
+"Output_modules/src/Non_nested_options.cpp"
 
 )
 
