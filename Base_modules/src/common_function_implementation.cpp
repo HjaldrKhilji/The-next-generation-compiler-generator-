@@ -77,10 +77,12 @@ T common_functions::read_number_from_string_at_a_position(const std::string& sou
     return result;
 }
  std::string common_functions::read_string_from_string_at_a_position(const std::string& source_string, std::string::size_type* position) {
-     char file_name_end_charactor = source_string[*position];
-     size_t delimiter_position = source_string.find(file_name_end_charactor, *position);
+char delimeter_charactor = source_string[*position];
+  constexpr int number_to_add_to_index_to_skip_the_index_of_delimeter=1;
+size_t delimiter_position = source_string.find(delimeter_charactor, *position+number_to_add_to_index_to_skip_the_index_of_delimeter);
      std::string file_name = source_string.substr(*position, delimiter_position-*position);
      *position = delimiter_position+1;
      return file_name;
  }
+
 
