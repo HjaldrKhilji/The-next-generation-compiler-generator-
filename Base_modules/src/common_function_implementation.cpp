@@ -44,7 +44,7 @@ module all_declarations;
      std::string identifier;
      char c;
      *line_stream >> std::skipws >> c; //skipping whitespaces
-     *line_stream.putback(c);
+     line_stream->putback(c);
      for (; *line_stream >> std::noskipws >> c && (isalnum(c) || c == '_'); identifier += c);
      *line_stream.putback(c);
      if (identifier.empty()) {
@@ -78,6 +78,6 @@ T common_functions::read_number_from_string_at_a_position(const std::string& sou
      char file_name_end_charactor = source_string[*position];
      size_t delimiter_position = source_string.find(file_name_end_charactor, *position);
      std::string file_name = source_string.substr(*position, delimiter_position);
-     *position = delimiter_position;
+     *position = delimiter_position+1;
      return file_name;
  }
