@@ -52,7 +52,7 @@ namespace printing_tools{
             template <absolute_base::Is_String_Or_Numeric Interal_resperentation_type>
             struct Accumulator {
                 using Interal_resperentation = Interal_resperentation_type;
-                Accumulator(Interal_resperentation arg) :internal_data{ arg } {}
+                Accumulator(Interal_resperentation arg) :internal_data{ std::move(arg) } {}
 
                 template <absolute_base::Numeric Interal_resperentation_of_type_converted>
                 Accumulator(Accumulator<Interal_resperentation_of_type_converted> arg) {
