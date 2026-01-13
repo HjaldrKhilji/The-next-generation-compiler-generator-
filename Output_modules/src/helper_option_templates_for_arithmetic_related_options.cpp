@@ -30,9 +30,10 @@ namespace printing_tools{
                 return source;
 
             }
+        template <absolute_base::Numeric T>
             T convert_to_number(std::string source) {
                 std::string::size_type position = 0;
-		T result= read_number_from_string_at_a_position<T>(source, &position);
+		T result= absolute_base::read_number_from_string_at_a_position<T>(source, &position);
  		if (position != source.length()) {
                     throw std::runtime_error{ "number mixed with (non numeric) charactor while taking input for an option" };
                 }
@@ -61,25 +62,25 @@ namespace printing_tools{
                 Interal_resperentation internal_data;
             };
             template<absolute_base::Is_String_Or_Numeric T, absolute_base::Is_String_Or_Numeric U>
-            Accumulator<T>& operator+(Accumulator<T>& x, Accumulator<U> y) {
-                Accumulator<T> converted_y = convert_to_target<T>(y.internal_data);
+            Accumulator<T> operator+(Accumulator<T> x, Accumulator<U> y) {
+                Accumulator<T> converted_y = convert_to_target<T>(std::move(y.internal_data));//I am using std::move() in case std::string is used
                 x.internal_data += converted_y.internal_data;
                 return x;
             }
-            template<std::Numeric T, absolute_base::Is_String_Or_Numeric U>
-            Accumulator<T>& operator-(Accumulator<T>& x, Accumulator<U> y) {
+            template<absolute_base::Numeric T, absolute_base::Is_String_Or_Numeric U>
+            Accumulator<T> operator-(Accumulator<T> x, Accumulator<U> y) {
                 Accumulator<T> converted_y = convert_to_target<T>(y.internal_data);
                 x.internal_data -= converted_y.internal_data;
                 return x;
             }
-            template<std::Numeric T, absolute_base::Is_String_Or_Numeric U>
-            Accumulator<T>& operator/(Accumulator<T>& x, Accumulator<U> y) {
+            template<absolute_base::Numeric T, absolute_base::Is_String_Or_Numeric U>
+            Accumulator<T> operator/(Accumulator<T> x, Accumulator<U> y) {
                 Accumulator<T> converted_y = convert_to_target<T>(y.internal_data);
                 x.internal_data /= converted_y.internal_data;
                 return x;
             }
-            template<std::Numeric T, absolute_base::Is_String_Or_Numeric U>
-            Accumulator<T>& operator*(Accumulator<T>& x, Accumulator<U> y) {
+            template<absolute_base::Numeric T, absolute_base::Is_String_Or_Numeric U>
+            Accumulator<T> operator*(Accumulator<T> x, Accumulator<U> y) {
                 Accumulator<T> converted_y = convert_to_target<T>(y.internal_data);
                 x.internal_data *= converted_y.internal_data;
                 return x;
