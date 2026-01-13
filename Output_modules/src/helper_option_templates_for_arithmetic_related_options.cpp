@@ -8,26 +8,15 @@ import All_declarations;
 namespace printing_tools{
     namespace helper_templates_for_options {
         namespace helpers_for_arithmetic_options {
-            template <absolute_base::Is_String_Or_Numeric Type_to_read>
-            Type_to_read read_from_string(const std::string& output_config, std::string::size_type* position);
-            template <>
-            Type_to_read read_from_string<std::string>(const std::string& output_config, std::string::size_type* position) {
-
-                return read_string_from_string_at_a_position(output_config, position);
-
-            }
-            template <>
-            Type_to_read read_from_string<long long int>(const std::string& output_config, std::string::size_type* position) {
-
-                return read_number_from_string_at_a_position(output_config, position);
-
-            }
-            template <>
-            Type_to_read read_from_string<long double>(const std::string& output_config, std::string::size_type* position) {
-
-                return absolute_base::read_number_from_string_at_a_position(output_config, position);
-
-            }
+            template <absolute_base::Is_String_Or_Numeric T>
+    T read_from_string(const std::string& config, std::string::size_type* pos) {
+        if constexpr (std::is_same_v<T, std::string>) {
+            return read_string_from_string_at_a_position(config, pos);
+        }
+	 else {
+            return absolute_base::read_number_from_string_at_a_position(config, pos);
+        }
+    }
             template <absolute_base::Numeric T>
             inline std::string convert_to_string(T source) {
                 return std::to_string(source);
