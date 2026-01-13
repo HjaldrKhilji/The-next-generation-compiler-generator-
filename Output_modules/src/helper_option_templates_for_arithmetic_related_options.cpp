@@ -44,7 +44,7 @@ namespace printing_tools{
             T convert_to_number(std::string source) {
                 std::string::size_type position = 0;
 		T result= read_number_from_string_at_a_position<T>(source, &position);
- 		if (position != source.length()-1) {
+ 		if (position != source.length()) {
                     throw std::runtime_error{ "number mixed with (non numeric) charactor while taking input for an option" };
                 }
                 return result;
