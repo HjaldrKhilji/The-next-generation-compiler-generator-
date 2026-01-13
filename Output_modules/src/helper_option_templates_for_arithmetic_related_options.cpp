@@ -5,7 +5,7 @@ module;
 //i used AI to track the header files needed
 module Printer;
 import All_declarations;
-namesapce printing_tools{
+namespace printing_tools{
     namespace helper_templates_for_options {
         namespace helpers_for_arithmetic_options {
             template <absolute_base::Is_String_Or_Numeric Type_to_read>
