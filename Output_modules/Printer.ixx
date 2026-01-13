@@ -37,30 +37,6 @@ using absolute_base::Siblings;
 export namespace printing_tools {
 
     
-    namespace helper_templates_for_options {
-       template <typename Type_to_read>
-       Type_to_read read_from_string(const std::string& output_config, std::string::size_type* position);
-       template <>
-       Type_to_read read_from_string<std::string>(const std::string& output_config, std::string::size_type* position) {
-       
-           return read_string_from_string_at_a_position(output_config, position);
-
-       }
-       template <>
-       Type_to_read read_from_string<long long int>(const std::string& output_config, std::string::size_type* position) {
-
-           return read_number_from_string_at_a_position(output_config, position);
-
-       }
-       template <>
-       Type_to_read read_from_string<long double>(const std::string& output_config, std::string::size_type* position) {
-
-           return read_number_from_string_at_a_position(output_config, position);
-
-       }
-
-
-        }
 
     class Printer : public absolute_base::Base_printer {
     private:
