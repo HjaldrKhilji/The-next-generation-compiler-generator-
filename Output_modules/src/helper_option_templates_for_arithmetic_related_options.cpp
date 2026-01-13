@@ -49,17 +49,17 @@ namespace printing_tools{
                 }
             }
 
-            template <absolute_base::Is_String_Or_Numeric Interal_resperentation_type>
+            template <absolute_base::Is_String_Or_Numeric Internal_resperentation_type>
             struct Accumulator {
-                using Interal_resperentation = Interal_resperentation_type;
-                Accumulator(Interal_resperentation arg) :internal_data{ std::move(arg) } {}
+                using Internal_resperentation = Internal_resperentation_type;
+                Accumulator(Internal_resperentation arg) :internal_data{ std::move(arg) } {}
 
-                template <absolute_base::Numeric Interal_resperentation_of_type_converted>
-                Accumulator(Accumulator<Interal_resperentation_of_type_converted> arg) {
-                    interal_data = convert_to_target<Interal_resperentation>(arg.internal_data);
+                template <absolute_base::Numeric Internal_resperentation_of_type_converted>
+                Accumulator(Accumulator<Internal_resperentation_of_type_converted> arg) {
+                    interal_data = convert_to_target<Internal_resperentation>(arg.internal_data);
                 }
 
-                Interal_resperentation internal_data;
+                Internal_resperentation internal_data;
             };
             template<absolute_base::Is_String_Or_Numeric T, absolute_base::Is_String_Or_Numeric U>
             Accumulator<T> operator+(Accumulator<T> x, Accumulator<U> y) {
