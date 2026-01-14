@@ -151,89 +151,88 @@ export namespace printing_tools {
             // ========================================================================
             // SECTION 1: SYSTEM & SEMANTIC MANAGEMENT 
             // ========================================================================
-            { 'a', &Printer::options::add_entry<true,  &Printer::all_config_for_input> },
-            { 'b', &Printer::options::add_entry<false, &Printer::all_config_for_input> },
-            { 'c', &Printer::options::remove_entry<true,  &Printer::all_config_for_input> },
-            { 'd', &Printer::options::remove_entry<false, &Printer::all_config_for_input> },
-            { 'e', &Printer::options::add_entry<true,  &Printer::all_config_for_output> },
-            { 'f', &Printer::options::add_entry<false, &Printer::all_config_for_output> },
-            { 'g', &Printer::options::remove_entry<true,  &Printer::all_config_for_output> },
-            { 'h', &Printer::options::remove_entry<false, &Printer::all_config_for_output> },
+            { 'a', &options::add_entry<true,  &all_config_for_input> },
+            { 'b', &options::add_entry<false, &all_config_for_input> },
+            { 'c', &options::remove_entry<true,  &all_config_for_input> },
+            { 'd', &options::remove_entry<false, &all_config_for_input> },
+            { 'e', &options::add_entry<true,  &all_config_for_output> },
+            { 'f', &options::add_entry<false, &all_config_for_output> },
+            { 'g', &options::remove_entry<true,  &all_config_for_output> },
+            { 'h', &options::remove_entry<false, &all_config_for_output> },
 
-            // Semantic Rules (Input: 1-8, Output: Symbols)
-            { '1', &Printer::options::add_semantic_entry_to_non_term_entry_passed<true,true,true, &Printer::all_config_for_input> },
-            { '2', &Printer::options::add_semantic_entry_to_non_term_entry_passed<true,true,false, &Printer::all_config_for_input> },
-            { '3', &Printer::options::add_semantic_entry_to_non_term_entry_passed<true,false,true, &Printer::all_config_for_input> },
-            { '4', &Printer::options::add_semantic_entry_to_non_term_entry_passed<true,false,false, &Printer::all_config_for_input> },
-            { '5', &Printer::options::add_semantic_entry_to_non_term_entry_passed<false,true,true, &Printer::all_config_for_input> },
-            { '6', &Printer::options::add_semantic_entry_to_non_term_entry_passed<false,true,false, &Printer::all_config_for_input> },
-            { '7', &Printer::options::add_semantic_entry_to_non_term_entry_passed<false,false,true, &Printer::all_config_for_input> },
-            { '8', &Printer::options::add_semantic_entry_to_non_term_entry_passed<false,false,false, &Printer::all_config_for_input> },
+            // Semantic Rules (Input: 1-8)
+            { '1', &options::add_semantic_entry_to_non_term_entry_passed<true,  true,  true,  &all_config_for_input> },
+            { '2', &options::add_semantic_entry_to_non_term_entry_passed<true,  true,  false, &all_config_for_input> },
+            { '3', &options::add_semantic_entry_to_non_term_entry_passed<true,  false, true,  &all_config_for_input> },
+            { '4', &options::add_semantic_entry_to_non_term_entry_passed<true,  false, false, &all_config_for_input> },
+            { '5', &options::add_semantic_entry_to_non_term_entry_passed<false, true,  true,  &all_config_for_input> },
+            { '6', &options::add_semantic_entry_to_non_term_entry_passed<false, true,  false, &all_config_for_input> },
+            { '7', &options::add_semantic_entry_to_non_term_entry_passed<false, false, true,  &all_config_for_input> },
+            { '8', &options::add_semantic_entry_to_non_term_entry_passed<false, false, false, &all_config_for_input> },
 
-            // General Control (R-U, _)
-            { 'R', &Printer::options::option_to_replicate_output },
-            { 'S', &Printer::options::option_to_change_output_stream },
-            { 'T', &Printer::options::option_to_change_input_stream },
-            { 'U', &Printer::options::print_output },
-            { '_', &Printer::options::trim_output_from_current_position_to_end },
+            // General Control & Position Manipulation
+            { 'R', &options::option_to_replicate_output },
+            { 'S', &options::option_to_change_output_stream },
+            { 'T', &options::option_to_change_input_stream },
+            { 'U', &options::print_output },
+            { '_', &options::trim_output_from_current_position_to_end },
+            { 'X', &options::subtract_from_output_data_position<false> },
+            { 'K', &options::subtract_from_output_data_position<true> }, // Assigned to 'K' to avoid collision with 'X'
 
             // ========================================================================
-            // SECTION 2: CALCULATOR (Reserving + - * /) for more convient, but slower operations
+            // SECTION 2: CALCULATOR (Reserving + - * /)
             // ========================================================================
 
             // --- BLOCK 1: (true, true) [Both from Config] ---
-            { 'q', &Printer::options::calculator<long long,   long long,   true, true, '+'> },
-            { 'w', &Printer::options::calculator<double,      double,      true, true, '+'> },
-            { 'e', &Printer::options::calculator<std::string, std::string, true, true, '+'> },
-            { 'r', &Printer::options::calculator<long long,   double,      true, true, '+'> },
-            { 't', &Printer::options::calculator<double,      long long,   true, true, '+'> },
-            { 'y', &Printer::options::calculator<std::string, long long,   true, true, '+'> },
-            { 'u', &Printer::options::calculator<std::string, double,      true, true, '+'> },
-            { 'i', &Printer::options::calculator<long long,   long long,   true, true, '-'> },
-            { 'o', &Printer::options::calculator<double,      double,      true, true, '-'> },
-            { 'p', &Printer::options::calculator<long long,   double,      true, true, '-'> },
-            { 's', &Printer::options::calculator<double,      long long,   true, true, '-'> },
-            { 'l', &Printer::options::calculator<long long,   long long,   true, true, '*'> },
-            { 'm', &Printer::options::calculator<double,      double,      true, true, '*'> },
+            { 'q', &options::calculator<long long,   long long,   true, true, '+'> },
+            { 'w', &options::calculator<double,      double,      true, true, '+'> },
+            { 'e', &options::calculator<std::string, std::string, true, true, '+'> },
+            { 'r', &options::calculator<long long,   double,      true, true, '+'> },
+            { 't', &options::calculator<double,      long long,   true, true, '+'> },
+            { 'y', &options::calculator<std::string, long long,   true, true, '+'> },
+            { 'u', &options::calculator<std::string, double,      true, true, '+'> },
+            { 'i', &options::calculator<long long,   long long,   true, true, '-'> },
+            { 'o', &options::calculator<double,      double,      true, true, '-'> },
+            { 'p', &options::calculator<long long,   double,      true, true, '-'> },
+            { 's', &options::calculator<double,      long long,   true, true, '-'> },
+            { 'l', &options::calculator<long long,   long long,   true, true, '*'> },
+            { 'm', &options::calculator<double,      double,      true, true, '*'> },
 
             // --- BLOCK 2: (true, false) [Left: Config, Right: Output] ---
-            { 'j', &Printer::options::calculator<long long,   long long,   true, false, '+'> },
-            { 'k', &Printer::options::calculator<double,      double,      true, false, '+'> },
-            { 'x', &Printer::options::calculator<std::string, std::string, true, false, '+'> },
-            { 'v', &Printer::options::calculator<long long,   double,      true, false, '+'> },
-            { 'n', &Printer::options::calculator<double,      long long,   true, false, '+'> },
-            { 'z', &Printer::options::calculator<long long,   long long,   true, false, '-'> },
-            { 'Q', &Printer::options::calculator<double,      double,      true, false, '-'> },
+            { 'j', &options::calculator<long long,   long long,   true, false, '+'> },
+            { 'k', &options::calculator<double,      double,      true, false, '+'> },
+            { 'x', &options::calculator<std::string, std::string, true, false, '+'> },
+            { 'v', &options::calculator<long long,   double,      true, false, '+'> },
+            { 'n', &options::calculator<double,      long long,   true, false, '+'> },
+            { 'z', &options::calculator<long long,   long long,   true, false, '-'> },
+            { 'Q', &options::calculator<double,      double,      true, false, '-'> },
 
             // --- BLOCK 3: (false, true) [Left: Output, Right: Config] ---
-            { 'W', &Printer::options::calculator<long long,   long long,   false, true, '+'> },
-            { 'E', &Printer::options::calculator<double,      double,      false, true, '+'> },
-            { 'Y', &Printer::options::calculator<std::string, std::string, false, true, '+'> },
-            { 'Z', &Printer::options::calculator<long long,   double,      false, true, '+'> },
-            { 'X', &Printer::options::calculator<double,      long long,   false, true, '+'> },
-            { 'V', &Printer::options::calculator<long long,   long long,   false, true, '-'> },
-            { 'N', &Printer::options::calculator<double,      double,      false, true, '-'> },
+            { 'W', &options::calculator<long long,   long long,   false, true, '+'> },
+            { 'E', &options::calculator<double,      double,      false, true, '+'> },
+            { 'Y', &options::calculator<std::string, std::string, false, true, '+'> },
+            { 'Z', &options::calculator<long long,   double,      false, true, '+'> },
+            { 'M', &options::calculator<double,      long long,   false, true, '+'> }, // Changed from 'X' to avoid collision
+            { 'V', &options::calculator<long long,   long long,   false, true, '-'> },
+            { 'N', &options::calculator<double,      double,      false, true, '-'> },
 
             // --- BLOCK 4: (false, false) [Both from Output] ---
-            { '[', &Printer::options::calculator<long long,   long long,   false, false, '+'> },
-            { ']', &Printer::options::calculator<double,      double,      false, false, '+'> },
-            { '{', &Printer::options::calculator<std::string, std::string, false, false, '+'> },
-            { '}', &Printer::options::calculator<long long,   double,      false, false, '+'> },
-            { '|', &Printer::options::calculator<double,      long long,   false, false, '+'> },
-            { ';', &Printer::options::calculator<std::string, long long,   false, false, '+'> },
-            { ':', &Printer::options::calculator<std::string, double,      false, false, '+'> },
-            { '"', &Printer::options::calculator<long long,   long long,   false, false, '-'> },
-            { '<', &Printer::options::calculator<double,      double,      false, false, '-'> },
-            { '>', &Printer::options::calculator<long long,   double,      false, false, '-'> },
-            { '?', &Printer::options::calculator<double,      long long,   false, false, '-'> },
-            { ',', &Printer::options::calculator<long long,   long long,   false, false, '*'> },
-            { '.', &Printer::options::calculator<double,      double,      false, false, '*'> },
-            { '~', &Printer::options::calculator<long long,   long long,   false, false, '/'> },
-            { '`', &Printer::options::calculator<double,      double,      false, false, '/'> }
+            { '[', &options::calculator<long long,   long long,   false, false, '+'> },
+            { ']', &options::calculator<double,      double,      false, false, '+'> },
+            { '{', &options::calculator<std::string, std::string, false, false, '+'> },
+            { '}', &options::calculator<long long,   double,      false, false, '+'> },
+            { '|', &options::calculator<double,      long long,   false, false, '+'> },
+            { ';', &options::calculator<std::string, long long,   false, false, '+'> },
+            { ':', &options::calculator<std::string, double,      false, false, '+'> },
+            { '"', &options::calculator<long long,   long long,   false, false, '-'> },
+            { '<', &options::calculator<double,      double,      false, false, '-'> },
+            { '>', &options::calculator<long long,   double,      false, false, '-'> },
+            { '?', &options::calculator<double,      long long,   false, false, '-'> },
+            { ',', &options::calculator<long long,   long long,   false, false, '*'> },
+            { '.', &options::calculator<double,      double,      false, false, '*'> },
+            { '~', &options::calculator<long long,   long long,   false, false, '/'> },
+            { '`', &options::calculator<double,      double,      false, false, '/'> }
         };
-       
-
-
 
 
     };
