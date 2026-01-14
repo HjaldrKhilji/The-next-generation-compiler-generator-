@@ -137,9 +137,11 @@ namespace printing_tools{
 
                 if (is_char_digit(string_to_read_from[*pos])) {
                     {
+						std::string::size_type previous_pos=*pos;
                         long long int int_read= absolute_base::read_number_from_string_at_a_position<long long int>(string_to_read_from, pos);
                         if (string_to_read_from[*pos] == '.') {
-                            long double double_read = absolute_base::read_number_from_string_at_a_position<long double>(string_to_read_from, pos);
+                            *pos=previous_pos:
+							long double double_read = absolute_base::read_number_from_string_at_a_position<long double>(string_to_read_from, pos);
                             return std::make_unique<Accumulator<long long int>>(Accumulator (double_read));
 
                         }
@@ -157,4 +159,5 @@ namespace printing_tools{
 
         }
 }
+
 
