@@ -125,30 +125,31 @@ namespace printing_tools {
         template<absolute_base::Is_String_Or_Numeric left_hand_side_type, absolute_base::Is_String_Or_Numeric right_hand_side_type,  bool left_hand_side_branch, bool right_hand_side_branch, char operator_name>
         void calculator(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
             using helper_templates_for_options::helpers_for_arithmetic_options::read_from_string;
-            using T= helper_templates_for_options::helpers_for_arithmetic_options::Accumulator<left_hand_side_type>;
+            using helper_templates_for_options::helpers_for_arithmetic_options::pump_static;
+            using T_result_type= helper_templates_for_options::helpers_for_arithmetic_options::Accumulator<left_hand_side_type, pump_static>;
             if (operator_name == '+') {
-                *output_data_position += std::string{
-                T{read_from_string<left_hand_side_type, left_hand_side_branch >(output_config, output_data, position, output_data_position)} +
-                   T{ read_from_string<left_hand_side_type, left_hand_side_branch >(output_config, output_data, position, output_data_position) }
-                }
+                T_result_type result=
+               T_result_type{read_from_string<left_hand_side_type, left_hand_side_branch >(output_config, output_data, position, output_data_position)} +
+                    T_result_type{ read_from_string<left_hand_side_type, left_hand_side_branch >(output_config, output_data, position, output_data_position) }
+                result.pump(output_data);
         }
              if (operator_name == '*') {
-                 *output_data_position += std::string{
-                T{read_from_string<left_hand_side_type, left_hand_side_branch >(output_config, output_data, position, output_data_position)} *
-                   T{ read_from_string<left_hand_side_type, left_hand_side_branch >(output_config, output_data, position, output_data_position) }
-                 }
+                 T_result_type result =
+                     T_result_type{ read_from_string<left_hand_side_type, left_hand_side_branch >(output_config, output_data, position, output_data_position) } *
+                     T_result_type{ read_from_string<left_hand_side_type, left_hand_side_branch >(output_config, output_data, position, output_data_position) }
+                 result.pump(output_data);
         }
              if (operator_name == '-') {
-                 *output_data_position += std::string{
-               T{read_from_string<left_hand_side_type, left_hand_side_branch >(output_config, output_data, position, output_data_position)} -
-                   T{ read_from_string<left_hand_side_type, left_hand_side_branch >(output_config, output_data, position, output_data_position) }
-                 }
+                 T_result_type result =
+                     T_result_type{ read_from_string<left_hand_side_type, left_hand_side_branch >(output_config, output_data, position, output_data_position) } -
+                     T_result_type{ read_from_string<left_hand_side_type, left_hand_side_branch >(output_config, output_data, position, output_data_position) }
+                 result.pump(output_data);
         }
              if (operator_name == '/') {
-                 *output_data_position += std::string{
-                T{read_from_string<left_hand_side_type, left_hand_side_branch >(output_config, output_data, position, output_data_position)} /
-                   T{ read_from_string<left_hand_side_type, left_hand_side_branch >(output_config, output_data, position, output_data_position) }
-                 }
+                 T_result_type result =
+                     T_result_type{ read_from_string<left_hand_side_type, left_hand_side_branch >(output_config, output_data, position, output_data_position) } /
+                     T_result_type{ read_from_string<left_hand_side_type, left_hand_side_branch >(output_config, output_data, position, output_data_position) }
+                 result.pump(output_data);
         }
 
         }
