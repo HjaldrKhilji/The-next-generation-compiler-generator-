@@ -1,3 +1,7 @@
+BIG NOTE: THE TOOL ISNT MEANT TO BE HUMAN READABLE OR FOR HUMANS, I WILL MAKE ANOTHER TOOL USING THIS ENGINE THAT TRANSLATE HUMAN READABLE FORMAT INTO THIS ONE.
+
+
+
 nothing works for now, I will finish the core part of it within a few weeks, replace standard regexes with optimized (non standard) ones, and at last debug all my code
 I will use a seperate modules for regexes where the interface will be stable but the underlying library used to implement it can change if needed.
 main focus right now is Output_modules and adding options.
