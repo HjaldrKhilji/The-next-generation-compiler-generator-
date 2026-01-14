@@ -4,7 +4,9 @@ module;
 #include <fstream>  // For std::ofstream and std::ifstream
 #include <utility>  // For std::move
 #include <span>     // For std::span (requires C++20)
-
+#include<limits>
+#include<stdexcept>
+#include<iostream>
 // I used AI to keep track of the headers needed 
 
 module Printer;
