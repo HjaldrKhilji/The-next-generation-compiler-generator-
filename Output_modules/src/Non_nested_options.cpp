@@ -104,8 +104,27 @@ namespace printing_tools {
         void trim_output_from_current_position_to_end(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
             output_data->erase(*output_data_position);
         }
+
+        template<bool read_from_config_or_output>
+        void subtract_from_output_data_position(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
+        using helper_templates_for_options::helpers_for_arithmetic_options::read_from_string;
+        //a function from helper_templates_for_options::helpers_for_arithmetic_options is ideally not to be used here, but I had to since I didnt know a better place to put this function in
+        //in my defense it is okay, since I am doing some arithmetic in this function, so suck it up.
+        size_t number_to_subract= read_from_string<size_t, read_from_config_or_output>(output_config, output_data, position, output_data_position);
+            if (output_data_position = > number_to_subract) {
+                *(static_cast<size_t*>(output_data_position)) -= number_to_subract;
+            }
+            else if (number_to_subract == std::numeric_limits<std::size_t>::max()) {
+                //means the user gave -1 as input
+                *output_data_position = 0;
+            }
+            else {
+                throw std::runtime_error{ "number to subtract from is bigger than  output data's position" };
+            }
+        }
         template<absolute_base::Is_String_Or_Numeric left_hand_side_type, absolute_base::Is_String_Or_Numeric right_hand_side_type,  bool left_hand_side_branch, bool right_hand_side_branch, char operator_name>
         void calculator(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
+            using helper_templates_for_options::helpers_for_arithmetic_options::read_from_string;
             using T= helper_templates_for_options::helpers_for_arithmetic_options::Accumulator<left_hand_side_type>;
             if (operator_name == '+') {
                 *output_data_position += std::string{
