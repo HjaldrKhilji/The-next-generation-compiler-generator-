@@ -2,6 +2,7 @@ module;
 #include <string>       // For std::string, std::string::size_type
 #include <stdexcept>    // For std::runtime_error
 #include <type_traits>
+#include <memory>
 //i used AI to track the header files needed
 module Printer;
 import All_declarations;
@@ -17,18 +18,7 @@ namespace printing_tools{
                     return absolute_base::read_number_from_string_at_a_position(string_to_read_from, pos);
                 }
             }
-            //to be done:
-           /* inline T read_from_string(const std::string& string_to_read_from, std::string::size_type* pos) {
-                if constexpr (std::isdigit(string_to_read_from[*pos])) {
-                    {
-                        return absolute_base::read_number_from_string_at_a_position(string_to_read_from, pos);
-                    }
-                 
-                
-                else {
-                    return read_string_from_string_at_a_position(string_to_read_from, pos);
-                }
-            }*/
+            
             template <absolute_base::Is_String_Or_Numeric T, bool read_from_x_or_y>
             inline T read_from_string(const std::string& x, const std::string& y, std::string::size_type* x_pos, std::string::size_type* y_pos) {
                 constexpr if (read_from_x_or_y) {
@@ -127,6 +117,40 @@ namespace printing_tools{
                 x.internal_data *= converted_y.internal_data;
                 return x;
             }
+            inline bool is_char_digit(const char c) {
+
+                if (c >= '0' && c <= '9') {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+            using helper_templates_for_options::helpers_for_arithmetic_options::pump_polymorphic;
+
+            inline std::unique_ptr<pump_polymorphic> read_from_string(const std::string& string_to_read_from, std::string::size_type* pos) {
+                template<absolute_base::Is_String_Or_Numeric T>
+                using helper_templates_for_options::helpers_for_arithmetic_options::Accumulator<T, pump_polymorphic>;
+
+                if (is_char_digit(string_to_read_from[*pos])) {
+                    {
+                        long long int int_read= absolute_base::read_number_from_string_at_a_position<long long int>(string_to_read_from, pos);
+                        if (string_to_read_from[*pos] == '.') {
+                            long double double_read = absolute_base::read_number_from_string_at_a_position<long double>(string_to_read_from, pos);
+                            return std::make_unique(Accumulator (double_read));
+
+                        }
+                        else {
+                            return std::make_unique(Accumulator(int_read));
+                        }
+                    }
+
+
+                else {
+                    return  std::make_unique(Accumulator(read_string_from_string_at_a_position(string_to_read_from, pos)));
+                }
+                }
         }
+
         }
 }
