@@ -177,7 +177,7 @@ export namespace printing_tools {
             { 'U', &options::print_output },
             { '_', &options::trim_output_from_current_position_to_end },
             { 'X', &options::subtract_from_output_data_position<false> },
-            { 'K', &options::subtract_from_output_data_position<true> }, // Assigned to 'K' to avoid collision with 'X'
+            { 'Y', &options::subtract_from_output_data_position<true> }, // Assigned to 'K' to avoid collision with 'X'
 
             // ========================================================================
             // SECTION 2: CALCULATOR (Reserving + - * /)
