@@ -1,9 +1,12 @@
 module;
-#include <string>       // For std::string, std::string::size_type
-#include <stdexcept>    // For std::runtime_error
+#include <string>
+#include <stdexcept>
 #include <type_traits>
 #include <memory>
-#include<concepts>
+#include <concepts>
+#include <utility>
+#include <variant>
+#include <functional>
 
 //i used AI to track the header files needed
 #include<utility>
@@ -195,7 +198,7 @@ namespace printing_tools {
                 }
                 
             };
-            inline Polymorphic_accumulator read_polymorphically_from_string(const std::string& string_to_read_from, std::string::size_type* pos) {
+             Polymorphic_accumulator read_polymorphically_from_string(const std::string& string_to_read_from, std::string::size_type* pos) {
           
                 if (is_char_digit(string_to_read_from[*pos])) {
                     {
