@@ -51,11 +51,9 @@ export namespace printing_tools {
             //ONLY USE WHEN YOU WILL RUN push_latest_entry_as_sub_entry_of_an_entry AFTER THIS FUNCTION CALL
         }
         //I did not use function wrappers because of some wierd errors, that according to AI were because of my compile time environment, since I tried all fixes. In the future try using function wrappers istead, if possible.
-        using Option_functions_wrapper_type = std::string::size_type (Printer::*)(const std::string&, std::string::size_type, std::string*);
+        using Option_functions_wrapper_type = std::string::size_type (Printer::*)(const std::string&, std::string::size_type*, std::string*, std::string::size_type*);
         
         void additional_setup_for_family_tree() {
-            //NOTE::BY FAMILY TREE, I MEAN, THE TREE OF ALL NODE ENTRIES
-            //I used that name because it help visualize the tree like a family business trying to translate nodes on demand.
             int current_sibling_index = (*(all_config_for_output->begin())).sub_entries.size() - 1;
             if (current_sibling_index == -1) {
                 std::runtime_error("no root found");
@@ -73,14 +71,20 @@ export namespace printing_tools {
 
             }
             std::string::size_type position = 0;
-
+            std::string::size_type output_data_position = 0;
             
             for (char option_charactor :  output_config_entry.output_config_data) {
             ++position;//changing index in ouptut_config
                 for (auto const& pair : operations_upon_to_run_upon_charactors_found) {
-                    if (option_charactor == pair.first) {
-                        ++position;//skipping the option charactor
-                        (this->*pair.second)(output_config_entry.output_config_data, position, &string_to_output);
+                    if (option_charactor != pair.first) {
+                        throw std::runtime_error{ "invalid option found:" + option_charactor };
+                    
+                }
+
+                    else{
+                        ++position;//skipping the option charactor found
+                        (this->*pair.second)(output_config_entry.output_config_data, &position, &string_to_output,&output_data_position);
+
                         break; // We found the move; go to the next character in the config
                     }
                 }
