@@ -127,35 +127,92 @@ namespace printing_tools {
         template<absolute_base::Is_String_Or_Numeric left_hand_side_type, absolute_base::Is_String_Or_Numeric right_hand_side_type,  bool left_hand_side_branch, bool right_hand_side_branch, char operator_name>
         void calculator(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
             using helper_templates_for_options::helpers_for_arithmetic_options::read_from_string;
-            using helper_templates_for_options::helpers_for_arithmetic_options::pump_static;
-            using T_result_type= helper_templates_for_options::helpers_for_arithmetic_options::Accumulator<left_hand_side_type, pump_static>;
-            if (operator_name == '+') {
+      
+            
+            using T_result_type= helper_templates_for_options::helpers_for_arithmetic_options::Accumulator<left_hand_side_type>;
+            constexpr if (operator_name == '+') {
                 T_result_type result=
                T_result_type{read_from_string<left_hand_side_type, left_hand_side_branch >(output_config, output_data, position, output_data_position)} +
                     T_result_type{ read_from_string<left_hand_side_type, left_hand_side_branch >(output_config, output_data, position, output_data_position) }
                 result.pump(output_data);
         }
-             if (operator_name == '*') {
+             else if (operator_name == '*') {
                  T_result_type result =
                      T_result_type{ read_from_string<left_hand_side_type, left_hand_side_branch >(output_config, output_data, position, output_data_position) } *
                      T_result_type{ read_from_string<left_hand_side_type, left_hand_side_branch >(output_config, output_data, position, output_data_position) }
                  result.pump(output_data);
         }
-             if (operator_name == '-') {
+            else if (operator_name == '-') {
                  T_result_type result =
                      T_result_type{ read_from_string<left_hand_side_type, left_hand_side_branch >(output_config, output_data, position, output_data_position) } -
                      T_result_type{ read_from_string<left_hand_side_type, left_hand_side_branch >(output_config, output_data, position, output_data_position) }
                  result.pump(output_data);
         }
-             if (operator_name == '/') {
+            else if (operator_name == '/') {
                  T_result_type result =
                      T_result_type{ read_from_string<left_hand_side_type, left_hand_side_branch >(output_config, output_data, position, output_data_position) } /
                      T_result_type{ read_from_string<left_hand_side_type, left_hand_side_branch >(output_config, output_data, position, output_data_position) }
                  result.pump(output_data);
         }
+            else {
+                static_assert(1, "wrong operator");
+            }
 
         }
-        //implementation of the caculator using pump_polymorphic (for both sides)to be continued, and it would be the last calculator option that would use user input to determine where to read the left and right hand side from, and + / - * are reserved for that calculator
+        template<char operator_name>
+        void polymorphic_calculator(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
+            using helper_templates_for_options::helpers_for_arithmetic_options::read_polymorphically_from_string;
+            using T_result_type = helper_templates_for_options::helpers_for_arithmetic_options::Accumulator<Polymorphic_accumulator>;
+            constexpr if (operator_name == '+') {
+                T_result_type result =
+                    T_result_type{ read_polymorphically_from_string(output_config, position) }
+                + T_result_type{ read_polymorphically_from_string(output_config, position) };
+                result.pump(output_data);
+
+            }
+            else if (operator_name == '-') {
+                T_result_type result =
+                    T_result_type{ read_polymorphically_from_string(output_config, position) }
+                - T_result_type{ read_polymorphically_from_string(output_config, position) };
+                result.pump(output_data);
+
+            }
+            else if (operator_name == '*') {
+                T_result_type result =
+                    T_result_type{ read_polymorphically_from_string(output_config, position) }
+                - T_result_type{ read_polymorphically_from_string(output_config, position) };
+                result.pump(output_data);
+
+            }
+            else if (operator_name == '/') {
+                T_result_type result =
+                    T_result_type{ read_polymorphically_from_string(output_config, position) }
+                / T_result_type{ read_polymorphically_from_string(output_config, position) };
+                result.pump(output_data);
+
+            }
+            else if (operator_name == '|') {
+                T_result_type result =
+                    T_result_type{ read_polymorphically_from_string(output_config, position) }
+                | T_result_type{ read_polymorphically_from_string(output_config, position) };
+                result.pump(output_data);
+
+            }
+            else if (operator_name == '&') {
+                T_result_type result =
+                    T_result_type{ read_polymorphically_from_string(output_config, position) }
+                &T_result_type{ read_polymorphically_from_string(output_config, position) };
+                result.pump(output_data);
+
+            }
+            else if (operator_name == '^') {
+                T_result_type result =
+                    T_result_type{ read_polymorphically_from_string(output_config, position) }
+                ^ T_result_type{ read_polymorphically_from_string(output_config, position) };
+                result.pump(output_data);
+
+            }
+        }
     }
 
 }
