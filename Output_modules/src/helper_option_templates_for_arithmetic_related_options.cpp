@@ -9,14 +9,37 @@ namespace printing_tools{
     namespace helper_templates_for_options {
         namespace helpers_for_arithmetic_options {
             template <absolute_base::Is_String_Or_Numeric T>
-    T read_from_string(const std::string& config, std::string::size_type* pos) {
-        if constexpr (std::is_same_v<T, std::string>) {
-            return read_string_from_string_at_a_position(config, pos);
-        }
-	 else {
-            return absolute_base::read_number_from_string_at_a_position(config, pos);
-        }
-    }
+            inline T read_from_string(const std::string& string_to_read_from, std::string::size_type* pos) {
+             if constexpr (std::is_same_v<T, std::string>) {
+                    return read_string_from_string_at_a_position(string_to_read_from, pos);
+                }
+	        else {
+                    return absolute_base::read_number_from_string_at_a_position(string_to_read_from, pos);
+                }
+            }
+            //to be done:
+           /* inline T read_from_string(const std::string& string_to_read_from, std::string::size_type* pos) {
+                if constexpr (std::isdigit(string_to_read_from[*pos])) {
+                    {
+                        return absolute_base::read_number_from_string_at_a_position(string_to_read_from, pos);
+                    }
+                 
+                
+                else {
+                    return read_string_from_string_at_a_position(string_to_read_from, pos);
+                }
+            }*/
+            template <absolute_base::Is_String_Or_Numeric T, bool read_from_x_or_y>
+            inline T read_from_string(const std::string& x, const std::string& y, std::string::size_type* x_pos, std::string::size_type* y_pos) {
+                constexpr if (read_from_x_or_y) {
+                    read_from_string(x, x_pos);
+                }
+                else {
+                    read_from_string(y, y_pos);
+
+                }
+            }
+
             template <absolute_base::Numeric T>
             inline std::string convert_to_string(T source) {
                 return std::to_string(source);
