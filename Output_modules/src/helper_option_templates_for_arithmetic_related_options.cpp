@@ -91,7 +91,7 @@ namespace printing_tools{
                     interal_data = convert_to_target<Internal_resperentation>(arg.internal_data);
                 }
                 void pump(std::string* string_to_pump_to){
-                    *string_to_pump_to += internal_data;
+                    *string_to_pump_to += std::string{internal_data};
                 }
                 Internal_resperentation internal_data;
             };
@@ -159,5 +159,6 @@ namespace printing_tools{
 
         }
 }
+
 
 
