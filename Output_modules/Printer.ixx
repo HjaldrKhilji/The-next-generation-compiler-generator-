@@ -248,8 +248,9 @@ export namespace printing_tools {
             { '|', &options::polymorphic_calculator<'|'> }
             { '&', &options::polymorphic_calculator<'&'> }
             { '^', &options::polymorphic_calculator<'^'> }
-
-        };
+            //note:any future options would now also have nested options
+                     
+};
 
 
     };
