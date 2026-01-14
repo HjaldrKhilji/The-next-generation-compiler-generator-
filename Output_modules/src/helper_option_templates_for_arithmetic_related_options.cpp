@@ -3,6 +3,10 @@ module;
 #include <stdexcept>    // For std::runtime_error
 #include <type_traits>
 #include <memory>
+#include<concepts>
+#include<limits>
+#include<ios>
+#include<type_traits>//Sometimes required for stream state, though <spanstream> usually covers it.
 //i used AI to track the header files needed
 module Printer;
 import All_declarations;
