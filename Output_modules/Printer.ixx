@@ -54,6 +54,8 @@ export namespace printing_tools {
         using Option_functions_wrapper_type = std::string::size_type (Printer::*)(const std::string&, std::string::size_type, std::string*);
         
         void additional_setup_for_family_tree() {
+            //NOTE::BY FAMILY TREE, I MEAN, THE TREE OF ALL NODE ENTRIES
+            //I used that name because it help visualize the tree like a family business trying to translate nodes on demand.
             int current_sibling_index = (*(all_config_for_output->begin())).sub_entries.size() - 1;
             if (current_sibling_index == -1) {
                 std::runtime_error("no root found");
