@@ -1,4 +1,5 @@
 nothing works for now, I will finish the core part of it within a few weeks, replace standard regexes with optimized (non standard) ones, and at last debug all my code
 I will use a seperate modules for regexes where the interface will be stable but the underlying library used to implement it can change if needed.
 main focus right now is Output_modules and adding options.
-ALSO NOTE::: ONLY ASCCI CHARACTORS IS SUPPORTED
+ALSO NOTE::: ONLY ASCCI CHARACTORS IS SUPPORTED as options and config data in both input text used as config while translation and from the config files!!!
+I know my commits are messy, but thats because I am a single guy on the project, so the goal is to finish this project as soon as possible and to (finally) move to the debugging stage.
