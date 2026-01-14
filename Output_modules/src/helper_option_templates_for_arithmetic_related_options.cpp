@@ -71,9 +71,25 @@ namespace printing_tools{
                     return convert_to_number<T_dest>(source); 
                 }
             }
-
-            template <absolute_base::Is_String_Or_Numeric Internal_resperentation_type>
-            struct Accumulator {
+            //pump (in this context) is a type of polymorphic object that has a pump_to_string function
+            //in pump_to_string_function it pumps the internal data of itself to the end of a given string
+            //the concept for pump is very simple:
+            template<typename pump_type>
+            concept pump = requires(pump_type a, std::string string_to_pump_to) {
+                { a.pump(string_to_pump_to) } -> std::same_as<void>;
+            };
+            //the classes below are pump types, one is polymorphic, while the other is static
+            class pump_static{
+            public:
+                //void pump(); pump need not to be defined here
+            };
+            class pump_polymorphic {
+            public:
+                virtual void pump(std::string*) = 0;
+            };
+           
+            template <absolute_base::Is_String_Or_Numeric Internal_resperentation_type, pump base_pump>
+            struct Accumulator::public base_pump {
                 using Internal_resperentation = Internal_resperentation_type;
                 Accumulator(Internal_resperentation arg) :internal_data{ std::move(arg) } {}
 
@@ -81,9 +97,12 @@ namespace printing_tools{
                 Accumulator(Accumulator<Internal_resperentation_of_type_converted> arg) {
                     interal_data = convert_to_target<Internal_resperentation>(arg.internal_data);
                 }
-
+                void pump(std::string* string_to_pump_to){
+                    *string_to_pump_to += internal_data;
+                }
                 Internal_resperentation internal_data;
             };
+
             template<absolute_base::Is_String_Or_Numeric T, absolute_base::Is_String_Or_Numeric U>
             Accumulator<T> operator+(Accumulator<T> x, Accumulator<U> y) {
                 Accumulator<T> converted_y = convert_to_target<T>(std::move(y.internal_data));//I am using std::move() in case std::string is used
