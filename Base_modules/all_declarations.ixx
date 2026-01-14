@@ -116,7 +116,13 @@ again these are just my opinion, dont judge
             { ptr.operator->() } -> std::same_as<value_pointer_to_by_pointer*>; // Has pointer-like access for the "->" operator
             { static_cast<bool>(ptr) };           // Can be checked for null
         };
-    
+        template<typename T> 
+        concept Is_String_Or_Numeric = requires(T & is) {
+            { is }->std::same_as<std::string>
+        } || common_functions::Numeric<T>;
+
+        
+
     }
 
     namespace low_level_memory_management {
@@ -150,6 +156,7 @@ again these are just my opinion, dont judge
     }
     export namespace absolute_base {
         using common_concepts::Streamable;
+        using common_concepts::Is_String_Or_Numeric;
         using low_level_memory_management::Streamable_manager;
         using common_functions::Numeric;
 
@@ -378,7 +385,7 @@ again these are just my opinion, dont judge
         class Base_printer {
         public:
             virtual bool print(std::string string_to_output, const Non_terminal_name_entry& output_config_entry) = 0;
-            
+            virtual ~Base_printer() = 0;//has to be virtual since its a public base class that CAN BE USED AS A HANDLE
 
 
         };
