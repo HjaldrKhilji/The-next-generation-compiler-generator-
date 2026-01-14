@@ -182,15 +182,15 @@ namespace printing_tools {
 
                 }
                 Polymorphic_accumulator operator|(Polymorphic_accumulator polymorphic_accumulator) {
-                    return all_numeric_operator_impl_generator<std::logical_or>(polymorphic_accumulator);
+                    return all_numeric_operator_impl_generator<std::bit_or>(polymorphic_accumulator);
 
                 }
                 Polymorphic_accumulator operator&(Polymorphic_accumulator polymorphic_accumulator) {
-                    return all_numeric_operator_impl_generator<std::logical_and>(polymorphic_accumulator);
+                    return all_numeric_operator_impl_generator<std::bit_and>(polymorphic_accumulator);
 
                 }
                 Polymorphic_accumulator operator^(Polymorphic_accumulator polymorphic_accumulator) {
-                    return all_numeric_operator_impl_generator<std::logical_xor>(polymorphic_accumulator);
+                    return all_numeric_operator_impl_generator<std::bit_xor >(polymorphic_accumulator);
 
                 }
                 
