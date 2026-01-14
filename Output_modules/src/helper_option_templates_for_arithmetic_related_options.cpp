@@ -140,20 +140,21 @@ namespace printing_tools{
                         long long int int_read= absolute_base::read_number_from_string_at_a_position<long long int>(string_to_read_from, pos);
                         if (string_to_read_from[*pos] == '.') {
                             long double double_read = absolute_base::read_number_from_string_at_a_position<long double>(string_to_read_from, pos);
-                            return std::make_unique(Accumulator (double_read));
+                            return std::make_unique<Accumulator<long long int>>(Accumulator (double_read));
 
                         }
                         else {
-                            return std::make_unique(Accumulator(int_read));
+                            return std::make_unique<Accumulator<long double>>(Accumulator(int_read));
                         }
                     }
 
 
                 else {
-                    return  std::make_unique(Accumulator(read_string_from_string_at_a_position(string_to_read_from, pos)));
+                    return  std::make_unique<Accumulator<std:string>>(Accumulator(read_string_from_string_at_a_position(string_to_read_from, pos)));
                 }
                 }
         }
 
         }
 }
+
