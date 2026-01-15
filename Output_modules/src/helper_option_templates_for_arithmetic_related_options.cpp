@@ -130,7 +130,7 @@ namespace printing_tools {
                 void pump(std::string* string_to_pump_to) {
                     std::visit([&](auto&& arg) {
                         if constexpr (std::is_same_v<std::decay_t<decltype(arg)>, std::string>){
-                    *string_to_pump_to += std::string{ internal_data };
+                    *string_to_pump_to += std::string{ arg };
                     }
                     else{*string_to_pump_to += std::to_string( internal_data );}, internal_data);
                    
@@ -138,7 +138,7 @@ namespace printing_tools {
 
                
                 template<typename Op_type>
-                Polymorphic_accumulator all_operator_impl_generator(const Polymorphic_accumulator lhs, const Polymorphic_accumulator rhs, Op_type operator_name) {
+                Polymorphic_accumulator all_operator_impl_generator(Polymorphic_accumulator lhs, Polymorphic_accumulator rhs, Op_type operator_name) {
                     return std::visit([&](auto&& a, auto&& b) -> Polymorphic_accumulator {
                         // This 'if constexpr' checks at compile-time if the operator works for these types
                         if constexpr (requires { operator_name(a, b); }) {
@@ -200,11 +200,12 @@ namespace printing_tools {
                 else {
                     return  Polymorphic_accumulator{ read_from_string<std::string>(string_to_read_from, pos) };
                 }
-                }
+              }
             }
 
         }
     }
+
 
 
 
