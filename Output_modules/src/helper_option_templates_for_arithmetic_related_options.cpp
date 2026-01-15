@@ -130,70 +130,45 @@ namespace printing_tools {
                         }, internal_data);
                 }
 
-                Polymorphic_accumulator operator+(Polymorphic_accumulator polymorphic_accumulator) {
-                    //warning ugly implementation that I had to add:
-
-                    if (internal_data.index() == 0) {
-                   
-                            return Polymorphic_accumulator{ static_cast<long long int>
-                                (std::get<long long int>(internal_data)) + static_cast<long long int>
-                                (std::get<long long int>(polymorphic_accumulator.internal_data)) };
+               
+                template<typename Op_type>
+                Polymorphic_accumulator all_operator_impl_generator(const Polymorphic_accumulator& lhs, const Polymorphic_accumulator& rhs, Op_type operator_name) {
+                    return std::visit([&](auto&& a, auto&& b) -> Polymorphic_accumulator {
+                        // This 'if constexpr' checks at compile-time if the operator works for these types
+                        if constexpr (requires { operator_name(a, b); }) {
+                            return Polymorphic_accumulator{ op(std::move(a), std::move( b)) };//used std::move() because of strings
                         }
-                        else if (data.index() == 1) {
-                            return Polymorphic_accumulator{ static_cast<long double>
-                                (std::get<long double>(internal_data)) + static_cast<long double>
-                                (std::get<long double>(polymorphic_accumulator.internal_data)) };
+                        else {
+                            throw std::runtime_error("Type mismatch in arithmetic operation");
                         }
-                        else  if (data.index() == 2) {
-                            return Polymorphic_accumulator{ static_cast<std::string>
-                                (std::get<std::string>(internal_data)) + static_cast<std::string>
-                                (std::get<std::string>(polymorphic_accumulator.internal_data)) };
-                        }
-
-                       
-                        }
-                template< template<typename, typename> typename operator_func>
-                Polymorphic_accumulator all_numeric_operator_impl_generator(Polymorphic_accumulator polymorphic_accumulator) {
-                    //in case future operators were to be added, this is my goto template
-                    //warning ugly implementation that I had to add:
-
-                    if (internal_data.index() == 0) {
-                        return Polymorphic_accumulator{ operator_func(static_cast<long  long int>
-                                (std::get<long long int>(internal_data)) , static_cast<long  long int>
-                                (std::get<long long int>(polymorphic_accumulator.internal_data)))};
-                    }
-                    else if (internal_data.index() == 1) {
-                        return Polymorphic_accumulator{ operator_func(static_cast<long double>
-                                (std::get<long double>(internal_data)) , static_cast<long double>
-                                (std::get<long double>(polymorphic_accumulator.internal_data)) };
-                    }
-                    else {
-                        throw std::runtime_error{ "string used in arithmetic other than addition" };
-                    } 
+                        }, lhs.internal_data, rhs.internal_data);
                 }
-
                 Polymorphic_accumulator operator-(Polymorphic_accumulator polymorphic_accumulator) {
-                    return all_numeric_operator_impl_generator<std::minus>(polymorphic_accumulator);
+                    return all_operator_impl_generator(*this, polymorphic_accumulator, std::plus <>{});
+
+                }
+                Polymorphic_accumulator operator-(Polymorphic_accumulator polymorphic_accumulator) {
+                    return all_operator_impl_generator(*this, polymorphic_accumulator, std::minus<>{});
 
                 }
                 Polymorphic_accumulator operator*(Polymorphic_accumulator polymorphic_accumulator) {
-                    return all_numeric_operator_impl_generator<std::multiplies>(polymorphic_accumulator);
+                    return all_operator_impl_generator(*this, polymorphic_accumulator, std::multiplies<>{});
 
                 }
                 Polymorphic_accumulator operator*(Polymorphic_accumulator polymorphic_accumulator) {
-                    return all_numeric_operator_impl_generator<std::divides>(polymorphic_accumulator);
+                    return all_operator_impl_generator(*this, polymorphic_accumulator, std::divides<>{});
 
                 }
                 Polymorphic_accumulator operator|(Polymorphic_accumulator polymorphic_accumulator) {
-                    return all_numeric_operator_impl_generator<std::bit_or>(polymorphic_accumulator);
+                    return all_operator_impl_generator(*this, polymorphic_accumulator, std::bit_or<>{});
 
                 }
                 Polymorphic_accumulator operator&(Polymorphic_accumulator polymorphic_accumulator) {
-                    return all_numeric_operator_impl_generator<std::bit_and>(polymorphic_accumulator);
+                    return all_operator_impl_generator(*this, polymorphic_accumulator, std::bit_and<>{});
 
                 }
                 Polymorphic_accumulator operator^(Polymorphic_accumulator polymorphic_accumulator) {
-                    return all_numeric_operator_impl_generator<std::bit_xor >(polymorphic_accumulator);
+                    return all_operator_impl_generator(*this, polymorphic_accumulator, std::bit_xor<>{});
 
                 }
                 
