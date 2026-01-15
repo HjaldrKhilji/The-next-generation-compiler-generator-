@@ -81,7 +81,10 @@ namespace printing_tools {
                     interal_data = convert_to_target<Internal_resperentation>(arg.internal_data);
                 }
                 void pump(std::string* string_to_pump_to) {
+                    constexpr if(std::is_same_v<Internal_resperentation, std::string>){
                     *string_to_pump_to += std::string{ internal_data };
+                    }
+                    else{*string_to_pump_to += std::to_string( internal_data );}
                 }
                 Internal_resperentation internal_data;
                  Accumulator<Internal_resperentation> operator+(Accumulator<Internal_resperentation> y) {
@@ -126,8 +129,11 @@ namespace printing_tools {
                 
                 void pump(std::string* string_to_pump_to) {
                     std::visit([&](auto&& arg) {
-                        *string_to_pump_to += std::string{ std::move(arg) };
-                        }, internal_data);
+                        constexpr if(std::is_same_v<decltype(arg), std::string>){
+                    *string_to_pump_to += std::string{ internal_data };
+                    }
+                    else{*string_to_pump_to += std::to_string( internal_data );}
+               
                 }
 
                
@@ -139,7 +145,7 @@ namespace printing_tools {
                             return Polymorphic_accumulator{ op(std::move(a), std::move( b)) };//used std::move() because of strings
                         }
                         else {
-                            throw std::runtime_error("Type mismatch in arithmetic operation");
+                            throw std::runtime_error("Type mismatch in polymorphic arithmetic operation");
                         }
                         }, lhs.internal_data, rhs.internal_data);
                 }
@@ -199,5 +205,6 @@ namespace printing_tools {
 
         }
     }
+
 
 
