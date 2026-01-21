@@ -276,7 +276,7 @@ again these are just my opinion, dont judge
             void set_current_subling_index(int a) {
                 current_sibling_index = a;
             }
-            Non_terminal_name_entry const * get_current_sibling() {
+            Non_terminal_name_entry const & get_current_sibling() {
                 return (Representation.get())[current_sibling_index].get();
             }
             bool check_if_current_sibling_has_no_children() {
