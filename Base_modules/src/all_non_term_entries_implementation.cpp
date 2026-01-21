@@ -4,7 +4,7 @@ module;
 #include <deque>            // Often used for "list_of_all_non_term_entries_for_fast_traversal"
 #include <map>              // For map_for_fast_retrival_of_entries
 #include <unordered_map>    // Alternative if using hash maps
-#include <regex>            // For std::regex, std::sregex_iterator
+
 #include <iterator>         // For std::distance and iterators
 #include <iostream>         // For std::cout, std::cerr
 #include <stdexcept>        // For std::runtime_error
@@ -15,6 +15,7 @@ module;
 
 
 module all_declarations;
+import estd_regex;
 using  absolute_base::All_non_terminal_entries_implementation::Iterator_for_list_of_entries; 
 using absolute_base::Settings_for_semantical_rules;
 using absolute_base::All_non_terminal_entries_implementation;
@@ -51,11 +52,11 @@ void All_non_terminal_entries_implementation::remove_semantic_rule_of_entry(abso
 
 
 bool absolute_base::Semantical_analyzer_config_entry::check_pattern(std::string text) {
-    std::regex pattern{ the_pattern_to_check };
+    estd::regex pattern{ the_pattern_to_check };
     
         int number_of_matches = static_cast<size_t>(std::distance(
-            std::sregex_iterator(text.begin(), text.end(), pattern),
-            std::sregex_iterator() // Default constructor represents the end-of-sequence
+            estd::sregex_iterator(text.begin(), text.end(), pattern),
+            estd::sregex_iterator() // Default constructor represents the end-of-sequence, like the first argument will be equal to the seocnd, when the first argument reaches the end
         ));
         if (all_settings == Settings_for_semantical_rules::NONE) {
             return true;
