@@ -1,26 +1,21 @@
 module;
-#include <iostream>
-
-#include<functional>
-
-#include <map>
-
-
-#include <sstream>
-
-#include <string>
-
-#include <vector>
-#include<regex>
-#include<stack>
-#include<memory>
+#include <string>      // For std::string and string manipulation
+#include <iostream>    // For std::istream
+#include <vector>      // For std::vector (used in semantical_checks)
+#include <stack>       // For std::stack (used for family_tree)
+#include <memory>      // For std::shared_ptr
+#include <stdexcept>   // For std::runtime_error
+// I used AI to keep track of the headers needed
 
 export module Inputer;
 import All_declarations;
+import estd_regex;
+
 using absolute_base::Semantical_analyzer_config_entry;
 using absolute_base::Non_terminal_name_entry;
 using absolute_base::Siblings;
 using absolute_base::Non_terminal_name_entry;
+
 export namespace input_tools {
    
         class Input_reader {
@@ -37,9 +32,9 @@ export namespace input_tools {
                 const std::vector < Semantical_analyzer_config_entry >& semantical_checks
 
             ) {
-                std::regex pattern{ entry_to_match.pattern };
-                std::smatch match_info;
-                for (; std::regex_search(raw_input, match_info, pattern); get_raw_input());
+                estd::regex pattern{ entry_to_match.pattern };
+                estd::smatch match_info;
+                for (; estd::regex_search(raw_input, match_info, pattern); get_raw_input());
                 if (semantical_checks.empty() != true) {
                     //if its empty then it means that we are in the node that has
                     //no sub nodes, hence no semantic rules.
