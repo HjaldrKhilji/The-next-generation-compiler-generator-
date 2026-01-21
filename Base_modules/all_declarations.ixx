@@ -384,7 +384,7 @@ again these are just my opinion, dont judge
         
         class Base_printer {
         public:
-            virtual bool print(std::string string_to_output, const Non_terminal_name_entry& output_config_entry) = 0;
+            virtual bool print(std::string string_to_output) = 0;
             virtual ~Base_printer() = 0;//has to be virtual since its a public base class that CAN BE USED AS A HANDLE
 
 
