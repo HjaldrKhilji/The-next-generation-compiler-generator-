@@ -34,10 +34,12 @@ export namespace input_tools {
             ) {
                 estd::regex pattern{ entry_to_match.pattern };
                 estd::smatch match_info;
-                for (; estd::regex_search(raw_input, match_info, pattern); get_raw_input());
+                for (; !estd::regex_search(raw_input, match_info, pattern); get_raw_input());
                 if (semantical_checks.empty() != true) {
                     //if its empty then it means that we are in the node that has
                     //no sub nodes, hence no semantic rules.
+                    //in this block, it is assumed to not be empty, hence we do the semantic checks as we usally will
+                    
                     if (absolute_base::semantic_checks(semantical_checks, match_info[0].str()) != true) {
                         throw std::runtime_error("semantic checks failed on stream of charactors of type: " + entry_to_match.name);
                     }
@@ -45,7 +47,7 @@ export namespace input_tools {
 
 
                 raw_input.erase(match_info.position(), match_info.length());
-                output_manager.print(match_info[0].str(), entry_to_match);
+                output_manager.print(match_info[0].str());
                 //the work asked(by my ownself) for below is done:
                 //OUTPUT SECTION:
                 //feed match_info[0] to the output class, because only the output class gets to deal with what happens next
@@ -94,7 +96,7 @@ export namespace input_tools {
         public:
             using Input_stream_handler_ptr = absolute_base::Streamable_manager<std::istream, std::shared_ptr>;
             Input_reader(std::istream* a) = delete;
-            Input_reader(Stream_handler_ptr a, const absolute_base::Base_printer& b, const absolute_base::All_non_terminal_entries& c) :input_stream{ a }, output_manager{ b }, all_config{ c } {}
+            Input_reader(Input_stream_handler_ptr a, const absolute_base::Base_printer& b, const absolute_base::All_non_terminal_entries& c) :input_stream{ a }, output_manager{ b }, all_config{ c } {}
 
             
 
