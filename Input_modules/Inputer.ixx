@@ -60,7 +60,7 @@ export namespace input_tools {
                 if (want_to_initialize_loop == true) {
                     int current_sibling_index = (*all_config.begin()).sub_entries.size() - 1;
                     if (current_sibling_index == -1) {
-                        std::runtime_error("no root found");
+                        throw std::runtime_error("no root found");
                     }
                     Siblings current_generation =
                         { (*(all_config.begin())).sub_entries, current_sibling_index};
