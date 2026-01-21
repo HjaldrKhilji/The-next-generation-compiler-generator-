@@ -66,7 +66,7 @@ export namespace printing_tools {
 
       
 
-        void output_driver(std::string string_to_output, int current_generation) {
+        void output_driver(std::string string_to_output, const Non_terminal_name_entry& output_config_entry, int current_generation) {
           
             std::string::size_type position = 0;
             std::string::size_type output_data_position = 0;
@@ -101,7 +101,7 @@ export namespace printing_tools {
 
                 absolute_base::dig_to_the_leaves_of_the_family_tree(current_generation, &family_tree);
 
-                output_driver(std::move(output_data), current_sibling_index);
+                output_driver(std::move(output_data), current_generation.get_current_sibling(), current_sibling_index);
             }
             else {
                 throw std::runtime_error{ "nothing is left to output" };
