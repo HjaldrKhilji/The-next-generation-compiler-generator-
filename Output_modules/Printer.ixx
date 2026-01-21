@@ -66,11 +66,8 @@ export namespace printing_tools {
 
       
 
-        void output_driver(std::string string_to_output, const Non_terminal_name_entry& output_config_entry, int current_generation) {
-            if (absolute_base::semantic_checks(output_config_entry.all_semantical_analysis_rules[current_generation], string_to_output) != true) {
-                throw std::runtime_error{ "semantic checks on output string failed!" };
-
-            }
+        void output_driver(std::string string_to_output, int current_generation) {
+          
             std::string::size_type position = 0;
             std::string::size_type output_data_position = 0;
             
@@ -96,7 +93,7 @@ export namespace printing_tools {
 
         }
 
-        bool print(std::string output_data, const Non_terminal_name_entry& output_config_entry) override {
+        bool print(std::string output_data) override {
             if (!family_tree.empty()) {
                 Siblings current_generation = family_tree.top();
                 family_tree.pop();
@@ -104,7 +101,7 @@ export namespace printing_tools {
 
                 absolute_base::dig_to_the_leaves_of_the_family_tree(current_generation, &family_tree);
 
-                output_driver(std::move(output_data), output_config_entry, current_sibling_index);
+                output_driver(std::move(output_data), current_sibling_index);
             }
             else {
                 throw std::runtime_error{ "nothing is left to output" };
@@ -113,17 +110,7 @@ export namespace printing_tools {
         }
 
     public:
-        //function for the very special case of dynamically loading new options
-        void add_a_new_option(Option_functions_wrapper_type operation_to_run, char charactor_representing_option) {
-            std::vector<char>& vec = charactors_representing_each_option;
-            if (std::find(vec.begin(), vec.end(), charactor_representing_option) == vec.end()) {
-                vec.push_back(charactor_representing_option);
-                operations_upon_to_run_upon_charactors_found.push_back(operation_to_run);
-            }
-            else {
-                throw std::runtime_error{ "charactor representing your option is not available" };
-            }
-        }
+        
         using Input_stream_handler_ptr = absolute_base::Streamable_manager<std::istream, std::shared_ptr>;
         using Output_stream_handler_ptr = absolute_base::Streamable_manager<std::ostream, std::unique_ptr>;
         Printer(Output_stream_handler_ptr a,  std::unique_ptr<absolute_base::All_non_terminal_entries> b, std::shared_ptr<absolute_base::All_non_terminal_entries> c, Input_stream_handler_ptr  d) : output{ a }, all_config_for_output{b}, all_config_for_input{ c }, input{d}
