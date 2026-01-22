@@ -23,7 +23,7 @@ export namespace input_tools {
             void get_raw_input() {
                 std::string lineInput;
                 std::getline(*input_stream, lineInput);
-                raw_input.append(lineInput);
+                raw_input.append(lineInput+"\n");
 
             }
 
@@ -41,7 +41,8 @@ export namespace input_tools {
                     //in this block, it is assumed to not be empty, hence we do the semantic checks as we usally will
                     
                     if (absolute_base::semantic_checks(semantical_checks, match_info[0].str()) != true) {
-                        throw std::runtime_error("semantic checks failed on stream of charactors of type: " + entry_to_match.name);
+                        //syntax check failed.
+                        throw std::runtime_error{ "SYNTAX MODULE:invalid syntax" + entry_to_match.name };
                     }
                 }
 
@@ -82,7 +83,8 @@ export namespace input_tools {
                     }
                     else {
                         if (raw_input.length() != 0) {
-                            throw std::runtime_error{ "unidentified charactors at the end" };
+                            //compiler error by definition
+                            throw std::runtime_error{ "COMPILER: empty config" };
                         }
                     }
                 }
