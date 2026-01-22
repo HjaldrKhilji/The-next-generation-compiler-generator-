@@ -63,7 +63,8 @@ export namespace input_tools {
                 if (want_to_initialize_loop == true) {
                     int current_sibling_index = (*all_config.begin()).sub_entries.size() - 1;
                     if (current_sibling_index == -1) {
-                        throw std::runtime_error("no root found");
+                        //its a compiler error by definition
+                        throw std::runtime_error{ "COMPILER: empty input config" };
                     }
                     Siblings current_generation =
                         { (*(all_config.begin())).sub_entries, current_sibling_index};
