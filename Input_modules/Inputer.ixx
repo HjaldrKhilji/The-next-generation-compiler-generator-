@@ -84,7 +84,7 @@ export namespace input_tools {
                     else {
                         if (raw_input.length() != 0) {
                             //its a compiler error by definition
-                            throw std::runtime_error{ "COMPILER: empty config" };
+                            throw std::runtime_error{ "COMPILER: empty input config" };
                         }
                     }
                 }
