@@ -68,9 +68,9 @@ namespace printing_tools {
                     return convert_to_number<T_dest>(source);
                 }
             }
-           
-           
-          
+
+
+
             template <absolute_base::Is_String_Or_Numeric Internal_resperentation_type>
             struct Accumulator > {
                 using Internal_resperentation = Internal_resperentation_type;
@@ -78,34 +78,36 @@ namespace printing_tools {
 
                 template <absolute_base::Numeric Internal_resperentation_of_type_converted>
                 Accumulator(Accumulator<Internal_resperentation_of_type_converted> arg) {
-                    interal_data = convert_to_target<Internal_resperentation>(arg.internal_data);
+                    try {
+                        interal_data = convert_to_target<Internal_resperentation>(arg.internal_data);
+                    }
+                    catch (...) {
+                        throw;
+                    }
                 }
                 void pump(std::string* string_to_pump_to) {
-                    constexpr if(std::is_same_v<Internal_resperentation, std::string>){
                     *string_to_pump_to += std::string{ internal_data };
-                    }
-                    else{*string_to_pump_to += std::to_string( internal_data );}
                 }
                 Internal_resperentation internal_data;
-                 Accumulator<Internal_resperentation> operator+(Accumulator<Internal_resperentation> y) {
+                Accumulator<Internal_resperentation> operator+(Accumulator<Internal_resperentation> y) {
 
                     return std::move(internal_data) + std::move(y.internal_data);// using move() due to std::strings 
 
 
                 }
-                 Accumulator<Internal_resperentation> operator-(Accumulator<Internal_resperentation> y)
+                Accumulator<Internal_resperentation> operator-(Accumulator<Internal_resperentation> y)
                     requires absolute_base::Numeric<Internal_resperentation> {
 
                     return internal_data - y.internal_data;
 
                 }
-                 Accumulator<Internal_resperentation> operator*(Accumulator<Internal_resperentation> y)
+                Accumulator<Internal_resperentation> operator*(Accumulator<Internal_resperentation> y)
                     requires absolute_base::Numeric<Internal_resperentation> {
 
                     return internal_data * y.internal_data;
 
                 }
-                 Accumulator<Internal_resperentation> operator/(Accumulator<Internal_resperentation> y)
+                Accumulator<Internal_resperentation> operator/(Accumulator<Internal_resperentation> y)
                     requires absolute_base::Numeric<Internal_resperentation> {
 
                     return internal_data / y.internal_data;
@@ -113,7 +115,7 @@ namespace printing_tools {
                 }
             };
 
-            
+
             inline bool is_char_digit(const char c) {
 
                 if (c >= '0' && c <= '9') {
@@ -125,27 +127,24 @@ namespace printing_tools {
             }
             struct Polymorphic_accumulator {
                 std::variant<long long int, long double, std::string> internal_data;
-                
-                
+
+
                 void pump(std::string* string_to_pump_to) {
                     std::visit([&](auto&& arg) {
-                        if constexpr (std::is_same_v<std::decay_t<decltype(arg)>, std::string>){
-                    *string_to_pump_to += std::string{ arg };
-                    }
-                    else{*string_to_pump_to += std::to_string( internal_data );}, internal_data);
-                   
+                        *string_to_pump_to += std::string{ std::move(arg) };
+                        }, internal_data);
                 }
 
-               
+
                 template<typename Op_type>
-                Polymorphic_accumulator all_operator_impl_generator(Polymorphic_accumulator lhs, Polymorphic_accumulator rhs, Op_type operator_name) {
+                Polymorphic_accumulator all_operator_impl_generator(const Polymorphic_accumulator& lhs, const Polymorphic_accumulator& rhs, Op_type operator_name) {
                     return std::visit([&](auto&& a, auto&& b) -> Polymorphic_accumulator {
                         // This 'if constexpr' checks at compile-time if the operator works for these types
                         if constexpr (requires { operator_name(a, b); }) {
-                            return Polymorphic_accumulator{ op(std::move(a), std::move( b)) };//used std::move() because of strings
+                            return Polymorphic_accumulator{ op(std::move(a), std::move(b)) };//used std::move() because of strings
                         }
                         else {
-                            throw std::runtime_error("Type mismatch in polymorphic arithmetic operation");
+                            throw std::runtime_error{ "DYNAMIC ARETHIMETIC ENGINE" };
                         }
                         }, lhs.internal_data, rhs.internal_data);
                 }
@@ -177,36 +176,32 @@ namespace printing_tools {
                     return all_operator_impl_generator(*this, polymorphic_accumulator, std::bit_xor<>{});
 
                 }
-                
+
             };
-             Polymorphic_accumulator read_polymorphically_from_string(const std::string& string_to_read_from, std::string::size_type* pos) {
-          
-                if (is_char_digit(string_to_read_from[*pos])) {
-                    {
-                        std::string::size_type previous_pos = *pos;
-                        long long int int_read = read_from_string<long long int>(string_to_read_from, pos);
-                        if (string_to_read_from[*pos] == '.') {
-                            *pos = previous_pos:
-                            long double double_read = read_from_string<long double>(string_to_read_from, pos);
-                            return Polymorphic_accumulator{ double_read };
+            Polymorphic_accumulator read_polymorphically_from_string(const std::string& string_to_read_from, std::string::size_type* pos) {
+                try {
+                    if (is_char_digit(string_to_read_from[*pos])) 
+                        {
+                            return Polymorphic_accumulator{ read_from_string<long long int>(string_to_read_from, pos) };
 
-                        }
-                        else {
-                            return Polymorphic_accumulator{ int_read };
-                        }
+                         }
+                    else if (string_to_read_from[*pos] == '.') {
+                        return Polymorphic_accumulator{ read_from_string<long double>(string_to_read_from, pos) };
                     }
+                    
 
 
-                else {
-                    return  Polymorphic_accumulator{ read_from_string<std::string>(string_to_read_from, pos) };
-                }
-              }
+                    else {
+                        return  Polymorphic_accumulator{ read_from_string<std::string>(string_to_read_from, pos) };
+                    }
+                    }
+                
+
+                catch (...) { throw; }
+
             }
-
         }
     }
-
-
-
+}
 
 
