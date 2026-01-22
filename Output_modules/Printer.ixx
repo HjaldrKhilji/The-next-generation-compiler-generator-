@@ -85,7 +85,8 @@ export namespace printing_tools {
 
                 }
                 if (!any_option_matched) {
-                    throw std::runtime_error{ "this charactor is an invalid option: "+ option_charactor };
+                    //its a Compiler error by defintion
+                    throw std::runtime_error{ "Compiler: invalid option character: "+ option_charactor };
                 }
             }
             
@@ -104,7 +105,9 @@ export namespace printing_tools {
                 output_driver(std::move(output_data), current_generation.get_current_sibling(), current_sibling_index);
             }
             else {
-                throw std::runtime_error{ "nothing is left to output" };
+                //its a Compiler error by defintion
+                throw std::runtime_error{ "Compiler: empty output config" };
+
             }
 
         }
