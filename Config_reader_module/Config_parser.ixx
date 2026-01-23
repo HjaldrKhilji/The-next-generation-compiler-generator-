@@ -1,18 +1,15 @@
 
 module;
-#include <iostream>
+#include <string>       // For std::string, .replace(), .length()
+#include <iostream>     // For std::istream
+#include <sstream>      // For std::istringstream
+#include <spanstream>   // For std::spanstream (used in your helper functions)
+#include <vector>       // For initializer lists in escape_string
+#include <memory>       // For std::unique_ptr
+#include <stdexcept>    // For std::runtime_error
+#include <utility>      // For std::move
+// I used AI to keep track of the headers needed
 
-#include<functional>
-
-#include <map>
-
-
-#include <sstream>
-
-#include <string>
-
-#include <vector>
-#include <climits>
 export module Config_parser;
 
 import All_declarations;
@@ -280,8 +277,7 @@ export   namespace config_parsing_tools {
             case '}':
                 break;
             default:
-                std::cerr << "invalid configuration input, proceed on your own risk" << std::endl;
-                throw std::runtime_error("parse_config_for_semantic_entry error");
+                throw std::runtime_error{ "CONFIG_PARSER: parse_config_for_semantic_entry error" };
                 break;
             }
 
@@ -457,7 +453,7 @@ export   namespace config_parsing_tools {
                 //I have yet to find a use for this function, but I thought it is important for the future maintainer to just have this very trivial function
                 return line_stream;
             }
-
+        public:
             void get_and_parse_input() {
 
                 //post_condition: the input for a single non term entry is taken, along side the nested non term entries in that non term entry, and the semantical rules for each
@@ -469,24 +465,16 @@ export   namespace config_parsing_tools {
                         change_current_line();
 
                     }
-                    catch (const std::ios_base::failure& e) {
-                        //Todo
-                        return;
+                    catch (...) {
+                        throw std::string{ "CONFIG_PARSER: totally unexpected error" };
                     }
-                    catch (const std::runtime_error& e) {
-
-                        //Todo
-
-                        return;
-                    }
-                    //notice an extra flush using std::endl isnt required while using cerr stream in the code above because cerr is flush automatically
                 } while (line_stream.good() == true);
                 line_stream.clear();
                 line_stream.str("");
             } // parse the whole file
 
 
-        public:
+      
 
             void print_all_parsed_input_for_testing()  {
                 //postcondition: simply prints the information for every non term entry, which contains the non term entries,  nested entries of those non term entries,
@@ -497,7 +485,7 @@ export   namespace config_parsing_tools {
 
 
             
-            Config_reader(std::istream* a) :input_stream(a) { get_and_parse_input(); }
+            Config_reader(std::istream* a) :input_stream(a) { }
             
             Config_reader(Config_reader&) = default;
             Config_reader(Config_reader&&) = default;
