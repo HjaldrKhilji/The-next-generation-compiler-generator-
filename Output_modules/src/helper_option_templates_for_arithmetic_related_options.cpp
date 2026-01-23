@@ -54,7 +54,7 @@ namespace printing_tools {
                 std::string::size_type position = 0;
                 T result = absolute_base::read_number_from_string_at_a_position<T>(source, &position);
                 if (position != source.length()) {
-                    throw std::runtime_error{ "number mixed with (non numeric) charactor while taking input for an option" };
+                    throw std::string{ "number mixed with (non numeric) charactor while taking input for an option" };
                 }
                 return result;
 
@@ -78,12 +78,9 @@ namespace printing_tools {
 
                 template <absolute_base::Numeric Internal_resperentation_of_type_converted>
                 Accumulator(Accumulator<Internal_resperentation_of_type_converted> arg) {
-                    try {
+                    
                         interal_data = convert_to_target<Internal_resperentation>(arg.internal_data);
-                    }
-                    catch (...) {
-                        throw;
-                    }
+                    
                 }
                 void pump(std::string* string_to_pump_to) {
                     *string_to_pump_to += std::string{ internal_data };
@@ -138,16 +135,20 @@ namespace printing_tools {
 
                 template<typename Op_type>
                 Polymorphic_accumulator all_operator_impl_generator(const Polymorphic_accumulator& lhs, const Polymorphic_accumulator& rhs, Op_type operator_name) {
-                    return std::visit([&](auto&& a, auto&& b) -> Polymorphic_accumulator {
-                        // This 'if constexpr' checks at compile-time if the operator works for these types
-                        if constexpr (requires { operator_name(a, b); }) {
-                            return Polymorphic_accumulator{ op(std::move(a), std::move(b)) };//used std::move() because of strings
-                        }
-                        else {
-                            throw std::runtime_error{ "DYNAMIC ARETHIMETIC ENGINE" };
-                        }
-                        }, lhs.internal_data, rhs.internal_data);
-                }
+                    
+                        Polymorphic_accumulator result = std::visit([&](auto&& a, auto&& b) -> Polymorphic_accumulator {
+                            // This 'if constexpr' checks at compile-time if the operator works for these types
+                            if constexpr (requires { operator_name(a, b); }) {
+                                return Polymorphic_accumulator{ op(std::move(a), std::move(b)) };//used std::move() because of strings
+                            }
+                            else {
+                                throw std::string{ "DYNAMIC ARETHIMETIC ENGINE" };
+                            }
+                            }, lhs.internal_data, rhs.internal_data);
+                        return result;
+                    
+                    
+                   }
                 Polymorphic_accumulator operator-(Polymorphic_accumulator polymorphic_accumulator) {
                     return all_operator_impl_generator(*this, polymorphic_accumulator, std::plus <>{});
 
@@ -179,7 +180,7 @@ namespace printing_tools {
 
             };
             Polymorphic_accumulator read_polymorphically_from_string(const std::string& string_to_read_from, std::string::size_type* pos) {
-                try {
+              
                     if (is_char_digit(string_to_read_from[*pos])) 
                         {
                             return Polymorphic_accumulator{ read_from_string<long long int>(string_to_read_from, pos) };
@@ -194,10 +195,10 @@ namespace printing_tools {
                     else {
                         return  Polymorphic_accumulator{ read_from_string<std::string>(string_to_read_from, pos) };
                     }
-                    }
+                    
                 
 
-                catch (...) { throw; }
+                
 
             }
         }
