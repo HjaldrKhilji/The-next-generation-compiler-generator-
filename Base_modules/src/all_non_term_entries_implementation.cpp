@@ -23,7 +23,7 @@ using absolute_base::All_non_terminal_entries_implementation;
 void All_non_terminal_entries_implementation::add_a_child_to_entry
 (absolute_base::Non_terminal_name_entry *entry_to_be_added_to,  absolute_base::Non_terminal_name_entry&& entry_to_add) override{
     if (!map_for_fast_retrival_of_entries.contains(entry_to_be_added_to->name)) {
-        throw std::runtime_error{ "entry not found" };
+        throw std::string{ "COMPILER: entry not found" };
     }
     map_for_fast_retrival_of_entries[entry_to_be_added_to->name]->sub_entry.push_back(std::move(entry_to_add));
 }
@@ -51,46 +51,52 @@ void All_non_terminal_entries_implementation::remove_semantic_rule_of_entry(abso
 }
 
 
-bool absolute_base::Semantical_analyzer_config_entry::check_pattern(std::string text) {
-    estd::regex pattern{ the_pattern_to_check };
-    
+void absolute_base::Semantical_analyzer_config_entry::check_pattern(const std::vector < Semantical_analyzer_config_entry >& semantical_checks, std::string text) {
+    std::string failed_matches{};
+    for (auto& x : semantical_checks) {
+        estd::regex pattern{ x.the_pattern_to_check };
+
         int number_of_matches = static_cast<size_t>(std::distance(
             estd::sregex_iterator(text.begin(), text.end(), pattern),
             estd::sregex_iterator() // Default constructor represents the end-of-sequence, like the first argument will be equal to the seocnd, when the first argument reaches the end
         ));
         if (all_settings == Settings_for_semantical_rules::NONE) {
-            return true;
+
         }
-        if (all_settings && Settings_for_semantical_rules::check_exist) {
+        else if (all_settings && Settings_for_semantical_rules::check_exist) {
             if (all_settings && Settings_for_semantical_rules::check_atleast) {
-                if (number_of_matches == minimum_amount_of_matches) {
-                    return true;
+                if (maximum_amount_of_matches == std::numeric_limits<std::size_t>::max()) {
+                    //means the useer entered -1 as maximum_amount_of_matches
+                     //which means that he dosent want us to check the upper limit at all
+                    if (number_of_matches > minimum_amount_of_matches) {
+                        failed_matches += x.the_pattern_to_check + '\\' + '\n';
+                    }
                 }
                 else {
-                    return false;
+                    if ((maximum_amount_of_matches < number_of_matches) && (number_of_matches > minimum_amount_of_matches)) {
+                        failed_matches += x.the_pattern_to_check + '\\' + '\n';
+                    }
                 }
             }
-            if (all_settings && Settings_for_semantical_rules::check_exact)
+            else if (all_settings && Settings_for_semantical_rules::check_exact)
             {
-                if ((maximum_amount_of_matches <number_of_matches) && (number_of_matches> minimum_amount_of_matches)) {
-                    return false;
-                }
-                else {
-                    return false;
-                }
 
+                if (number_of_matches != minimum_amount_of_matches) {
+                    failed_matches += x.the_pattern_to_check + '\\' + '\n';
+                }
 
             }
         }
-        if (all_settings && Settings_for_semantical_rules::check_dont_exist) {
-            if (number_of_matches == 0) {
-                return true;
-            }
-            else {
-                return false;
+
+        else if (all_settings && Settings_for_semantical_rules::check_dont_exist) {
+            if (!number_of_matches) {
+                failed_matches += x.the_pattern_to_check + '\\' + '\n';
             }
         }
-
+    }
+    if (failed_matches.length() != 0) {
+        throw std::string{std::move(failed_matches)};
+    }
     }
 
 
@@ -161,8 +167,7 @@ void All_non_terminal_entries_implementation::add_non_term_symbol_name(std::stri
   // "pattern" data member of that entry is returned
 
     if (!map_for_fast_retrival_of_entries.contains(sub_symbol_name)) {
-      std::cerr<<"no pattern founds"<<std::endl;
-      throw std::runtime_error("get_pattern_of_nested_non_term_symbol_pattern error");
+      throw std::string("COMPILER: get_pattern_of_nested_non_term_symbol_pattern error");
     }
 
     return (map_for_fast_retrival_of_entries.at(sub_symbol_name))->pattern;
@@ -174,8 +179,8 @@ void All_non_terminal_entries_implementation::add_non_term_symbol_name(std::stri
   //postcondition: the entry corrsponding to the key "sub_symbol_name" from map_for_fast_retrival_of_entries, and the reference wrapper containing
   //a reference to the data member "pattern" of the entry is returned
     if (!map_for_fast_retrival_of_entries.contains(sub_symbol_name)) {
-      std::cerr<<"no pattern found"<<std::endl;
-      throw std::runtime_error("get_parmenant_name_of_nested_non_term_symbol_pattern error");
+     
+      throw std::string("COMPILER: get_parmenant_name_of_nested_non_term_symbol_pattern error");
 
     }
 
@@ -218,8 +223,7 @@ void All_non_terminal_entries_implementation::add_non_term_symbol_name(std::stri
     newest_entry.all_semantical_analysis_rules.back().push_back(  std::move(semantical_rule_entry));
     }
     else{
-      std::cerr<<"count mismatch between the amount of entries in \"all_semantical_analysis_rules\"  and \"sub_entries\" data members of the newest entry"<<std::endl;
-      throw std::runtime_error("add_semantic_rule_for_newest_sub_entry error");
+      throw std::string("COMPILER: add_semantic_rule_for_newest_sub_entry error");
     }
   }
   absolute_base::Non_terminal_name_entry& All_non_terminal_entries_implementation::get_current_non_term_entry(int index) {
