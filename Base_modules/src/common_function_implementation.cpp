@@ -21,22 +21,28 @@ module all_declarations;
     const std::vector < std::string > & strings_to_be_replaced,
       const std::vector < common_functions::escape_charactor_function_wrapper_type >
         function_to_be_run_for_each) {
-    for (size_t index = 0; index < strings_to_be_replaced.size(); index++) {
-      //precondition: input_string, strings_to_be_replaced, function_to_be_run_for_each are in a valid state
-      //precondition: the container "function_to_be_run_for_each" has the same size as strings_to_be_replaced
-      //postconditions: all the matches of the strings inside  "strings_to_be_replaced"  are found in "input_string", 
-      // and the position of that match along side a reference to the input_string is  passed to the
-      // corrsponding function in function_to_be_run_for_each, corrsponding in this sentence means the function element from  function_to_be_run_for_each
-      //that has the same index as the element whose match is found.
-      //UGLY LOW LEVEL CODE ALERT: DONT TOUCH THIS UGLY CODE, UNLESS YOU REALLY REALLY HAVE TO CHANGE IT!!!!!!!
-      size_t position_of_the_match_found_last = 0;
-      while ((position_of_the_match_found_last = input_string->find(
-          strings_to_be_replaced[index],
-          position_of_the_match_found_last)) != std::string::npos) {
-        function_to_be_run_for_each[index](input_string,
-          &position_of_the_match_found_last);
-      }
-    }
+     for (size_t index = 0; index < strings_to_be_replaced.size(); index++) {
+         //precondition: input_string, strings_to_be_replaced, function_to_be_run_for_each are in a valid state
+         //precondition: the container "function_to_be_run_for_each" has the same size as strings_to_be_replaced
+         //postconditions: all the matches of the strings inside  "strings_to_be_replaced"  are found in "input_string", 
+         // and the position of that match along side a reference to the input_string is  passed to the
+         // corrsponding function in function_to_be_run_for_each, corrsponding in this sentence means the function element from  function_to_be_run_for_each
+         //that has the same index as the element whose match is found.
+         //UGLY LOW LEVEL CODE ALERT: DONT TOUCH THIS UGLY CODE, UNLESS YOU REALLY REALLY HAVE TO CHANGE IT!!!!!!!
+         size_t position_of_the_match_found_last = 0;
+         try {
+             while ((position_of_the_match_found_last = input_string->find(
+                 strings_to_be_replaced[index],
+                 position_of_the_match_found_last)) != std::string::npos) {
+                 function_to_be_run_for_each[index](input_string,
+                     &position_of_the_match_found_last);
+             }
+         }
+         catch (std::bad_alloc) {
+             //this is a very low level compiler error, in particular, it is an error in the usage of this tool or in the hardware/execution_environemnt of the user
+             throw std::string{ "memory allocation failure" };
+         }
+     }
   }
  std::string common_functions::read_identifier(std::spanstream* line_stream) {
      //precondition: line_stream is in a valid state and is not empty
@@ -50,7 +56,6 @@ module all_declarations;
      for (; *line_stream >> std::noskipws >> c && (isalnum(c) || c == '_'); identifier += c);
      line_stream->putback(c);
      if (identifier.empty()) {
-         std::cerr << "empty non terminal symbol name" << std::endl;
          throw std::runtime_error{"read_identifier error"};
      }
      return identifier;
@@ -64,24 +69,35 @@ T common_functions::read_number_from_string_at_a_position(const std::string& sou
     const char* end = source.data() + source.size();
 
     auto [read_till, status] = std::from_chars(start, end, result);
+    if (ec == std::errc{}) {
+        //SUCCESSS
+        // Advance the position based on how many characters were consumed
+        *position += (read_till - start);
 
-    if (status == std::errc::invalid_argument) {
-        throw std::runtime_error("Not a number at this position.");
+        return result;
+    }
+    else if (status == std::errc::invalid_argument) {
+        throw std::runtime_error{ "Input read isnt a number" };
     } else if (status == std::errc::result_out_of_range) {
-        throw std::runtime_error("Number exceeds type limits.");
+        throw std::runtime_error{ "Number exceeds type limits." };
+    }
+    else {
+        throw std::runtime_error{ "unknown error occured" };
     }
 
-    // Advance the position based on how many characters were consumed
-    *position += (read_till - start);
     
-    return result;
 }
  std::string common_functions::read_string_from_string_at_a_position(const std::string& source_string, std::string::size_type* position) {
 char delimeter_charactor = source_string[*position];
   constexpr int number_to_add_to_index_to_skip_the_index_of_delimeter=1;
 size_t delimiter_position = source_string.find(delimeter_charactor, *position+number_to_add_to_index_to_skip_the_index_of_delimeter);
-     std::string file_name = source_string.substr(*position, delimiter_position-*position);
-     *position = delimiter_position+1;
+try {
+    std::string file_name = source_string.substr(*position, delimiter_position - *position);
+}
+catch(std::out_of_range){
+    throw std::runtime_error{ "out of range read" };
+}
+    *position = delimiter_position+1;
      return file_name;
  }
 
