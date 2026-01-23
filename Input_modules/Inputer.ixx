@@ -39,32 +39,34 @@ export namespace input_tools {
                     //if its empty then it means that we are in the node that has
                     //no sub nodes, hence no semantic rules.
                     //in this block, it is assumed to not be empty, hence we do the semantic checks as we usally will
-                    
-                    if (absolute_base::semantic_checks(semantical_checks, match_info[0].str()) != true) {
-                        //syntax check failed.
-                        throw std::runtime_error{ "SYNTAX MODULE:invalid syntax" + entry_to_match.name };
+                    try{
+                        absolute_base::semantic_checks(semantical_checks, match_info[0].str());
                     }
-                }
-
-
+                    catch (std::string failed_matches) {
+                        throw std::string{ "SYNTAX PARSER ENGINE: syntax errors. raw syntax errors are:" + failed_matches };
+                    }
                 raw_input.erase(match_info.position(), match_info.length());
-                output_manager.print(match_info[0].str());
+                
+                    output_manager.print(match_info[0].str());
+                
+                
+
                 //the work asked(by my ownself) for below is done:
                 //OUTPUT SECTION:
                 //feed match_info[0] to the output class, because only the output class gets to deal with what happens next
             }
 
             
-            
+        public:
             void scan_family_tree_regex_pattern_of_root(bool want_to_initialize_loop) {
 
 
-                static std::stack< Siblings > family_tree{};
+                static std::stack<Siblings > family_tree{};
                 if (want_to_initialize_loop == true) {
                     int current_sibling_index = (*all_config.begin()).sub_entries.size() - 1;
                     if (current_sibling_index == -1) {
                         //its a compiler error by definition
-                        throw std::runtime_error{ "COMPILER: empty input config" };
+                        throw std::string{ "COMPILER: empty input config" };
                     }
                     Siblings current_generation =
                         { (*(all_config.begin())).sub_entries, current_sibling_index};
@@ -85,7 +87,7 @@ export namespace input_tools {
                     else {
                         if (raw_input.length() != 0) {
                             //its a compiler error by definition
-                            throw std::runtime_error{ "COMPILER: empty input config" };
+                            throw std::string{ "COMPILER: empty input config" };
                         }
                     }
                 }
@@ -96,17 +98,14 @@ export namespace input_tools {
 
 
 
-        public:
+        
             using Input_stream_handler_ptr = absolute_base::Streamable_manager<std::istream, std::shared_ptr>;
             Input_reader(std::istream* a) = delete;
             Input_reader(Input_stream_handler_ptr a, const absolute_base::Base_printer& b, const absolute_base::All_non_terminal_entries& c) :input_stream{ a }, output_manager{ b }, all_config{ c } {}
 
             
 
-            void parse_raw_input() {
-                scan_family_tree_regex_pattern_of_root(true);
-
-            }
+            
             Input_reader(Input_reader&) = default;
             Input_reader(Input_reader&&) = default;
         private:
