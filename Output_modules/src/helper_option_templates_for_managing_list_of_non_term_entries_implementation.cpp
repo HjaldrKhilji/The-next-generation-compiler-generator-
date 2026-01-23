@@ -1,5 +1,5 @@
 module;
-#include <string>
+
 #include <string>       // For std::string, std::string::size_type
 #include <algorithm>    // For std::find_if
 #include <stdexcept>    // For std::runtime_error
@@ -8,6 +8,7 @@ module Printer;
 
 import All_declarations;
 import Config_parser;
+namespace printing_tools{
 namespace helper_templates_for_options {
     
    
@@ -16,13 +17,21 @@ namespace helper_templates_for_options {
     template<> 
      void return_non_terminal_entry<true>(const std::string& output_config, std::string::size_type* position, absolute_base::All_non_terminal_entries* list_of_entries_to_find_it_in) {
         std::string non_terminal_entry_name = absolute_base::read_string_from_string_at_a_position(output_config, position);
-        auto entry_found = std::find_if(list_of_entries_to_find_it_in->begin(), list_of_entries_to_find_it_in->end(),
+        try {
+            auto entry_found = std::find_if(list_of_entries_to_find_it_in->begin(), list_of_entries_to_find_it_in->end(),
+        }
+        catch (std::bad_alloc) {
+            //this is a very low level compiler error, in particular, it is an error in the usage of this tool or in the hardware/execution_environemnt of the user
+            throw std::string{"memory allocation failure"};
+        }
+       
+        
             [&non_terminal_entry_name](absolute_base::Non_terminal_name_entry current_entry) {
                 return current_entry.name == non_terminal_entry_name;
             }
         );
         if (entry_found != list_of_entries_to_find_it_in->end()) {
-            throw std::runtime_error{ "semantic entry not found (PRINTER ERROR)" };
+            throw std::string{ "semantic entry not found (PRINTER ERROR)" };
 
         }
         return entry_found;
@@ -30,7 +39,7 @@ namespace helper_templates_for_options {
     template<>
     inline Non_terminal_name_entry* return_non_terminal_entry<false>(const std::string& output_config, std::string::size_type* position, absolute_base::All_non_terminal_entries* list_of_entries_to_find_it_in) {
         if (!list_of_entries_to_find_it_in->size()) {
-            throw std::runtime_error{ "semantic entry not found (PRINTER ERROR)" };
+            throw std::string{ "semantic entry not found (PRINTER ERROR)" };
         }
         return *(list_of_entries_to_find_it_in->begin());
     }
@@ -51,14 +60,14 @@ namespace helper_templates_for_options {
             }
         );
         if (entry_found != entry_containing_semantic_entry.end()) {
-            throw std::runtime_error{ "semantic entry not found (PRINTER ERROR)" };
+            throw std::string{ "semantic entry not found" };
         }
         return index;
     }
     template<>
     inline int return_semantic_entry_helper<true>(const std::string& output_config, std::string::size_type* position, const Sibling& entry_containing_semantic_entry, Non_terminal_name_entry* list_of_entries_to_find_it_in) {
         if (!entry_containing_semantic_entry.size()) {
-            throw std::runtime_error{ "semantic entry not found (PRINTER ERROR)" };
+            throw std::string{ "semantic entry not found" };
         }
         return entry_containing_semantic_entry.size()-1;
     }
@@ -81,7 +90,7 @@ namespace helper_templates_for_options {
 
             );
             if (entry_found != entry.sub_entries.end()) {
-                throw std::runtime_error{ "sub_entry not found (PRINTER ERROR)" };
+                throw std::string{ "sub_entry not found" };
             }
             return counter;
     }
@@ -104,4 +113,4 @@ read_number_from_string_at_a_position<int>(output_config,
  (output_config, position, entry_in_sibling_state, list_of_entries_to_find_it_in);
     return indexes{ sibling_index, semantic_index, entry };
     }
-}
+}}
