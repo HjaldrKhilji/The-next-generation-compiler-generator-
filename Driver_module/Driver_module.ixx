@@ -113,7 +113,7 @@ export namespace driver {
 
             }
             catch (...) {
-                error_log_stream << "DRIVER MODULE ENGINE: unexpected error (its basically FBAR(from saving private ryan) this time)\n";
+                error_log_stream << "DRIVER MODULE ENGINE: unexpected error (its basically FUBAR(from saving private ryan) this time)\n";
             }
             
     }
