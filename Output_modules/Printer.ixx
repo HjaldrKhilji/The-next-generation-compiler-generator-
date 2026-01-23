@@ -86,7 +86,7 @@ export namespace printing_tools {
                 }
                 if (!any_option_matched) {
                     //its a Compiler error by defintion
-                    throw std::runtime_error{ "Compiler: invalid option character: "+ option_charactor };
+                    throw std::string{ "Compiler: invalid option character: "+ option_charactor };
                 }
             }
             
@@ -101,12 +101,17 @@ export namespace printing_tools {
                 int current_sibling_index = current_generation.get_current_sibling_index();
 
                 absolute_base::dig_to_the_leaves_of_the_family_tree(current_generation, &family_tree);
-
+                try {
+                    absolute_base::semantic_checks(current_generation.get_semantic_rules_for_current_sibling(), output_data);
+                }
+                catch (std::string failed_matches) {
+                    throw std::string{ "OPTION TO DO SEMANTIC CHECKS: SEMANTIC CHECKS ENGINE: semantic errors. raw semantic errors are:" + failed_matches };
+                }
                 output_driver(std::move(output_data), current_generation.get_current_sibling(), current_sibling_index);
             }
             else {
                 //its a Compiler error by defintion
-                throw std::runtime_error{ "Compiler: empty output config" };
+                throw std::string{ "Compiler: empty output config" };
 
             }
 
