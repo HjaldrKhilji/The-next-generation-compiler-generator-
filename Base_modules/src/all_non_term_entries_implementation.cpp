@@ -11,6 +11,8 @@ module;
 #include <utility>          // For std::move
 #include <functional>       // For std::reference_wrapper
 #include <algorithm>        // For iterator arithmetic and algorithms
+#include <limits>       // For std::numeric_limits<T>::max(), ::min(), ::lowest()
+
 // I used AI to keep track of the headers needed
 
 
