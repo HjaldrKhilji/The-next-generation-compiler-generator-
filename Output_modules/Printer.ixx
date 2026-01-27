@@ -6,6 +6,7 @@ module;
 
 #include<type_traits>
 
+#include<future>
 
 #include <spanstream> 
 
@@ -34,10 +35,10 @@ using absolute_base::Non_terminal_name_entry;
 using absolute_base::Siblings;
 
 
-  
+
 export namespace printing_tools {
 
-    
+
 
     class Printer : public absolute_base::Base_printer {
     private:
@@ -52,8 +53,8 @@ export namespace printing_tools {
             //ONLY USE WHEN YOU WILL RUN push_latest_entry_as_sub_entry_of_an_entry AFTER THIS FUNCTION CALL
         }
         //I did not use function wrappers because of some wierd errors, that according to AI were because of my compile time environment, since I tried all fixes. In the future try using function wrappers istead, if possible.
-        using Option_functions_wrapper_type = std::string::size_type (Printer::*)(const std::string&, std::string::size_type*, std::string*, std::string::size_type*);
-        
+        using Option_functions_wrapper_type = std::string::size_type(Printer::*)(const std::string&, std::string::size_type*, std::string*, std::string::size_type*);
+
         void additional_setup_for_family_tree() {
             int current_sibling_index = (*(all_config_for_output->begin())).sub_entries.size() - 1;
             if (current_sibling_index == -1) {
@@ -64,16 +65,16 @@ export namespace printing_tools {
             absolute_base::dig_to_the_leaves_of_the_family_tree(current_generation, &family_tree);
         }
 
-      
+
 
         void output_driver(std::string string_to_output, const Non_terminal_name_entry& output_config_entry, int current_generation) {
-          
+
             std::string::size_type position = 0;
             std::string::size_type output_data_position = 0;
-            
-            for (char option_charactor :  output_config_entry.output_config_data) {
-            ++position;//changing index in ouptut_config
-            bool any_option_matched = false;
+
+            for (char option_charactor : output_config_entry.output_config_data) {
+                ++position;//changing index in ouptut_config
+                bool any_option_matched = false;
                 for (auto const& pair : operations_upon_to_run_upon_charactors_found) {
                     if (option_charactor == pair.first) {
                         ++position;//skipping the option charactor found
@@ -83,16 +84,16 @@ export namespace printing_tools {
                         (this->*pair.second)(output_config_entry.output_config_data, &position, &string_to_output, &output_data_position);
                         any_option_matched = true;
                         break; // We found the move; go to the next character in the config
-                    
-                }
+
+                    }
 
                 }
                 if (!any_option_matched) {
                     //its a Compiler error by defintion
-                    throw std::string{ "Compiler: invalid option character: "+ option_charactor };
+                    throw std::string{ "Compiler: invalid option character: " + option_charactor };
                 }
             }
-            
+
 
 
         }
@@ -121,31 +122,34 @@ export namespace printing_tools {
         }
 
     public:
-        
+
         using Input_stream_handler_ptr = absolute_base::Streamable_manager<std::istream, std::shared_ptr>;
         using Output_stream_handler_ptr = absolute_base::Streamable_manager<std::ostream, std::unique_ptr>;
-        Printer(Output_stream_handler_ptr a,  std::unique_ptr<absolute_base::All_non_terminal_entries> b, std::shared_ptr<absolute_base::All_non_terminal_entries> c, Input_stream_handler_ptr  d) : output{ a }, all_config_for_output{b}, all_config_for_input{ c }, input{d}
+        Printer(Output_stream_handler_ptr a, std::unique_ptr<absolute_base::All_non_terminal_entries> b, std::shared_ptr<absolute_base::All_non_terminal_entries> c, Input_stream_handler_ptr  d, std::shared_ptr<bool> e) : output{ a }, all_config_for_output{ b }, all_config_for_input{ c }, input{ d }, multithreaded{ e }
         {
             additional_setup_for_family_tree();
         }
         ~Printer() {
-            
+
 
         }
         Printer(Printer&) = default;
         Printer(Printer&&) = default;
     private:
-        
+
 
         Output_stream_handler_ptr output;
 
         std::unique_ptr<absolute_base::All_non_terminal_entries> all_config_for_output;
         std::shared_ptr<absolute_base::All_non_terminal_entries> all_config_for_input;
 
-        
+
         Input_stream_handler_ptr input;
-        
+
         std::stack< Siblings > family_tree{};
+
+        std::shared_ptr<bool> multithreaded;
+
 
         std::vector<std::pair<char, Option_functions_wrapper_type>> operations_upon_to_run_upon_charactors_found = {
             // --- CORE SYSTEM (0x00 - 0x05) ---
@@ -279,7 +283,11 @@ export namespace printing_tools {
             { 0xBC, &options::get_from_cache<true,true>  },
             { 0xBD, &options::get_from_cache<false,false>},
             { 0xBE, &options::get_from_cache<true,false> },
-            { 0xBF, &options::get_from_cache<false,true> }
+            { 0xBF, &options::get_from_cache<false,true> },
+            { 0xCA, &options::change_value_of_bool_owned_by_shared_ptr<&Printer::multithreaded,true> },
+            { 0xCB, &options::change_value_of_bool_owned_by_shared_ptr<&Printer::multithreaded,false> }
+
+             
         };
 
 
