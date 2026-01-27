@@ -72,7 +72,7 @@ T common_functions::read_number_from_string_at_a_position(const std::string& sou
     if (ec == std::errc{}) {
         //SUCCESSS
         // Advance the position based on how many characters were consumed
-        *position += (read_till - start);
+        *(static_cast<uint64_t*>(position)) += (read_till - start);
 
         return result;
     }
