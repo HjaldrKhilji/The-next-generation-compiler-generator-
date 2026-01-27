@@ -1,4 +1,22 @@
 module;
+// Required for std::string and size_type
+#include <string>
+
+// Required for std::tuple and std::get
+#include <tuple>
+
+// Required for uint64_t fixed-width integers
+#include <cstdint>
+
+// Required if your accumulator uses engine-level regex
+#include <regex>
+
+// Recommended for the throw statements
+#include <stdexcept>
+
+// Required for the switch-case logic and any I/O
+#include <iostream>
+//used AI to track the header files
 module Printer;
 
 
