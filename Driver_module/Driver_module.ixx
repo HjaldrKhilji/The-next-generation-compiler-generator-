@@ -40,7 +40,18 @@ export namespace driver {
         Printer output_file;
         std::ostream error_log_stream;
         bool debug_mode;
-
+    public:
+        enum class index_from_the_end_of_each_argument_of_single_engine {
+        debug_mode = 1,//last argument, the ones below it are the one before it
+        debug_mode_for_reading_output_config = 2,
+        debug_mode_for_reading_input_config = 3,
+        error_log_file = 4,
+        error_log_file_for_config = 5,
+        output_file = 6,
+        input_file = 7,
+        output_config_file = 8,
+        input_config_file = 9,
+        };
         static Driver_engine create_driver(std::string input_config_file, std::string output_config_file, std::string input_file, std::string output_file, std::string error_log_file_for_config, std::string error_log_file, bool debug_mode_for_reading_input_config, bool debug_mode_for_reading_output_config, bool debug_mode) {
             std::ostream error_log_stream_for_config{ error_log_file_for_config };
             try {
@@ -100,7 +111,7 @@ export namespace driver {
             }
         }
     };
-	void run_engine(Driver_engine engine){
+	void run_engine(){
         bool init = true;
         while (debug_mode) {
             try {
