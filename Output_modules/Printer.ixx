@@ -279,7 +279,7 @@ export namespace printing_tools {
             { 0xBC, &options::get_from_cache<true,true>  },
             { 0xBD, &options::get_from_cache<false,false>},
             { 0xBE, &options::get_from_cache<true,false> },
-            { 0xBF, &options::get_from_cache<false,true> },
+            { 0xBF, &options::get_from_cache<false,true> }
         };
 
 
