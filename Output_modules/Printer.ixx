@@ -270,7 +270,13 @@ export namespace printing_tools {
             { 0xB4, &options::calculator<long long,   long long,   true,  true,  '/'> },
             { 0xB5, &options::calculator<long long,   long long,   false, false, '/'> },
             { 0xB6, &options::calculator<long double, long double, true,  true,  '/'> },
-            { 0xB7, &options::calculator<long double, long double, false, false, '/'> }
+            { 0xB7, &options::calculator<long double, long double, false, false, '/'> },
+            // --- CACHE OPTIONS, useful in debugging or applications that require recovery---
+            { 0xB8, &options::store_in_cache<true,true>  },
+            { 0xB8, &options::store_in_cache<false,false>},
+            { 0xB8, &options::store_in_cache<true,false> },
+            { 0xB8, &options::store_in_cache<false,true> },
+
         };
 
 
