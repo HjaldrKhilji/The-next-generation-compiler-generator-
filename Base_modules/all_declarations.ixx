@@ -89,7 +89,9 @@ again these are just my opinion, dont judge
         template<Numeric T>
         T  read_number_from_string_at_a_position(const std::string& source, std::string::size_type* position);
         std::string read_string_from_string_at_a_position(const std::string& source_string, std::string::size_type* position);
-  
+        inline bool convert_to_bool(std::string str);
+        inline bool convert_to_bool(const std::string& input_str, std::string::size_type* position);
+    }
     namespace common_concepts {
 
         template<typename T, typename type_to_stream = std::string>
@@ -156,6 +158,7 @@ again these are just my opinion, dont judge
     }
     export namespace absolute_base {
         using common_concepts::Streamable;
+        using common_functions:convert_to_bool;
         using common_concepts::Is_String_Or_Numeric;
         using low_level_memory_management::Streamable_manager;
         using common_functions::Numeric;
@@ -172,13 +175,7 @@ again these are just my opinion, dont judge
             check_exact = 8
         };
 
-        bool convert_to_bool(std::string str) {
-
-            std::transform(str.begin(), str.end(), str.begin(),
-                [](unsigned char c) { return std::tolower(c); });
-
-            return str == "true" || str == "yes" || str == "1";
-        }
+        
         using Underlying_type_of_settings_for_semantical_rules = std::underlying_type_t<Settings_for_semantical_rules>;
 
       
