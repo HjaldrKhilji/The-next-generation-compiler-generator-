@@ -320,13 +320,15 @@ namespace printing_tools {
                 read_from_string<std::string, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position),
                 read_from_string<std::string, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position),
                 read_from_string<std::string, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position),
-                absolute_base::convert_to_bool(read_from_string<std::string, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position)),
-                absolute_base::convert_to_bool(read_from_string<std::string, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position)),
-                absolute_base::convert_to_bool(read_from_string<std::string, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position))
-
+                read_from_string<bool, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position),
+                read_from_string<bool, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position),
+                read_from_string<bool, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position),
+                read_from_string<bool, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position),
+                read_from_string<bool, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position)
             );
 
             engine.run_engine();
+
         }
 
         template<bool source_is_output_config_or_output_data, bool get_from_ordered_or_else_hashed>
@@ -466,5 +468,10 @@ void get_from_cache(const std::string& output_config, std::string::size_type* po
     }
 
 }
+template<std::shared_ptr<bool> Printer::bool_to_set, bool source_is_output_config_or_output_data>
+void change_value_of_bool_owned_by_shared_ptr(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
+    *bool_to_set = read_from_string<bool, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
 
+
+}
 }
