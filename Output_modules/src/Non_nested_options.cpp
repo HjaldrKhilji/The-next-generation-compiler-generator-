@@ -427,7 +427,7 @@ void store_in_cache(const std::string& output_config, std::string::size_type* po
             all_variable_ordered_storage[variable_name] = output_config;
         }
         else {
-            all_variable_hashed_storage[variable_name] = output_data_position;
+            all_variable_hashed_storage[variable_name] = output_data;
 
         }
     }
@@ -436,8 +436,35 @@ void store_in_cache(const std::string& output_config, std::string::size_type* po
             all_variable_ordered_storage[variable_name] = output_config;
         }
         else {
-            all_variable_hashed_storage[variable_name] = output_data_position;
+            all_variable_hashed_storage[variable_name] = output_data;
 
         }
     }
+
+}
+template<bool source_is_output_config_or_output_data, bool get_from_ordered_or_else_hashed>
+void get_from_cache(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
+    std::string cache_name = read_from_string<std::string>(output_config, position);
+
+    constexpr if (get_from_ordered_or_else_hashed) {
+        constexpr if (source_is_output_config_or_output_data) {
+             output_config= all_variable_ordered_storage[variable_name];
+        }
+        else {
+            output_data=all_variable_hashed_storage[variable_name];
+
+        }
+    }
+    else {
+       constexpr if (source_is_output_config_or_output_data) {
+             output_config= all_variable_ordered_storage[variable_name];
+        }
+        else {
+            output_data=all_variable_hashed_storage[variable_name];
+
+        }
+    }
+
+}
+
 }
