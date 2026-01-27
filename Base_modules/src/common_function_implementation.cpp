@@ -101,4 +101,12 @@ catch(std::out_of_range){
      return file_name;
  }
 
+ inline bool common_functions::convert_to_bool(std::string str) {
+     return str == "1";
+ }
+ inline bool common_functions::convert_to_bool(const std::string& input_str, std::string::size_type* position) {
+     bool result = input_str[*position] == '1';
+     static_cast<uint64>_t& > (*position) += 1;
+	 return result;
 
+ }
