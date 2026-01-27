@@ -64,7 +64,8 @@ export namespace driver {
 
                 Config_reader read_input_stream = Config_reader{ file_stream_intializater<std::ifstream>(input_config_file) };
                 std::shared_ptr<All_entries> input_config = std::make_shared<All_entries>();
-                std::async(std::launch::async, [] {
+                std::thread input_config_reader_thread{
+                [] {
                     while (debug_mode_for_reading_intput_config) {
                         error_log_stream_for_config << "\n###INPUT CONFIG ERRORS###\n";
                         try {
@@ -78,11 +79,12 @@ export namespace driver {
 
                         }
                     }
-                    };
+                    } };
                 //as you can guess input config is shared because output needs to manage it(if the user asks by providing options) while input needs to use it
                 Config_reader output_config_stream = Config_reader{ file_stream_intializater<std::ofstream>(output_config_file) };
                 std::unique_ptr<All_entries> output_config = std::make_unique<All_entries>();
-                std::async(std::launch::async, [] {
+                std::thread output_config_reader_thread{
+                [] {
 
                     while (debug_mode_for_reading_output_config) {
                         error_log_stream_for_config << "\n###OUTPUT CONFIG ERRORS###\n";
@@ -97,7 +99,9 @@ export namespace driver {
 
                         }
 
-                    }};
+                    }} };
+                output_config_reader_thread.wait()
+				input_config_reader_thread.wait()input_config_reader_thread.wait()
                 //output isnt shared and is only used by Printer class that both uses it and manages it(if the user asks by providing options)
                 using Input_stream_handler_ptr = absolute_base::Streamable_manager<std::ifstream, std::shared_ptr>;
                 using Output_stream_handler_ptr = absolute_base::Streamable_manager<std::ofstream, std::unique_ptr>;
