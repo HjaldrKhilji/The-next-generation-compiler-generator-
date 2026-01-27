@@ -100,8 +100,8 @@ export namespace driver {
                         }
 
                     }} };
-                output_config_reader_thread.wait()
-				input_config_reader_thread.wait()input_config_reader_thread.wait()
+                output_config_reader_thread.join();
+                input_config_reader_thread.join();
                 //output isnt shared and is only used by Printer class that both uses it and manages it(if the user asks by providing options)
                 using Input_stream_handler_ptr = absolute_base::Streamable_manager<std::ifstream, std::shared_ptr>;
                 using Output_stream_handler_ptr = absolute_base::Streamable_manager<std::ofstream, std::unique_ptr>;
