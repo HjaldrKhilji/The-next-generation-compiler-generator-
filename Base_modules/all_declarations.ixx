@@ -171,6 +171,14 @@ again these are just my opinion, dont judge
             check_atleast = 4,
             check_exact = 8
         };
+
+        bool convert_to_bool(std::string str) {
+
+            std::transform(str.begin(), str.end(), str.begin(),
+                [](unsigned char c) { return std::tolower(c); });
+
+            return str == "true" || str == "yes" || str == "1";
+        }
         using Underlying_type_of_settings_for_semantical_rules = std::underlying_type_t<Settings_for_semantical_rules>;
 
       
@@ -230,7 +238,7 @@ again these are just my opinion, dont judge
             std::string name;
             union {
                 std::string pattern;
-                std::string output_config_data;
+                std::string output_config_data;//dont even think of making this one const! (it wont allow branching)
                 //keep the type of both as std::string !!!!!
             
             };
