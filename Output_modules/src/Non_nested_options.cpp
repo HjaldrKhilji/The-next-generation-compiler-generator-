@@ -10,7 +10,7 @@ module;
 // I used AI to keep track of the headers needed 
 
 module Printer;
-
+import Driver;
 //this file contains options that dont read user input to find other options at runtime
 namespace printing_tools {
     namespace options{
@@ -171,13 +171,14 @@ namespace printing_tools {
 
         template<bool read_from_config_or_output>
         void subtract_from_output_data_position(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
-        using helper_templates_for_options::helpers_for_arithmetic_options::read_from_string;
         try {
+            using helper_templates_for_options::helpers_for_arithmetic_options::read_from_string;
+
             //a function from helper_templates_for_options::helpers_for_arithmetic_options is ideally not to be used here, but I had to since I didnt know a better place to put this function in
             //in my defense it is okay, since I am doing some arithmetic in this function, so suck it up.
             size_t number_to_subract = read_from_string<size_t, read_from_config_or_output>(output_config, output_data, position, output_data_position);
             if (output_data_position = > number_to_subract) {
-                *(static_cast<size_t*>(output_data_position)) -= number_to_subract;
+                *(static_cast<uint64_t*>(output_data_position)) -= number_to_subract;
             }
             else if (number_to_subract == std::numeric_limits<std::size_t>::max()) {
                 //means the user gave -1 as input
@@ -308,6 +309,111 @@ namespace printing_tools {
             }
 
         }
-    }
+        template<bool source_is_output_config_or_output_data>
+        void start_nested(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
+            using helper_templates_for_options::helpers_for_arithmetic_options::read_from_string;
+
+            driver::Driver_engine engine = driver::create_driver(
+                read_from_string<std::string, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position),
+                read_from_string<std::string, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position),
+                read_from_string<std::string, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position),
+                read_from_string<std::string, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position),
+                read_from_string<std::string, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position),
+                read_from_string<std::string, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position),
+                absolute_base::convert_to_bool(read_from_string<std::string, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position)),
+                absolute_base::convert_to_bool(read_from_string<std::string, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position)),
+                absolute_base::convert_to_bool(read_from_string<std::string, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position))
+
+                );
+            
+            engine.run_engine();
+        }
+        template<bool source_is_output_config_or_output_data, bool get_from_hashed_or_non_hashed>
+        void add_data_to_output_config(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
+            //can be used to make functions
+            using helper_templates_for_options::helpers_for_arithmetic_options::read_from_string;
+            try {
+                using helper_templates_for_options::helpers_for_arithmetic_options::read_from_string;
+                std::string variable_name = read_from_string<std::string, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
+                constexpr if (get_from_hashed_or_non_hashed) {
+                    auto value = all_variable_ordered_storage.at(variable_name);
+                    value.pump(const_cast<std::string&>(output_config));
+                }
+                else {
+                    auto value = all_variable_hashed_storage.at(variable_name);
+                    value.pump(const_cast<std::string&>(output_config));
+
+                }
+            }
+
+            catch (std::string error_sent_by_reader)
+            {
+                throw std::string{ "POLYMORPHIC VARIABLE GET: " + error_sent_by_reader };
+            }
+            catch (...) {
+                throw std::string{ "POLYMORPHIC VARIABLE GET:  totally unexpected error" };
+
+            }
+            
+        }
+       
+        std::map<std::string, printing_tools::helper_templates_for_options::helpers_for_arithmetic_options::Polymorphic_accumulator> all_variable_ordered_storage{};
+        std::unordered_map<std::string, printing_tools::helper_templates_for_options::helpers_for_arithmetic_options::Polymorphic_accumulator> all_variable_hashed_storage{};
+        
+        template<bool source_is_output_config_or_output_data, bool store_in_hashed_or_non_hashed>
+        void store_variable(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
+            try {
+                using helper_templates_for_options::helpers_for_arithmetic_options::read_from_string;
+                std::string variable_name = read_from_string<std::string, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
+                constexpr if (store_in_hashed_or_non_hashed) {
+                    all_variable_ordered_storage[variable_name]= helper_templates_for_options::helpers_for_arithmetic_options::read_polymorphically_from_string
+                        <source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
+                }
+                else {
+                    all_variable_hashed_storage[variable_name] = helper_templates_for_options::helpers_for_arithmetic_options::read_polymorphically_from_string
+                        <source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
+
+                }
+            }
+            
+            catch (std::string error_sent_by_reader)
+            {
+                throw std::string{ "POLYMORPHIC VARIABLE STORAGE: " + error_sent_by_reader };
+            }
+            catch (...) {
+                throw std::string{ "POLYMORPHIC VARIABLE STORAGE:  totally unexpected error" };
+
+            }
+        
+        }
+
+        template<bool source_is_output_config_or_output_data, bool get_from_hashed_or_non_hashed>
+        void get_polymorphic(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
+            try {
+                using helper_templates_for_options::helpers_for_arithmetic_options::read_from_string;
+                std::string variable_name = read_from_string<std::string, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
+                constexpr if (get_from_hashed_or_non_hashed) {
+                    auto value = all_variable_ordered_storage.at(variable_name);
+                    value.pump(output_data);
+                }
+                else {
+                    auto value = all_variable_hashed_storage.at(variable_name);
+                     value.pump(output_data);
+
+                }
+            }
+
+            catch (std::string error_sent_by_reader)
+            {
+                throw std::string{ "POLYMORPHIC VARIABLE GET: " + error_sent_by_reader };
+            }
+            catch (...) {
+                throw std::string{ "POLYMORPHIC VARIABLE GET:  totally unexpected error" };
+
+            }
+
+        }
+
+        }
 
 }
