@@ -36,7 +36,16 @@ namespace printing_tools {
 
                 }
             }
+            template <bool read_from_x_or_y>
+            inline T read_from_string<bool>(const std::string& x, const std::string& y, std::string::size_type* x_pos, std::string::size_type* y_pos) {
+                constexpr if (read_from_x_or_y) {
+                    absolute_base::convert_to_bool(x, x_pos);
+                }
+                else {
+                    absolute_base::convert_to_bool(y, y_pos);
 
+                }
+            }
             template <absolute_base::Numeric T>
             inline std::string convert_to_string(T source) {
                 return std::to_string(source);
