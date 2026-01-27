@@ -146,7 +146,7 @@ export namespace driver {
     void run_engine() {
 
         if (multi_threaded_launch) {
-            std::jthread t([] {] {output_manager.print(match_info[0].str()); });
+            std::jthread t([] {] {run_engine_helper(); });
         }
         else {
             run_engine_helper();
