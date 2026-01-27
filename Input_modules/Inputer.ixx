@@ -5,6 +5,9 @@ module;
 #include <stack>       // For std::stack (used for family_tree)
 #include <memory>      // For std::shared_ptr
 #include <stdexcept>   // For std::runtime_error
+#include <thread>
+// For std::jthread
+
 // I used AI to keep track of the headers needed
 
 export module Inputer;
@@ -47,9 +50,13 @@ export namespace input_tools {
                     }
                 raw_input.erase(match_info.position(), match_info.length());
                 
+                if (*multi_threaded) {
+                    std::jthread t([] {] {output_manager.print(match_info[0].str()); });
+                }
+                else {
                     output_manager.print(match_info[0].str());
-                
-                
+
+                }
 
                 //the work asked(by my ownself) for below is done:
                 //OUTPUT SECTION:
@@ -101,7 +108,7 @@ export namespace input_tools {
         
             using Input_stream_handler_ptr = absolute_base::Streamable_manager<std::istream, std::shared_ptr>;
             Input_reader(std::istream* a) = delete;
-            Input_reader(Input_stream_handler_ptr a, const absolute_base::Base_printer& b, const absolute_base::All_non_terminal_entries& c) :input_stream{ a }, output_manager{ b }, all_config{ c } {}
+            Input_reader(Input_stream_handler_ptr a, const absolute_base::Base_printer& b, const absolute_base::All_non_terminal_entries& c, std::shared_ptr<bool> d) :input_stream{ a }, output_manager{ b }, all_config{ c }, multithreaded{ d } {}
 
             
 
@@ -109,6 +116,7 @@ export namespace input_tools {
             Input_reader(Input_reader&) = default;
             Input_reader(Input_reader&&) = default;
         private:
+            const std::shared_ptr<bool> multithreaded;
             absolute_base::Base_printer& output_manager;//this member should be passed the same istream as this class is
             absolute_base::All_non_terminal_entries&  all_config;
             std::string raw_input;
