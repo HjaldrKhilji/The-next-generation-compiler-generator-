@@ -28,7 +28,7 @@ FetchContent_MakeAvailable(regex_dependencies)
 
 #(notice the build name is compiler_test, and only the main project files are included in compiler_test ) 
 # Define the executable first
-add_executable(compiler_test Test_code.cpp)
+add_executable(compiler_test run.cpp)
 target_link_libraries(compiler_test PRIVATE Boost::regex)
 
 # Define Module Interfaces (the .ixx files)
