@@ -367,7 +367,7 @@ namespace printing_tools {
         void store_variable(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
             try {
                 using helper_templates_for_options::helpers_for_arithmetic_options::read_from_string;
-                std::string variable_name = read_from_string<std::string, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
+                std::string variable_name = helper_templates_for_options::read_from_string<std::string, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
                 constexpr if (get_from_ordered_or_else_hashed) {
                     all_variable_ordered_storage[variable_name] = helper_templates_for_options::helpers_for_arithmetic_options::read_polymorphically_from_string
                         <source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
@@ -394,7 +394,7 @@ namespace printing_tools {
         void get_polymorphic(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
             try {
                 using helper_templates_for_options::helpers_for_arithmetic_options::read_from_string;
-                std::string variable_name = read_from_string<std::string, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
+                std::string variable_name = helper_templates_for_options::read_from_string<std::string, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
                 constexpr if (get_from_ordered_or_else_hashed) {
                     auto value = all_variable_ordered_storage.at(variable_name);
                     value.pump(output_data);
@@ -422,7 +422,7 @@ namespace printing_tools {
 }
 template<bool source_is_output_config_or_output_data, bool get_from_ordered_or_else_hashed>
 void store_in_cache(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
-    std::string cache_name = read_from_string<std::string>(output_config, position);
+    std::string cache_name = helper_templates_for_options::read_from_string<std::string>(output_config, position);
 
     constexpr if (get_from_ordered_or_else_hashed) {
         constexpr if (source_is_output_config_or_output_data) {
@@ -446,7 +446,7 @@ void store_in_cache(const std::string& output_config, std::string::size_type* po
 }
 template<bool source_is_output_config_or_output_data, bool get_from_ordered_or_else_hashed>
 void get_from_cache(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
-    std::string cache_name = read_from_string<std::string>(output_config, position);
+    std::string cache_name = helper_templates_for_options::read_from_string<std::string>(output_config, position);
 
     constexpr if (get_from_ordered_or_else_hashed) {
         constexpr if (source_is_output_config_or_output_data) {
@@ -470,7 +470,7 @@ void get_from_cache(const std::string& output_config, std::string::size_type* po
 }
 template<std::shared_ptr<bool> Printer::bool_to_set, bool source_is_output_config_or_output_data>
 void change_value_of_bool_owned_by_shared_ptr(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
-    *bool_to_set = read_from_string<bool, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
+    *bool_to_set = helper_templates_for_options::read_from_string<bool, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
 
 
 }
