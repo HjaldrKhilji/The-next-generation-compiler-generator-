@@ -54,6 +54,7 @@ target_sources(compiler_test
         "Output_modules/src/helper_option_templates_for_managing_list_of_non_term_entries_implementation.cpp"
         "Output_modules/src/Non_nested_options.cpp"
 	"Output_modules/src/helper_option_templates_for_arithmetic_related_options.cpp"
+	"Output_modules/src/branch_and_loop.cpp"
 )
 message("HAPPY TO BE OF SERVICE!")
 
