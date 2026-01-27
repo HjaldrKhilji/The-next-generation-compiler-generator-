@@ -167,16 +167,12 @@ export namespace printing_tools {
             { 0x17, &options::remove_entry<false, &Printer::all_config_for_input> },
 
             // --- FLOW CONTROL (0x20 - 0x2F) ---
-            // Loop (T/T, T/F, F/T, F/F)
-            { 0x20, &options::loop<true,  true> },  { 0x21, &options::loop<true,  false> },
-            { 0x22, &options::loop<false, true> },  { 0x23, &options::loop<false, false> },
-            // Branch
+            { 0x20, &options::loop<true,  true> },   { 0x21, &options::loop<true,  false> },
+            { 0x22, &options::loop<false, true> },   { 0x23, &options::loop<false, false> },
             { 0x24, &options::branch<true,  true> }, { 0x25, &options::branch<true,  false> },
             { 0x26, &options::branch<false, true> }, { 0x27, &options::branch<false, false> },
-            // Store Variable
             { 0x28, &options::store_variable<true,  true> }, { 0x29, &options::store_variable<true,  false> },
             { 0x2A, &options::store_variable<false, true> }, { 0x2B, &options::store_variable<false, false> },
-            // Get Polymorphic
             { 0x2C, &options::get_polymorphic<true,  true> }, { 0x2D, &options::get_polymorphic<true,  false> },
             { 0x2E, &options::get_polymorphic<false, true> }, { 0x2F, &options::get_polymorphic<false, false> },
 
@@ -187,7 +183,6 @@ export namespace printing_tools {
             { 0x33, &options::add_data_to_output_config<false, false> },
 
             // --- SEMANTIC ENTRIES (0x40 - 0x4F) ---
-            // Add (8 perms)
             { 0x40, &options::add_semantic_entry_to_non_term_entry_passed<true,  true,  true,  &Printer::all_config_for_input> },
             { 0x41, &options::add_semantic_entry_to_non_term_entry_passed<true,  true,  false, &Printer::all_config_for_input> },
             { 0x42, &options::add_semantic_entry_to_non_term_entry_passed<true,  false, true,  &Printer::all_config_for_input> },
@@ -196,7 +191,6 @@ export namespace printing_tools {
             { 0x45, &options::add_semantic_entry_to_non_term_entry_passed<false, true,  false, &Printer::all_config_for_input> },
             { 0x46, &options::add_semantic_entry_to_non_term_entry_passed<false, false, true,  &Printer::all_config_for_input> },
             { 0x47, &options::add_semantic_entry_to_non_term_entry_passed<false, false, false, &Printer::all_config_for_input> },
-            // Remove (8 perms)
             { 0x48, &options::remove_semantic_entry_to_non_term_entry_passed<true,  true,  true,  &Printer::all_config_for_input> },
             { 0x49, &options::remove_semantic_entry_to_non_term_entry_passed<true,  true,  false, &Printer::all_config_for_input> },
             { 0x4A, &options::remove_semantic_entry_to_non_term_entry_passed<true,  false, true,  &Printer::all_config_for_input> },
@@ -217,49 +211,40 @@ export namespace printing_tools {
             { 0x61, &options::calculator<long long,   long double, true,  false, '+'> },
             { 0x62, &options::calculator<long long,   long double, false, true,  '+'> },
             { 0x63, &options::calculator<long long,   long double, false, false, '+'> },
-
             { 0x64, &options::calculator<long double, long long,   true,  true,  '+'> },
             { 0x65, &options::calculator<long double, long long,   true,  false, '+'> },
             { 0x66, &options::calculator<long double, long long,   false, true,  '+'> },
             { 0x67, &options::calculator<long double, long long,   false, false, '+'> },
-
             { 0x68, &options::calculator<std::string, long long,   true,  true,  '+'> },
             { 0x69, &options::calculator<std::string, long long,   true,  false, '+'> },
             { 0x6A, &options::calculator<std::string, long long,   false, true,  '+'> },
             { 0x6B, &options::calculator<std::string, long long,   false, false, '+'> },
-
             { 0x6C, &options::calculator<long long,   std::string, true,  true,  '+'> },
             { 0x6D, &options::calculator<long long,   std::string, true,  false, '+'> },
             { 0x6E, &options::calculator<long long,   std::string, false, true,  '+'> },
             { 0x6F, &options::calculator<long long,   std::string, false, false, '+'> },
-
             { 0x70, &options::calculator<std::string, long double, true,  true,  '+'> },
             { 0x71, &options::calculator<std::string, long double, true,  false, '+'> },
             { 0x72, &options::calculator<std::string, long double, false, true,  '+'> },
             { 0x73, &options::calculator<std::string, long double, false, false, '+'> },
-
             { 0x74, &options::calculator<long double, std::string, true,  true,  '+'> },
             { 0x75, &options::calculator<long double, std::string, true,  false, '+'> },
             { 0x76, &options::calculator<long double, std::string, false, true,  '+'> },
             { 0x77, &options::calculator<long double, std::string, false, false, '+'> },
-
             { 0x78, &options::calculator<long long,   long long,   true,  true,  '+'> },
             { 0x79, &options::calculator<long long,   long long,   true,  false, '+'> },
             { 0x7A, &options::calculator<long long,   long long,   false, true,  '+'> },
             { 0x7B, &options::calculator<long long,   long long,   false, false, '+'> },
-
             { 0x7C, &options::calculator<long double, long double, true,  true,  '+'> },
             { 0x7D, &options::calculator<long double, long double, true,  false, '+'> },
             { 0x7E, &options::calculator<long double, long double, false, true,  '+'> },
             { 0x7F, &options::calculator<long double, long double, false, false, '+'> },
-
             { 0x80, &options::calculator<std::string, std::string, true,  true,  '+'> },
             { 0x81, &options::calculator<std::string, std::string, true,  false, '+'> },
             { 0x82, &options::calculator<std::string, std::string, false, true,  '+'> },
             { 0x83, &options::calculator<std::string, std::string, false, false, '+'> },
 
-            // --- CALCULATOR: SUB/MUL/DIV (0x90 - 0xAF) ---
-            // Numeric Only: ll/ld, ld/ll, ll/ll, ld/ld
+            // --- CALCULATOR: SUB/MUL/DIV (0x90 - 0xB7) ---
             { 0x90, &options::calculator<long long,   long double, true,  true,  '-'> },
             { 0x91, &options::calculator<long long,   long double, false, false, '-'> },
             { 0x92, &options::calculator<long double, long long,   true,  true,  '-'> },
