@@ -143,7 +143,7 @@ export namespace printing_tools {
 
         // The complete, fixed-size instruction set (AI generated(i wouldnt write all this myself) (256 entries)
 static const Option_functions_wrapper_type operations_dispatch_table[256] = {
-    /* 0x00 - 0x05: CORE SYSTEM */
+    /* 0x00 - 0x05: UTILITY */
     &options::print_output,                         /* 0x00 */
     &options::option_to_replicate_output,           /* 0x01 */
     &options::option_to_change_output_stream,       /* 0x02 */
@@ -166,11 +166,14 @@ static const Option_functions_wrapper_type operations_dispatch_table[256] = {
     &options::remove_entry<true,  &Printer::all_config_for_input>, /* 0x16 */
     &options::remove_entry<false, &Printer::all_config_for_input>, /* 0x17 */
 
-    /* 0x18 - 0x1F: RESERVED */
-    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
-    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
+    /* 0x18 - 0x1B: RESERVED */
+    &options::no_op, &options::no_op, &options::no_op, &options::no_op
 
-    /* 0x20 - 0x2F: FLOW CONTROL */
+    /* 0x1C - 0x2F: FLOW CONTROL AND VARIABLES*/
+    &options:remove_polymorphic<true, true> //0x1C
+    &options:remove_polymorphic<true, false> //0x1D
+    &options:remove_polymorphic<false, true> //0x1E
+    &options:remove_polymorphic<false, false> //0x1F
     &options::loop<true,  true>,   &options::loop<true,  false>,   /* 0x20, 0x21 */
     &options::loop<false, true>,   &options::loop<false, false>,   /* 0x22, 0x23 */
     &options::branch<true,  true>, &options::branch<true,  false>, /* 0x24, 0x25 */
