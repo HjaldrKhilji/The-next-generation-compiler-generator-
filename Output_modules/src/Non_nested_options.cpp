@@ -701,11 +701,11 @@ namespace printing_tools {
                 uint32_t variable_name = helper_templates_for_options::read_from_string<uint32_t, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
                 constexpr if (get_from_ordered_or_else_hashed) {
                     auto value = all_variable_ordered_storage.at(variable_name);
-                    value.pump(output_data);
+                    value.pump(output_data,output_data_position);
                 }
                 else {
                     auto value = all_variable_hashed_storage.at(variable_name);
-                    value.pump(output_data);
+                    value.pump(output_data, output_data_position);
 
                 }
             }
@@ -718,11 +718,6 @@ namespace printing_tools {
                 throw std::string{ "POLYMORPHIC VARIABLE GET:  totally unexpected error" };
 
             }
-
-        }
-
-    }
-
 }
 template<bool source_is_output_config_or_output_data, bool get_from_ordered_or_else_hashed>
 void store_in_cache(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
@@ -778,8 +773,34 @@ void change_value_of_bool_owned_by_shared_ptr(const std::string& output_config, 
 
 
 }
+template<bool source_is_output_config_or_output_data, bool get_from_ordered_or_else_hashed>
+        void remove_polymorphic(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
+            try {
+                using helper_templates_for_options::helpers_for_arithmetic_options::read_from_string;
+                uint32_t variable_name = helper_templates_for_options::read_from_string<uint32_t, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
+                constexpr if (get_from_ordered_or_else_hashed) {
+                     all_variable_ordered_storage.erase(variable_name);
+                    
+                }
+                else {
+                     all_variable_hashed_storage.erase(variable_name);
+                    
+
+                }
+            }
+
+            catch (std::string error_sent_by_reader)
+            {
+                throw std::string{ "POLYMORPHIC VARIABLE REMOVE: " + error_sent_by_reader };
+            }
+            catch (...) {
+                throw std::string{ "POLYMORPHIC VARIABLE REMOVE:  totally unexpected error" };
+
+            }
+        }
 void no_op(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
 
 
 }
+
 }}
