@@ -132,7 +132,7 @@ void All_non_terminal_entries_implementation::print_all_content() {
     }
 }
 
-void All_non_terminal_entries_implementation::add_non_term_symbol_name(std::string name) {
+void All_non_terminal_entries_implementation::add_non_term_symbol_name(uint64_tname) {
   //precondition: "name" paremeter can not be empty
   //precondition: list_of_all_non_term_entries_for_fast_traversal is in a valid state 
   //postcondition: an entry is added to the "traversal list" only, hence you can only access the entry by traversing the deque,
@@ -162,7 +162,7 @@ void All_non_terminal_entries_implementation::add_non_term_symbol_name(std::stri
     });
 
   }
-  std::string & All_non_terminal_entries_implementation::get_pattern_of_nested_non_term_symbol_pattern(std::string sub_symbol_name) {
+  std::string & All_non_terminal_entries_implementation::get_pattern_of_nested_non_term_symbol_pattern(uint64_t sub_symbol_name) {
   //precondition: "sub_symbol_name" paremeter can not be empty
   //precondition: map_for_fast_retrival_of_entries is in a valid state and is not empty
   //postcondition: the entry corrsponding to the key "sub_symbol_name" from map_for_fast_retrival_of_entries, and the copy of the 
@@ -175,7 +175,7 @@ void All_non_terminal_entries_implementation::add_non_term_symbol_name(std::stri
     return (map_for_fast_retrival_of_entries.at(sub_symbol_name))->pattern;
 
   }
-  std::reference_wrapper < std::string > All_non_terminal_entries_implementation::get_parmenant_name_of_nested_non_term_symbol_pattern(std::string sub_symbol_name) {
+  std::reference_wrapper < std::string > All_non_terminal_entries_implementation::get_parmenant_name_of_nested_non_term_symbol_pattern(uint64_t sub_symbol_name) {
 //precondition: "sub_symbol_name" paremeter can not be empty
   //precondition: map_for_fast_retrival_of_entries is in a valid state and is not empty
   //postcondition: the entry corrsponding to the key "sub_symbol_name" from map_for_fast_retrival_of_entries, and the reference wrapper containing
@@ -189,7 +189,7 @@ void All_non_terminal_entries_implementation::add_non_term_symbol_name(std::stri
     return map_for_fast_retrival_of_entries.at(sub_symbol_name)->name;
 
   }
-  void All_non_terminal_entries_implementation::add_nested_non_term_symbol_to_the_newest_entry(std::string sub_symbol_name) {
+  void All_non_terminal_entries_implementation::add_nested_non_term_symbol_to_the_newest_entry(uint64_t sub_symbol_name) {
     //precondition: "sub_symbol_name" paremeter can not be empty
     //precondition: map_for_fast_retrival_of_entries is in a valid state and is not empty
     //precondition: list_of_all_non_term_entries_for_fast_traversal is in a valid state and contains atleast a single entry
