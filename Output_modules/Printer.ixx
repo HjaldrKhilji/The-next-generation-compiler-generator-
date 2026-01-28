@@ -10,6 +10,8 @@ module;
 
 #include <spanstream> 
 
+#include <array>          
+// For the fixed-size dispatch table
 // For data structures
 #include <vector>
 #include <stack>
@@ -73,25 +75,13 @@ export namespace printing_tools {
             std::string::size_type output_data_position = 0;
 
             for (char option_charactor : output_config_entry.output_config_data) {
-                ++position;//changing index in ouptut_config
-                bool any_option_matched = false;
-                for (auto const& pair : operations_upon_to_run_upon_charactors_found) {
-                    if (option_charactor == pair.first) {
-                        ++position;//skipping the option charactor found
+             
                         //output_config_entry.output_config_data should never be changed to a local const variable (EVER!!!!)
                         //dont move output_config_entry.output_config_data as well into a local variable as well, you can copy but that would be expensive.
-                        //these two warnings are the just in case ones.
-                        (this->*pair.second)(output_config_entry.output_config_data, &position, &string_to_output, &output_data_position);
-                        any_option_matched = true;
-                        break; // We found the move; go to the next character in the config
-
-                    }
-
-                }
-                if (!any_option_matched) {
-                    //its a Compiler error by defintion
-                    throw std::string{ "Compiler: invalid option character: " + option_charactor };
-                }
+            operations_dispatch_table[option_charactor](output_config_entry.output_config_data, &position, &string_to_output, &output_data_position);
+            ++position;//skipping the option charactor found
+             }
+                
             }
 
 
@@ -151,144 +141,200 @@ export namespace printing_tools {
         std::shared_ptr<bool> multithreaded;
 
 
-        std::vector<std::pair<char, Option_functions_wrapper_type>> operations_upon_to_run_upon_charactors_found = {
-            // --- CORE SYSTEM (0x00 - 0x05) ---
-            { 0x00, &options::print_output },
-            { 0x01, &options::option_to_replicate_output },
-            { 0x02, &options::option_to_change_output_stream },
-            { 0x03, &options::option_to_change_input_stream },
-            { 0x04, &options::option_to_hash },
-            { 0x05, &options::trim_output_from_current_position_to_end },
+        // The complete, fixed-size instruction set (256 entries)
+static const Option_functions_wrapper_type operations_dispatch_table[256] = {
+    /* 0x00 - 0x05: CORE SYSTEM */
+    &options::print_output,                         /* 0x00 */
+    &options::option_to_replicate_output,           /* 0x01 */
+    &options::option_to_change_output_stream,       /* 0x02 */
+    &options::option_to_change_input_stream,        /* 0x03 */
+    &options::option_to_hash,                       /* 0x04 */
+    &options::trim_output_from_current_position_to_end, /* 0x05 */
 
-            // --- STRUCTURAL / POSITION (0x10 - 0x17) ---
-            { 0x10, &options::subtract_from_output_data_position<true> },
-            { 0x11, &options::subtract_from_output_data_position<false> },
-            { 0x12, &options::start_nested<true> },
-            { 0x13, &options::start_nested<false> },
-            { 0x14, &options::add_entry<true,  &Printer::all_config_for_input> },
-            { 0x15, &options::add_entry<false, &Printer::all_config_for_input> },
-            { 0x16, &options::remove_entry<true,  &Printer::all_config_for_input> },
-            { 0x17, &options::remove_entry<false, &Printer::all_config_for_input> },
+    /* 0x06 - 0x0F: UNUSED */
+    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
+    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
+    &options::no_op, &options::no_op,
 
-            // --- FLOW CONTROL (0x20 - 0x2F) ---
-            { 0x20, &options::loop<true,  true> },   { 0x21, &options::loop<true,  false> },
-            { 0x22, &options::loop<false, true> },   { 0x23, &options::loop<false, false> },
-            { 0x24, &options::branch<true,  true> }, { 0x25, &options::branch<true,  false> },
-            { 0x26, &options::branch<false, true> }, { 0x27, &options::branch<false, false> },
-            { 0x28, &options::store_variable<true,  true> }, { 0x29, &options::store_variable<true,  false> },
-            { 0x2A, &options::store_variable<false, true> }, { 0x2B, &options::store_variable<false, false> },
-            { 0x2C, &options::get_polymorphic<true,  true> }, { 0x2D, &options::get_polymorphic<true,  false> },
-            { 0x2E, &options::get_polymorphic<false, true> }, { 0x2F, &options::get_polymorphic<false, false> },
+    /* 0x10 - 0x17: STRUCTURAL */
+    &options::subtract_from_output_data_position<true>,  /* 0x10 */
+    &options::subtract_from_output_data_position<false>, /* 0x11 */
+    &options::start_nested<true>,                        /* 0x12 */
+    &options::start_nested<false>,                       /* 0x13 */
+    &options::add_entry<true,  &Printer::all_config_for_input>,    /* 0x14 */
+    &options::add_entry<false, &Printer::all_config_for_input>,    /* 0x15 */
+    &options::remove_entry<true,  &Printer::all_config_for_input>, /* 0x16 */
+    &options::remove_entry<false, &Printer::all_config_for_input>, /* 0x17 */
 
-            // --- CONFIGURATION DATA (0x30 - 0x33) ---
-            { 0x30, &options::add_data_to_output_config<true,  true> },
-            { 0x31, &options::add_data_to_output_config<true,  false> },
-            { 0x32, &options::add_data_to_output_config<false, true> },
-            { 0x33, &options::add_data_to_output_config<false, false> },
+    /* 0x18 - 0x1F: UNUSED */
+    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
+    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
 
-            // --- SEMANTIC ENTRIES (0x40 - 0x4F) ---
-            { 0x40, &options::add_semantic_entry_to_non_term_entry_passed<true,  true,  true,  &Printer::all_config_for_input> },
-            { 0x41, &options::add_semantic_entry_to_non_term_entry_passed<true,  true,  false, &Printer::all_config_for_input> },
-            { 0x42, &options::add_semantic_entry_to_non_term_entry_passed<true,  false, true,  &Printer::all_config_for_input> },
-            { 0x43, &options::add_semantic_entry_to_non_term_entry_passed<true,  false, false, &Printer::all_config_for_input> },
-            { 0x44, &options::add_semantic_entry_to_non_term_entry_passed<false, true,  true,  &Printer::all_config_for_input> },
-            { 0x45, &options::add_semantic_entry_to_non_term_entry_passed<false, true,  false, &Printer::all_config_for_input> },
-            { 0x46, &options::add_semantic_entry_to_non_term_entry_passed<false, false, true,  &Printer::all_config_for_input> },
-            { 0x47, &options::add_semantic_entry_to_non_term_entry_passed<false, false, false, &Printer::all_config_for_input> },
-            { 0x48, &options::remove_semantic_entry_to_non_term_entry_passed<true,  true,  true,  &Printer::all_config_for_input> },
-            { 0x49, &options::remove_semantic_entry_to_non_term_entry_passed<true,  true,  false, &Printer::all_config_for_input> },
-            { 0x4A, &options::remove_semantic_entry_to_non_term_entry_passed<true,  false, true,  &Printer::all_config_for_input> },
-            { 0x4B, &options::remove_semantic_entry_to_non_term_entry_passed<true,  false, false, &Printer::all_config_for_input> },
-            { 0x4C, &options::remove_semantic_entry_to_non_term_entry_passed<false, true,  true,  &Printer::all_config_for_input> },
-            { 0x4D, &options::remove_semantic_entry_to_non_term_entry_passed<false, true,  false, &Printer::all_config_for_input> },
-            { 0x4E, &options::remove_semantic_entry_to_non_term_entry_passed<false, false, true,  &Printer::all_config_for_input> },
-            { 0x4F, &options::remove_semantic_entry_to_non_term_entry_passed<false, false, false, &Printer::all_config_for_input> },
+    /* 0x20 - 0x2F: FLOW CONTROL */
+    &options::loop<true,  true>,   &options::loop<true,  false>,   /* 0x20, 0x21 */
+    &options::loop<false, true>,   &options::loop<false, false>,   /* 0x22, 0x23 */
+    &options::branch<true,  true>, &options::branch<true,  false>, /* 0x24, 0x25 */
+    &options::branch<false, true>, &options::branch<false, false>, /* 0x26, 0x27 */
+    &options::store_variable<true,  true>,  &options::store_variable<true,  false>,  /* 0x28, 0x29 */
+    &options::store_variable<false, true>,  &options::store_variable<false, false>,  /* 0x2A, 0x2B */
+    &options::get_polymorphic<true,  true>, &options::get_polymorphic<true,  false>, /* 0x2C, 0x2D */
+    &options::get_polymorphic<false, true>, &options::get_polymorphic<false, false>, /* 0x2E, 0x2F */
 
-            // --- POLYMORPHIC MATH (0x50 - 0x56) ---
-            { 0x50, &options::polymorphic_calculator<'+'> }, { 0x51, &options::polymorphic_calculator<'-'> },
-            { 0x52, &options::polymorphic_calculator<'*'> }, { 0x53, &options::polymorphic_calculator<'/'> },
-            { 0x54, &options::polymorphic_calculator<'|'> }, { 0x55, &options::polymorphic_calculator<'&'> },
-            { 0x56, &options::polymorphic_calculator<'^'> },
+    /* 0x30 - 0x33: CONFIG DATA */
+    &options::add_data_to_output_config<true,  true>,  /* 0x30 */
+    &options::add_data_to_output_config<true,  false>, /* 0x31 */
+    &options::add_data_to_output_config<false, true>,  /* 0x32 */
+    &options::add_data_to_output_config<false, false>, /* 0x33 */
 
-            // --- CALCULATOR: ADDITION (0x60 - 0x83) ---
-            { 0x60, &options::calculator<long long,   long double, true,  true,  '+'> },
-            { 0x61, &options::calculator<long long,   long double, true,  false, '+'> },
-            { 0x62, &options::calculator<long long,   long double, false, true,  '+'> },
-            { 0x63, &options::calculator<long long,   long double, false, false, '+'> },
-            { 0x64, &options::calculator<long double, long long,   true,  true,  '+'> },
-            { 0x65, &options::calculator<long double, long long,   true,  false, '+'> },
-            { 0x66, &options::calculator<long double, long long,   false, true,  '+'> },
-            { 0x67, &options::calculator<long double, long long,   false, false, '+'> },
-            { 0x68, &options::calculator<std::string, long long,   true,  true,  '+'> },
-            { 0x69, &options::calculator<std::string, long long,   true,  false, '+'> },
-            { 0x6A, &options::calculator<std::string, long long,   false, true,  '+'> },
-            { 0x6B, &options::calculator<std::string, long long,   false, false, '+'> },
-            { 0x6C, &options::calculator<long long,   std::string, true,  true,  '+'> },
-            { 0x6D, &options::calculator<long long,   std::string, true,  false, '+'> },
-            { 0x6E, &options::calculator<long long,   std::string, false, true,  '+'> },
-            { 0x6F, &options::calculator<long long,   std::string, false, false, '+'> },
-            { 0x70, &options::calculator<std::string, long double, true,  true,  '+'> },
-            { 0x71, &options::calculator<std::string, long double, true,  false, '+'> },
-            { 0x72, &options::calculator<std::string, long double, false, true,  '+'> },
-            { 0x73, &options::calculator<std::string, long double, false, false, '+'> },
-            { 0x74, &options::calculator<long double, std::string, true,  true,  '+'> },
-            { 0x75, &options::calculator<long double, std::string, true,  false, '+'> },
-            { 0x76, &options::calculator<long double, std::string, false, true,  '+'> },
-            { 0x77, &options::calculator<long double, std::string, false, false, '+'> },
-            { 0x78, &options::calculator<long long,   long long,   true,  true,  '+'> },
-            { 0x79, &options::calculator<long long,   long long,   true,  false, '+'> },
-            { 0x7A, &options::calculator<long long,   long long,   false, true,  '+'> },
-            { 0x7B, &options::calculator<long long,   long long,   false, false, '+'> },
-            { 0x7C, &options::calculator<long double, long double, true,  true,  '+'> },
-            { 0x7D, &options::calculator<long double, long double, true,  false, '+'> },
-            { 0x7E, &options::calculator<long double, long double, false, true,  '+'> },
-            { 0x7F, &options::calculator<long double, long double, false, false, '+'> },
-            { 0x80, &options::calculator<std::string, std::string, true,  true,  '+'> },
-            { 0x81, &options::calculator<std::string, std::string, true,  false, '+'> },
-            { 0x82, &options::calculator<std::string, std::string, false, true,  '+'> },
-            { 0x83, &options::calculator<std::string, std::string, false, false, '+'> },
+    /* 0x34 - 0x3F: UNUSED */
+    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
+    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
+    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
 
-            // --- CALCULATOR: SUB/MUL/DIV (0x90 - 0xB7) ---
-            { 0x90, &options::calculator<long long,   long double, true,  true,  '-'> },
-            { 0x91, &options::calculator<long long,   long double, false, false, '-'> },
-            { 0x92, &options::calculator<long double, long long,   true,  true,  '-'> },
-            { 0x93, &options::calculator<long double, long long,   false, false, '-'> },
-            { 0x94, &options::calculator<long long,   long long,   true,  true,  '-'> },
-            { 0x95, &options::calculator<long long,   long long,   false, false, '-'> },
-            { 0x96, &options::calculator<long double, long double, true,  true,  '-'> },
-            { 0x97, &options::calculator<long double, long double, false, false, '-'> },
+    /* 0x40 - 0x4F: SEMANTIC ENTRIES */
+    &options::add_semantic_entry_to_non_term_entry_passed<true,  true,  true,  &Printer::all_config_for_input>, /* 0x40 */
+    &options::add_semantic_entry_to_non_term_entry_passed<true,  true,  false, &Printer::all_config_for_input>, /* 0x41 */
+    &options::add_semantic_entry_to_non_term_entry_passed<true,  false, true,  &Printer::all_config_for_input>, /* 0x42 */
+    &options::add_semantic_entry_to_non_term_entry_passed<true,  false, false, &Printer::all_config_for_input>, /* 0x43 */
+    &options::add_semantic_entry_to_non_term_entry_passed<false, true,  true,  &Printer::all_config_for_input>, /* 0x44 */
+    &options::add_semantic_entry_to_non_term_entry_passed<false, true,  false, &Printer::all_config_for_input>, /* 0x45 */
+    &options::add_semantic_entry_to_non_term_entry_passed<false, false, true,  &Printer::all_config_for_input>, /* 0x46 */
+    &options::add_semantic_entry_to_non_term_entry_passed<false, false, false, &Printer::all_config_for_input>, /* 0x47 */
+    &options::remove_semantic_entry_to_non_term_entry_passed<true,  true,  true,  &Printer::all_config_for_input>, /* 0x48 */
+    &options::remove_semantic_entry_to_non_term_entry_passed<true,  true,  false, &Printer::all_config_for_input>, /* 0x49 */
+    &options::remove_semantic_entry_to_non_term_entry_passed<true,  false, true,  &Printer::all_config_for_input>, /* 0x4A */
+    &options::remove_semantic_entry_to_non_term_entry_passed<true,  false, false, &Printer::all_config_for_input>, /* 0x4B */
+    &options::remove_semantic_entry_to_non_term_entry_passed<false, true,  true,  &Printer::all_config_for_input>, /* 0x4C */
+    &options::remove_semantic_entry_to_non_term_entry_passed<false, true,  false, &Printer::all_config_for_input>, /* 0x4D */
+    &options::remove_semantic_entry_to_non_term_entry_passed<false, false, true,  &Printer::all_config_for_input>, /* 0x4E */
+    &options::remove_semantic_entry_to_non_term_entry_passed<false, false, false, &Printer::all_config_for_input>, /* 0x4F */
 
-            { 0xA0, &options::calculator<long long,   long double, true,  true,  '*'> },
-            { 0xA1, &options::calculator<long long,   long double, false, false, '*'> },
-            { 0xA2, &options::calculator<long double, long long,   true,  true,  '*'> },
-            { 0xA3, &options::calculator<long double, long long,   false, false, '*'> },
-            { 0xA4, &options::calculator<long long,   long long,   true,  true,  '*'> },
-            { 0xA5, &options::calculator<long long,   long long,   false, false, '*'> },
-            { 0xA6, &options::calculator<long double, long double, true,  true,  '*'> },
-            { 0xA7, &options::calculator<long double, long double, false, false, '*'> },
+    /* 0x50 - 0x56: POLYMORPHIC MATH */
+    &options::polymorphic_calculator<'+'>, &options::polymorphic_calculator<'-'>, /* 0x50, 0x51 */
+    &options::polymorphic_calculator<'*'>, &options::polymorphic_calculator<'/'>, /* 0x52, 0x53 */
+    &options::polymorphic_calculator<'|'>, &options::polymorphic_calculator<'&'>, /* 0x54, 0x55 */
+    &options::polymorphic_calculator<'^'>,                                        /* 0x56 */
 
-            { 0xB0, &options::calculator<long long,   long double, true,  true,  '/'> },
-            { 0xB1, &options::calculator<long long,   long double, false, false, '/'> },
-            { 0xB2, &options::calculator<long double, long long,   true,  true,  '/'> },
-            { 0xB3, &options::calculator<long double, long long,   false, false, '/'> },
-            { 0xB4, &options::calculator<long long,   long long,   true,  true,  '/'> },
-            { 0xB5, &options::calculator<long long,   long long,   false, false, '/'> },
-            { 0xB6, &options::calculator<long double, long double, true,  true,  '/'> },
-            { 0xB7, &options::calculator<long double, long double, false, false, '/'> },
-            // --- CACHE OPTIONS, useful in debugging or applications that require recovery---
-            { 0xB8, &options::store_in_cache<true,true>  },
-            { 0xB9, &options::store_in_cache<false,false>},
-            { 0xBA, &options::store_in_cache<true,false> },
-            { 0xBB, &options::store_in_cache<false,true> },
-            { 0xBC, &options::get_from_cache<true,true>  },
-            { 0xBD, &options::get_from_cache<false,false>},
-            { 0xBE, &options::get_from_cache<true,false> },
-            { 0xBF, &options::get_from_cache<false,true> },
-            { 0xCA, &options::change_value_of_bool_owned_by_shared_ptr<&Printer::multithreaded,true> },
-            { 0xCB, &options::change_value_of_bool_owned_by_shared_ptr<&Printer::multithreaded,false> }
+    /* 0x57 - 0x5F: UNUSED */
+    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
+    &options::no_op, &options::no_op, &options::no_op, &options::no_op, &options::no_op,
 
-             
-        };
+    /* 0x60 - 0x83: CALCULATOR (ADDITION) */
+    &options::calculator<long long,   long double, true,  true,  '+'>, /* 0x60 */
+    &options::calculator<long long,   long double, true,  false, '+'>, /* 0x61 */
+    &options::calculator<long long,   long double, false, true,  '+'>, /* 0x62 */
+    &options::calculator<long long,   long double, false, false, '+'>, /* 0x63 */
+    &options::calculator<long double, long long,   true,  true,  '+'>, /* 0x64 */
+    &options::calculator<long double, long long,   true,  false, '+'>, /* 0x65 */
+    &options::calculator<long double, long long,   false, true,  '+'>, /* 0x66 */
+    &options::calculator<long double, long long,   false, false, '+'>, /* 0x67 */
+    &options::calculator<std::string, long long,   true,  true,  '+'>, /* 0x68 */
+    &options::calculator<std::string, long long,   true,  false, '+'>, /* 0x69 */
+    &options::calculator<std::string, long long,   false, true,  '+'>, /* 0x6A */
+    &options::calculator<std::string, long long,   false, false, '+'>, /* 0x6B */
+    &options::calculator<long long,   std::string, true,  true,  '+'>, /* 0x6C */
+    &options::calculator<long long,   std::string, true,  false, '+'>, /* 0x6D */
+    &options::calculator<long long,   std::string, false, true,  '+'>, /* 0x6E */
+    &options::calculator<long long,   std::string, false, false, '+'>, /* 0x6F */
+    &options::calculator<std::string, long double, true,  true,  '+'>, /* 0x70 */
+    &options::calculator<std::string, long double, true,  false, '+'>, /* 0x71 */
+    &options::calculator<std::string, long double, false, true,  '+'>, /* 0x72 */
+    &options::calculator<std::string, long double, false, false, '+'>, /* 0x73 */
+    &options::calculator<long double, std::string, true,  true,  '+'>, /* 0x74 */
+    &options::calculator<long double, std::string, true,  false, '+'>, /* 0x75 */
+    &options::calculator<long double, std::string, false, true,  '+'>, /* 0x76 */
+    &options::calculator<long double, std::string, false, false, '+'>, /* 0x77 */
+    &options::calculator<long long,   long long,   true,  true,  '+'>, /* 0x78 */
+    &options::calculator<long long,   long long,   true,  false, '+'>, /* 0x79 */
+    &options::calculator<long long,   long long,   false, true,  '+'>, /* 0x7A */
+    &options::calculator<long long,   long long,   false, false, '+'>, /* 0x7B */
+    &options::calculator<long double, long double, true,  true,  '+'>, /* 0x7C */
+    &options::calculator<long double, long double, true,  false, '+'>, /* 0x7D */
+    &options::calculator<long double, long double, false, true,  '+'>, /* 0x7E */
+    &options::calculator<long double, long double, false, false, '+'>, /* 0x7F */
+    &options::calculator<std::string, std::string, true,  true,  '+'>, /* 0x80 */
+    &options::calculator<std::string, std::string, true,  false, '+'>, /* 0x81 */
+    &options::calculator<std::string, std::string, false, true,  '+'>, /* 0x82 */
+    &options::calculator<std::string, std::string, false, false, '+'>, /* 0x83 */
+
+    /* 0x84 - 0x8F: UNUSED */
+    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
+    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
+    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
+
+    /* 0x90 - 0x97: CALCULATOR (SUBTRACTION) */
+    &options::calculator<long long,   long double, true,  true,  '-'>, /* 0x90 */
+    &options::calculator<long long,   long double, false, false, '-'>, /* 0x91 */
+    &options::calculator<long double, long long,   true,  true,  '-'>, /* 0x92 */
+    &options::calculator<long double, long long,   false, false, '-'>, /* 0x93 */
+    &options::calculator<long long,   long long,   true,  true,  '-'>, /* 0x94 */
+    &options::calculator<long long,   long long,   false, false, '-'>, /* 0x95 */
+    &options::calculator<long double, long double, true,  true,  '-'>, /* 0x96 */
+    &options::calculator<long double, long double, false, false, '-'>, /* 0x97 */
+
+    /* 0x98 - 0x9F: UNUSED */
+    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
+    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
+
+    /* 0xA0 - 0xA7: CALCULATOR (MULTIPLICATION) */
+    &options::calculator<long long,   long double, true,  true,  '*'>, /* 0xA0 */
+    &options::calculator<long long,   long double, false, false, '*'>, /* 0xA1 */
+    &options::calculator<long double, long long,   true,  true,  '*'>, /* 0xA2 */
+    &options::calculator<long double, long long,   false, false, '*'>, /* 0xA3 */
+    &options::calculator<long long,   long long,   true,  true,  '*'>, /* 0xA4 */
+    &options::calculator<long long,   long long,   false, false, '*'>, /* 0xA5 */
+    &options::calculator<long double, long double, true,  true,  '*'>, /* 0xA6 */
+    &options::calculator<long double, long double, false, false, '*'>, /* 0xA7 */
+
+    /* 0xA8 - 0xAF: UNUSED */
+    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
+    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
+
+    /* 0xB0 - 0xB7: CALCULATOR (DIVISION) */
+    &options::calculator<long long,   long double, true,  true,  '/'>, /* 0xB0 */
+    &options::calculator<long long,   long double, false, false, '/'>, /* 0xB1 */
+    &options::calculator<long double, long long,   true,  true,  '/'>, /* 0xB2 */
+    &options::calculator<long double, long long,   false, false, '/'>, /* 0xB3 */
+    &options::calculator<long long,   long long,   true,  true,  '/'>, /* 0xB4 */
+    &options::calculator<long long,   long long,   false, false, '/'>, /* 0xB5 */
+    &options::calculator<long double, long double, true,  true,  '/'>, /* 0xB6 */
+    &options::calculator<long double, long double, false, false, '/'>, /* 0xB7 */
+
+    /* 0xB8 - 0xBF: CACHE OPTIONS */
+    &options::store_in_cache<true,  true>,  /* 0xB8 */
+    &options::store_in_cache<false, false>, /* 0xB9 */
+    &options::store_in_cache<true,  false>, /* 0xBA */
+    &options::store_in_cache<false, true>,  /* 0xBB */
+    &options::get_from_cache<true,  true>,  /* 0xBC */
+    &options::get_from_cache<false, false>, /* 0xBD */
+    &options::get_from_cache<true,  false>, /* 0xBE */
+    &options::get_from_cache<false, true>,  /* 0xBF */
+
+    /* 0xC0 - 0xC9: RESERVED */
+    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
+    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
+    &options::no_op, &options::no_op,
+
+    /* 0xCA - 0xCB: MULTITHREADING FLAGS */
+    &options::change_value_of_bool_owned_by_shared_ptr<&Printer::multithreaded, true>,  /* 0xCA */
+    &options::change_value_of_bool_owned_by_shared_ptr<&Printer::multithreaded, false>, /* 0xCB */
+
+    /* 0xCC - 0xFF: RESERVED (52 slots) */
+    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
+    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
+    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
+    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
+    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
+    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
+    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
+    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
+    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
+    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
+    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
+    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
+    &options::no_op, &options::no_op, &options::no_op, &options::no_op
+};
+
 
 
     };
