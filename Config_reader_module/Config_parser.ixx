@@ -34,7 +34,7 @@ export   namespace config_parsing_tools {
                   x
             } {
             }
-            void operator()(std::string* input_string, size_t* where_is_it_found) {
+            inline void operator()(std::string* input_string, size_t* where_is_it_found) {
                 input_string->replace(*where_is_it_found,
                     size_of_escape_charactor, string_to_be_replaced_with);
                 *where_is_it_found += size_of_the_replacement_of_escape_string;
@@ -114,7 +114,7 @@ export   namespace config_parsing_tools {
               //    semantic rule read for the nested non-terminal.
             constexpr size_t size_of_common_escape_charactors = 2;
 
-            std::string name = absolute_base::read_identifier(line_stream);
+            uint64_t name = absolute_base::read_number_from_string_at_a_position<uint64_t>(line_stream);
             std::string& the_nested_non_term_entry_pattern = all_entries->get_pattern_of_nested_non_term_symbol_pattern(name);
             input_string->replace(
                 *where_is_it_found,
@@ -304,7 +304,7 @@ export   namespace config_parsing_tools {
                 return;
             }
             line_stream->putback(c);
-            std::string non_terminal_name_to_search_inside = absolute_base::read_identifier(&line_stream);
+            uint64_t non_terminal_name_to_search_inside = absolute_base::read_number_from_string_at_a_position<uint64_t>(line_stream);
             std::string semantic_pattern_to_check = take_space_terminated_input_and_escape_it(line_stream, all_entries);
             unsigned int minimum_amount_of_Matches = 0;
             unsigned int maximum_amount_of_matches = 0; //only used if settings_for_semantic_rules dosent have check_atleast on.
