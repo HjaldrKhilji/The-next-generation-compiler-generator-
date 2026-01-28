@@ -360,14 +360,14 @@ namespace printing_tools {
 
         }
 
-        std::map<std::string, printing_tools::helper_templates_for_options::helpers_for_arithmetic_options::Polymorphic_accumulator> all_variable_ordered_storage{};
-        std::unordered_map<std::string, printing_tools::helper_templates_for_options::helpers_for_arithmetic_options::Polymorphic_accumulator> all_variable_hashed_storage{};
+        std::map<uint64_t, printing_tools::helper_templates_for_options::helpers_for_arithmetic_options::Polymorphic_accumulator> all_variable_ordered_storage{};
+        std::unordered_map<uint64_t, printing_tools::helper_templates_for_options::helpers_for_arithmetic_options::Polymorphic_accumulator> all_variable_hashed_storage{};
 
         template<bool source_is_output_config_or_output_data, bool get_from_ordered_or_else_hashed>
         void store_variable(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
             try {
                 using helper_templates_for_options::helpers_for_arithmetic_options::read_from_string;
-                std::string variable_name = helper_templates_for_options::read_from_string<std::string, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
+                uint64_t variable_name = helper_templates_for_options::read_from_string<uint64_t, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
                 constexpr if (get_from_ordered_or_else_hashed) {
                     all_variable_ordered_storage[variable_name] = helper_templates_for_options::helpers_for_arithmetic_options::read_polymorphically_from_string
                         <source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
@@ -394,7 +394,7 @@ namespace printing_tools {
         void get_polymorphic(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
             try {
                 using helper_templates_for_options::helpers_for_arithmetic_options::read_from_string;
-                std::string variable_name = helper_templates_for_options::read_from_string<std::string, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
+                uint64_t variable_name = helper_templates_for_options::read_from_string<uint64_t, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
                 constexpr if (get_from_ordered_or_else_hashed) {
                     auto value = all_variable_ordered_storage.at(variable_name);
                     value.pump(output_data);
