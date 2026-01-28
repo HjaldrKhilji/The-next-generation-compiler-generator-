@@ -278,7 +278,7 @@ again these are just my opinion, dont judge
             int get_current_sibling_index() {
                 return current_sibling_index;
             }
-            void set_current_subling_index(int a) {
+            void set_current_sibling_index(int a) {
                 current_sibling_index = a;
             }
             Non_terminal_name_entry const & get_current_sibling() {
@@ -288,11 +288,16 @@ again these are just my opinion, dont judge
                 return get_current_sibling().sub_entries.empty();
 
             }
-            sub_entries_type get_sub_entries_of_the_last_sub_entry_of_current_sibling() {
-                return get_current_sibling().sub_entries.back().get().sub_entries;
+            sub_entries_type get_sub_entries_of_current_subling() {
+                return get_current_sibling().sub_entries;
             }
             std::vector<absolute_base::Semantical_analyzer_config_entry>& get_semantic_rules_for_current_sibling() {
                 return get_current_sibling().all_semantical_analysis_rules[get_current_sibling_index()];
+            }
+            inline void dig_one_generation_in(){
+            Representation.get() = current_generation.get_sub_entries_of_current_subling();
+            set_current_sibling_index(current_generation().size() - 1);
+
             }
 
 
@@ -365,14 +370,16 @@ again these are just my opinion, dont judge
         };
 
         void dig_to_the_leaves_of_the_family_tree(Siblings current_generation, std::stack< Siblings>* family_tree) {
+        //the algorithm gurrentied that only leaf nodes are the current_generation after this function is called
+        //PERFECT!!
 
-
-            for (; current_generation.check_if_current_sibling_has_no_children() != true;
-                current_generation() = current_generation.get_sub_entries_of_the_last_sub_entry_of_current_sibling(),
-                current_generation.set_current_subling_index(current_generation.get_sub_entries_of_the_last_sub_entry_of_current_sibling().size() - 1)) {
+            do {
+                if(( current_generation.get_current_sibling_index() - 1 )=>0){
+                
                 (*family_tree).push(Siblings{ current_generation(), current_generation.get_current_sibling_index() - 1 });
-
-            }
+                }
+                current_generation.dig_one_generation_in();
+            }while(current_generation.check_if_current_sibling_has_no_children() != true);
 
 
 
