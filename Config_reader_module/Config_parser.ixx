@@ -86,7 +86,7 @@ export   namespace config_parsing_tools {
            //    semantic rule read for the nested non-terminal.
             constexpr size_t size_of_common_escape_charactors = 2;
 
-            std::string name = absolute_base::read_identifier(line_stream);
+            uint64_t name = absolute_base::read_number_from_string_at_a_position<uint64_t>(line_stream);
             all_entries->add_nested_non_term_symbol_to_the_newest_entry(name);
             input_string->replace(
                 *where_is_it_found,
@@ -359,7 +359,7 @@ export   namespace config_parsing_tools {
             //the non_terminal_pattern in this function will be a regex expression for input derived class and a custom pattern for output derived class.
             //by custom, I mean, the meaning of that pattern for the output class wil be defined by me 
             constexpr size_t size_of_common_escape_charactors = 2;
-            std::string non_terminal_name = absolute_base::read_identifier(line_stream);
+            uint64_t non_terminal_name = absolute_base::read_number_from_string_at_a_position<uint64_t>(line_stream);
             std::string non_terminal_pattern;
             *line_stream >> std::skipws >> non_terminal_pattern;
             all_entries->add_non_term_symbol_name(non_terminal_name);
