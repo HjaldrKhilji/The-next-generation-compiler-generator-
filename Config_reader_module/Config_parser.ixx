@@ -36,7 +36,7 @@ export   namespace config_parsing_tools {
             }
             inline void operator()(std::string* input_string, size_t* where_is_it_found) {
                 input_string->replace(*where_is_it_found,
-                    size_of_escape_charactor, string_to_be_replaced_with);
+                    size_of_escape_charactor, std::move(string_to_be_replaced_with));
                 *where_is_it_found += size_of_the_replacement_of_escape_string;
             }
         };
@@ -61,7 +61,7 @@ export   namespace config_parsing_tools {
             input_string->replace(
                 *where_is_it_found,
                 size_of_common_escape_charactors,
-                temp_input);
+                std::move(temp_input));
 
         };
 
