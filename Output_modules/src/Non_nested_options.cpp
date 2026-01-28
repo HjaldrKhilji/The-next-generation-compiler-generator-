@@ -474,4 +474,8 @@ void change_value_of_bool_owned_by_shared_ptr(const std::string& output_config, 
 
 
 }
+void no_op(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
+
+
+}
 }
