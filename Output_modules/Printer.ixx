@@ -141,7 +141,7 @@ export namespace printing_tools {
         std::shared_ptr<bool> multithreaded;
 
 
-        // The complete, fixed-size instruction set (256 entries)
+        // The complete, fixed-size instruction set (AI generated(i wouldnt write all this myself) (256 entries)
 static const Option_functions_wrapper_type operations_dispatch_table[256] = {
     /* 0x00 - 0x05: CORE SYSTEM */
     &options::print_output,                         /* 0x00 */
@@ -151,7 +151,7 @@ static const Option_functions_wrapper_type operations_dispatch_table[256] = {
     &options::option_to_hash,                       /* 0x04 */
     &options::trim_output_from_current_position_to_end, /* 0x05 */
 
-    /* 0x06 - 0x0F: UNUSED */
+    /* 0x06 - 0x0F: RESERVED */
     &options::no_op, &options::no_op, &options::no_op, &options::no_op,
     &options::no_op, &options::no_op, &options::no_op, &options::no_op,
     &options::no_op, &options::no_op,
@@ -166,7 +166,7 @@ static const Option_functions_wrapper_type operations_dispatch_table[256] = {
     &options::remove_entry<true,  &Printer::all_config_for_input>, /* 0x16 */
     &options::remove_entry<false, &Printer::all_config_for_input>, /* 0x17 */
 
-    /* 0x18 - 0x1F: UNUSED */
+    /* 0x18 - 0x1F: RESERVED */
     &options::no_op, &options::no_op, &options::no_op, &options::no_op,
     &options::no_op, &options::no_op, &options::no_op, &options::no_op,
 
@@ -186,7 +186,7 @@ static const Option_functions_wrapper_type operations_dispatch_table[256] = {
     &options::add_data_to_output_config<false, true>,  /* 0x32 */
     &options::add_data_to_output_config<false, false>, /* 0x33 */
 
-    /* 0x34 - 0x3F: UNUSED */
+    /* 0x34 - 0x3F: RESERVED */
     &options::no_op, &options::no_op, &options::no_op, &options::no_op,
     &options::no_op, &options::no_op, &options::no_op, &options::no_op,
     &options::no_op, &options::no_op, &options::no_op, &options::no_op,
@@ -215,7 +215,7 @@ static const Option_functions_wrapper_type operations_dispatch_table[256] = {
     &options::polymorphic_calculator<'|'>, &options::polymorphic_calculator<'&'>, /* 0x54, 0x55 */
     &options::polymorphic_calculator<'^'>,                                        /* 0x56 */
 
-    /* 0x57 - 0x5F: UNUSED */
+    /* 0x57 - 0x5F: RESERVED */
     &options::no_op, &options::no_op, &options::no_op, &options::no_op,
     &options::no_op, &options::no_op, &options::no_op, &options::no_op, &options::no_op,
 
@@ -257,7 +257,7 @@ static const Option_functions_wrapper_type operations_dispatch_table[256] = {
     &options::calculator<std::string, std::string, false, true,  '+'>, /* 0x82 */
     &options::calculator<std::string, std::string, false, false, '+'>, /* 0x83 */
 
-    /* 0x84 - 0x8F: UNUSED */
+    /* 0x84 - 0x8F: RESERVED */
     &options::no_op, &options::no_op, &options::no_op, &options::no_op,
     &options::no_op, &options::no_op, &options::no_op, &options::no_op,
     &options::no_op, &options::no_op, &options::no_op, &options::no_op,
@@ -272,7 +272,7 @@ static const Option_functions_wrapper_type operations_dispatch_table[256] = {
     &options::calculator<long double, long double, true,  true,  '-'>, /* 0x96 */
     &options::calculator<long double, long double, false, false, '-'>, /* 0x97 */
 
-    /* 0x98 - 0x9F: UNUSED */
+    /* 0x98 - 0x9F: RESERVED */
     &options::no_op, &options::no_op, &options::no_op, &options::no_op,
     &options::no_op, &options::no_op, &options::no_op, &options::no_op,
 
@@ -286,7 +286,7 @@ static const Option_functions_wrapper_type operations_dispatch_table[256] = {
     &options::calculator<long double, long double, true,  true,  '*'>, /* 0xA6 */
     &options::calculator<long double, long double, false, false, '*'>, /* 0xA7 */
 
-    /* 0xA8 - 0xAF: UNUSED */
+    /* 0xA8 - 0xAF: RESERVED */
     &options::no_op, &options::no_op, &options::no_op, &options::no_op,
     &options::no_op, &options::no_op, &options::no_op, &options::no_op,
 
