@@ -22,7 +22,7 @@ namespace printing_tools {
                     return read_string_from_string_at_a_position(string_to_read_from, pos);
                 }
                 else {
-                    return absolute_base::read_number_from_string_at_a_position(string_to_read_from, pos);
+                    return absolute_base::read_number_from_string_at_a_position<T>(string_to_read_from, pos);
                 }
             }
 
@@ -361,5 +361,6 @@ namespace printing_tools {
         }
     }
 }
+
 
 
