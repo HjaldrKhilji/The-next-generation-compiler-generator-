@@ -16,7 +16,7 @@ namespace helper_templates_for_options {
     inline Non_terminal_name_entry* return_non_terminal_entry(const std::string& output_config, std::string::size_type* position, absolute_base::All_non_terminal_entries* list_of_entries_to_find_it_in);
     template<> 
      void return_non_terminal_entry<true>(const std::string& output_config, std::string::size_type* position, absolute_base::All_non_terminal_entries* list_of_entries_to_find_it_in) {
-        std::string non_terminal_entry_name = absolute_base::read_string_from_string_at_a_position(output_config, position);
+        uint64_t non_terminal_entry_name = absolute_base::read_number_from_string_at_a_position<uint64_t>(output_config, position);
         try {
             auto entry_found = std::find_if(list_of_entries_to_find_it_in->begin(), list_of_entries_to_find_it_in->end(),
         }
@@ -80,7 +80,7 @@ namespace helper_templates_for_options {
     }
     template<>
         int find_sub_entry_index<false>(const Non_terminal_name_entry& entry, const std::string & output_config, , int* position) {
-            std::string non_terminal_entry_name = absolute_base::read_string_from_string_at_a_position(output_config, position);
+            uint64_t non_terminal_entry_name = absolute_base::read_number_from_string_at_a_position<uint64_t>(output_config, position);
             int counter{ 0 };
             auto entry_found = std::find_if(entry.sub_entries.begin(), entry.sub_entries.end(),
                 [&non_terminal_entry_name, &counter](absolute_base::Non_terminal_name_entry current_entry) {
