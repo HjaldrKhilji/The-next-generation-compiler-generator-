@@ -232,7 +232,7 @@ again these are just my opinion, dont judge
         };
         struct Non_terminal_name_entry {
             
-            std::string name;
+            uint64_t name;
             union {
                 std::string pattern;
                 std::string output_config_data;//dont even think of making this one const! (it wont allow branching)
@@ -350,21 +350,16 @@ again these are just my opinion, dont judge
         private:
             //this type isnt a Value oriented type, but rather a reference type to a large
             // global "database" of the entire program.
-            //the three types and aliases are just implementation details, please ignore it tho, if you arent implementing this class.
-            using Reference_to_string = std::reference_wrapper < std::string >;
+            //the two types and aliases are just implementation details, please ignore it tho, if you arent implementing this class.
+            
             using Reference_to_Non_terminal_name_entry = std::reference_wrapper < Non_terminal_name_entry >;
-            struct Function_object_class_to_compare_underlying_objects_of_a_reference {
-                bool operator()(const std::reference_wrapper < std::string >& a,
-                    const std::reference_wrapper < std::string >& b) const {
-                    return a.get() < b.get();
-                }
-            };
+            
 
             //it should be obvious that the map is for fast lookups, and deque is for fast traversal:
             
-            std::map < Reference_to_string,
-                Iterator_for_list_of_entries,
-                Function_object_class_to_compare_underlying_objects_of_a_reference > map_for_fast_retrival_of_entries;
+            std::map < uint64_t,
+                Iterator_for_list_of_entries
+                > map_for_fast_retrival_of_entries;
             std::deque < Non_terminal_name_entry > list_of_all_non_term_entries_for_fast_traversal;
 
         };
