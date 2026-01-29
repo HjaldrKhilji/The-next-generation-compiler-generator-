@@ -210,9 +210,9 @@ again these are just my opinion, dont judge
             a = a ^ b;
             return a;
         }
-
+        template<typename type_of_config_or_pattern>
         struct Semantical_analyzer_config_entry {
-            std::string the_pattern_to_check;
+            type_of_config_or_pattern the_pattern_to_check;
             std::reference_wrapper < std::string > name_of_non_term_symbol_to_check;
             Settings_for_semantical_rules all_settings;
 
@@ -240,15 +240,15 @@ again these are just my opinion, dont judge
                 //keep the type of both as std::string !!!!!
             
             };
-            using sub_entry_type = std::vector < std::reference_wrapper < Non_terminal_name_entry >>; 
+            using sub_entry_type = std::vector < std::reference_wrapper < Non_terminal_name_entry<type_of_config_or_pattern> >>; 
             sub_entry_type sub_entries;
             using all_semantical_analysis_rules_type = std::vector < std::vector < Semantical_analyzer_config_entry >>;
             is_moved_from_bool is_moved_from;
             all_semantical_analysis_rules_type all_semantical_analysis_rules;
             ~Non_terminal_name_entry() {}//for supressing warnings of implicitly deleted destructor
-            Non_terminal_name_entry(const Non_terminal_name_entry&) = default;
-            Non_terminal_name_entry(Non_terminal_name_entry&) = default;
-            Non_terminal_name_entry(Non_terminal_name_entry&&) = default;//moving, however, wont be so I allowed it
+            Non_terminal_name_entry(const Non_terminal_name_entry<type_of_config_or_pattern>&) = default;
+            Non_terminal_name_entry(Non_terminal_name_entry<type_of_config_or_pattern>&) = default;
+            Non_terminal_name_entry(Non_terminal_name_entry<type_of_config_or_pattern>&&) = default;//moving, however, wont be so I allowed it
             Non_terminal_name_entry(std::string a, std::string b, sub_entry_type c, all_semantical_analysis_rules_type d) :name{a}, pattern{b}, sub_entries{c}, all_semantical_analysis_rules{d}
             {}
         };
