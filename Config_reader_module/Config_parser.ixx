@@ -34,7 +34,8 @@ export   namespace config_parsing_tools {
                   x
             } {
             }
-            inline void operator()(std::string* input_string, size_t* where_is_it_found) {
+            template<typename config>
+         inline void operator()(std::spanstream* line_stream, absolute_base::All_non_terminal_entries<config>* all_entries,std::string* input_string, size_t* where_is_it_found) {
                 input_string->replace(*where_is_it_found,
                     size_of_escape_charactor, std::move(string_to_be_replaced_with));
                 *where_is_it_found += size_of_the_replacement_of_escape_string;
@@ -43,7 +44,8 @@ export   namespace config_parsing_tools {
 
 
 
-         inline void escape_backslash_capital_n(std::spanstream* line_stream,std::string* input_string, size_t* where_is_it_found) {
+         template<typename config>
+         inline void escape_backslash_capital_n_by_reading_nested_symbols(std::spanstream* line_stream, absolute_base::All_non_terminal_entries<config>* all_entries,std::string* input_string, size_t* where_is_it_found) {
            
             constexpr size_t size_of_common_escape_charactors = 2;
 
@@ -57,7 +59,8 @@ export   namespace config_parsing_tools {
         };
 
 
-         inline void escape_backslash_capital_a_by_reading_nested_symbols(std::spanstream* line_stream, absolute_base::All_non_terminal_entries* all_entries,std::string* input_string, size_t* where_is_it_found) {
+         template<typename config>
+         inline void escape_backslash_capital_a_by_reading_nested_symbols(std::spanstream* line_stream, absolute_base::All_non_terminal_entries<config>* all_entries,std::string* input_string, size_t* where_is_it_found) {
            
             constexpr size_t size_of_common_escape_charactors = 2;
 
@@ -71,8 +74,8 @@ export   namespace config_parsing_tools {
             semantical_analyzer_entry_reader();
 
         }
-        
-         inline void escape_backslash_capital_u_by_reading_nested_symbols(std::spanstream* line_stream, absolute_base::All_non_terminal_entries* all_entries,std::string* input_string, size_t* where_is_it_found) {
+        template<typename config>
+         inline void escape_backslash_capital_u_by_reading_nested_symbols(std::spanstream* line_stream, absolute_base::All_non_terminal_entries<config>* all_entries,std::string* input_string, size_t* where_is_it_found) {
            
             constexpr size_t size_of_common_escape_charactors = 2;
 
@@ -86,13 +89,7 @@ export   namespace config_parsing_tools {
 
         }
         
-            template<typename config>
-         inline std::string take_input(std::spanstream* line_stream, absolute_base::All_non_terminal_entries<config>* all_entries) {
-           
-            config semantic_pattern_to_check{};
-            *line_stream >> semantic_pattern_to_check;
-             return  std::move(semantic_pattern_to_check);
-        }
+          
         template<typename config>
          inline void parse_config_for_semantic_entry(std::spanstream* line_stream,absolute_base::Settings_for_semantical_rules* settings_for_current_config, unsigned int* minimum_amount_of_Matches, unsigned int* maximum_amount_of_matches) {
            
@@ -130,7 +127,8 @@ export   namespace config_parsing_tools {
 
             
             uint64_t non_terminal_name_to_search_inside = absolute_base::read_number_from_string_at_a_position<uint64_t>(line_stream);
-            config semantic_pattern_to_check = take_input(line_stream, all_entries);
+            config semantic_pattern_to_check{};
+            *line_stream >> semantic_pattern_to_check;
             unsigned int minimum_amount_of_Matches = 0;
             unsigned int maximum_amount_of_matches = 0; //only used if settings_for_semantic_rules dosent have check_atleast on.
             
@@ -161,7 +159,8 @@ export   namespace config_parsing_tools {
          std::string get_raw_input(std::istream* input_stream) {
            
             std::string raw_input{};
-            std::getline(*input_stream, raw_input);
+            delimeter = *input_stream;
+            std::getline(*input_stream, delimeter);
 
             return raw_input;
         }
@@ -241,7 +240,7 @@ export   namespace config_parsing_tools {
             absolute_base::All_non_terminal_entries_implementation<config> all_entries{};
             std::istringstream line_stream{ "" };
             std::unique_ptr<std::istream> input_stream;
-           
+           char delimeter;
             
         };
     }  
