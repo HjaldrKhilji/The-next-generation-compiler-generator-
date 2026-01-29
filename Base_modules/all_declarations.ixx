@@ -230,12 +230,13 @@ again these are just my opinion, dont judge
             }
 
         };
+        template<typename type_of_config_or_pattern>
         struct Non_terminal_name_entry {
             
             uint64_t name;
             union {
-                std::string pattern;
-                std::string output_config_data;//dont even think of making this one const! (it wont allow branching)
+                type_of_config_or_pattern pattern;
+                type_of_config_or_pattern output_config_data;//dont even think of making this one const! (it wont allow branching)
                 //keep the type of both as std::string !!!!!
             
             };
@@ -251,7 +252,7 @@ again these are just my opinion, dont judge
             Non_terminal_name_entry(std::string a, std::string b, sub_entry_type c, all_semantical_analysis_rules_type d) :name{a}, pattern{b}, sub_entries{c}, all_semantical_analysis_rules{d}
             {}
         };
-        
+        template<typename type_of_config_or_pattern>
         class Siblings {
         private:
             //keep the data members are lightweight as possible because I am passing them by value in other parts of the code.
@@ -261,7 +262,7 @@ again these are just my opinion, dont judge
             //basically representation_type is the sub entries type.
             //like initialize it with sub entries of a non terminal entry
             using representation_type_without_reference_wrapper = std::vector < std::reference_wrapper < Non_terminal_name_entry >>;
-            using sub_entries_type = std::vector < std::reference_wrapper < Non_terminal_name_entry >>;
+            using sub_entries_type = std::vector < std::reference_wrapper < Non_terminal_name_entry<type_of_config_or_pattern> >>;
             int current_sibling_index;
         public:
             inline std::vector<Semantical_analyzer_config_entry>::iterator begin() {
@@ -302,7 +303,7 @@ again these are just my opinion, dont judge
 
 
         };
-
+        template<typename type_of_config_or_pattern>
         class All_non_terminal_entries { 
             //the traversal begin() returns the last element, and end() returns one before the
                         //first element, thats because the last entry will be the one that the user of this
@@ -314,25 +315,26 @@ again these are just my opinion, dont judge
               virtual void add_semantic_rule_for_newest_sub_entry(const Semantical_analyzer_config_entry&& semantical_rule_entry)=0;//this is my favorite(I spend 4 days on making this), so all it does is that it finds the latest entry from the fast traversal list, then finds the latest sub entry in that, and adds this semantic rule entry for that sub entry 
               virtual std::reference_wrapper < std::string > get_parmenant_name_of_nested_non_term_symbol_pattern(std::string sub_symbol_name)=0;//returns the permanent reference to a non term name
               virtual void print_all_content()=0;
-              virtual Non_terminal_name_entry& get_current_non_term_entry(int index)=0;//simply gets the non term entry at the given index
-              virtual Non_terminal_name_entry& get_current_nested_non_term_entry(int index_for_nested_non_term, int index)=0;//simple gets the nested non term entry at the given indexes, or in [index][index_for_nested_non_term]
+              virtual Non_terminal_name_entry<type_of_config_or_pattern>& get_current_non_term_entry(int index)=0;//simply gets the non term entry at the given index
+              virtual Non_terminal_name_entry<type_of_config_or_pattern>& get_current_nested_non_term_entry(int index_for_nested_non_term, int index)=0;//simple gets the nested non term entry at the given indexes, or in [index][index_for_nested_non_term]
              
-              using ReverseIt = std::reverse_iterator<std::deque < Non_terminal_name_entry >::iterator>;
-              using ReverseIt = std::reverse_iterator<std::deque < Non_terminal_name_entry >::iterator>;
+              using ReverseIt = std::reverse_iterator<std::deque < Non_terminal_name_entry<type_of_config_or_pattern> >::iterator>;
+              using ReverseIt = std::reverse_iterator<std::deque < Non_terminal_name_entry<type_of_config_or_pattern> >::iterator>;
             virtual ReverseIt end() = 0;
             virtual ReverseIt physical_end() = 0;
 
             virtual ReverseIt begin() = 0;
-            virtual Non_terminal_name_entry* find_entry(std::string) = 0;
+            virtual Non_terminal_name_entry<type_of_config_or_pattern>* find_entry(std::string) = 0;
 
-            virtual void add_a_child_to_entry(absolute_base::Non_terminal_name_entry* entry_to_be_added_to, absolute_base::Non_terminal_name_entry&& entry_to_add) = 0;
-            virtual void add_semantic_rule_to_entry(absolute_base::Non_terminal_name_entry* entry_to_be_added_to,  Semantical_analyzer_config_entry&& semantical_rule_entry, int sibling_index, int semantic_entry_index) = 0;
-            virtual void remove_entry( absolute_base::Non_terminal_name_entry* entry_to_add) = 0;
-            virtual void remove_semantic_rule_of_entry(absolute_base::Non_terminal_name_entry* entry_to_remove_from, int sibling_index, int index_of_semantic_rule) = 0;
+            virtual void add_a_child_to_entry(Non_terminal_name_entry<type_of_config_or_pattern>* entry_to_be_added_to, absolute_base::Non_terminal_name_entry&& entry_to_add) = 0;
+            virtual void add_semantic_rule_to_entry(Non_terminal_name_entry<type_of_config_or_pattern>* entry_to_be_added_to,  Semantical_analyzer_config_entry&& semantical_rule_entry, int sibling_index, int semantic_entry_index) = 0;
+            virtual void remove_entry( Non_terminal_name_entry<type_of_config_or_pattern>* entry_to_add) = 0;
+            virtual void remove_semantic_rule_of_entry(Non_terminal_name_entry<type_of_config_or_pattern>* entry_to_remove_from, int sibling_index, int index_of_semantic_rule) = 0;
             
 
         };
-        class All_non_terminal_entries_implementation : public  All_non_terminal_entries {
+        template<typename type_of_config_or_pattern>
+        class All_non_terminal_entries_implementation : public  All_non_terminal_entries<type_of_config_or_pattern> {
             
               ReverseIt end() override{
                   auto iterator = list_of_all_non_term_entries_for_fast_traversal.rbegin();
@@ -346,13 +348,13 @@ again these are just my opinion, dont judge
                   return list_of_all_non_term_entries_for_fast_traversal.rbegin();
 
               }
-              using Iterator_for_list_of_entries = std::deque<absolute_base::Non_terminal_name_entry>::iterator;
+              using Iterator_for_list_of_entries = std::deque<Non_terminal_name_entry<type_of_config_or_pattern>>::iterator;
         private:
             //this type isnt a Value oriented type, but rather a reference type to a large
             // global "database" of the entire program.
             //the two types and aliases are just implementation details, please ignore it tho, if you arent implementing this class.
             
-            using Reference_to_Non_terminal_name_entry = std::reference_wrapper < Non_terminal_name_entry >;
+            using Reference_to_Non_terminal_name_entry = std::reference_wrapper < Non_terminal_name_entry<type_of_config_or_pattern> >;
             
 
             //it should be obvious that the map is for fast lookups, and deque is for fast traversal:
@@ -360,18 +362,18 @@ again these are just my opinion, dont judge
             std::map < uint64_t,
                 Iterator_for_list_of_entries
                 > map_for_fast_retrival_of_entries;
-            std::deque < Non_terminal_name_entry > list_of_all_non_term_entries_for_fast_traversal;
+            std::deque < Non_terminal_name_entry<type_of_config_or_pattern> > list_of_all_non_term_entries_for_fast_traversal;
 
         };
-
-        void dig_to_the_leaves_of_the_family_tree(Siblings current_generation, std::stack< Siblings>* family_tree) {
+        template<typename type_of_config_or_pattern>
+        void dig_to_the_leaves_of_the_family_tree(Siblings<type_of_config_or_pattern> current_generation, std::stack< Siblings<type_of_config_or_pattern>>* family_tree) {
         //the algorithm gurrentied that only leaf nodes are the current_generation after this function is called
         //PERFECT!!
 
             do {
                 if(( current_generation.get_current_sibling_index() - 1 )=>0){
                 
-                (*family_tree).push(Siblings{ current_generation(), current_generation.get_current_sibling_index() - 1 });
+                (*family_tree).push(Siblings<type_of_config_or_pattern>{ current_generation(), current_generation.get_current_sibling_index() - 1 });
                 }
                 current_generation.dig_one_generation_in();
             }while(current_generation.check_if_current_sibling_has_no_children() != true);
@@ -379,15 +381,7 @@ again these are just my opinion, dont judge
 
 
         }
-        bool semantic_checks(const std::vector < Semantical_analyzer_config_entry >& check_info,  std::string text) {
-            
-            for (auto x : check_info) {
-                if (x.check_pattern(text) == false) {
-                    return false;
-                }
-            }
-            return true;
-        }
+        
         
         class Base_printer {
         public:
