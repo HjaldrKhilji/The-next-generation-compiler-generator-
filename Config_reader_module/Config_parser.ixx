@@ -298,12 +298,7 @@ export   namespace config_parsing_tools {
                   //post condition: the line stream is forwarded after the input of the specific format described in the preconditions is completed
 
 
-            char c;
-            if (!(*line_stream >> std::skipws >> c)) {
-
-                return;
-            }
-            line_stream->putback(c);
+            
             uint64_t non_terminal_name_to_search_inside = absolute_base::read_number_from_string_at_a_position<uint64_t>(line_stream);
             std::string semantic_pattern_to_check = take_space_terminated_input_and_escape_it(line_stream, all_entries);
             unsigned int minimum_amount_of_Matches = 0;
@@ -324,9 +319,13 @@ export   namespace config_parsing_tools {
             };
             //this function can be used in Printer.ixx to help the user insert a new semantic entry to a non_term entry
         }
-         inline absolute_base::Semantical_analyzer_config_entry semantical_analyzer_entry_reader(std::spanstream* line_stream, absolute_base::All_non_terminal_entries* all_entries) {
-
+         inline void semantical_analyzer_entry_reader(std::spanstream* line_stream, absolute_base::All_non_terminal_entries* all_entries) {
+             char c;
+             //the loop skips white spaces and checks if any charater is left in line stream or basically the config for the current non terminal entry
+            while((*line_stream >> std::skipws >> c)) {
+            line_stream->putback(c);
              all_entries->add_semantic_rule_for_newest_sub_entry(return_semantical_analyzer_entry(line_stream, all_entries));
+           }
 
          }
          std::string get_raw_input(std::istream* input_stream) {
