@@ -50,10 +50,8 @@ module all_declarations;
      //is returned
      ///post condition : line_stream argument's state is changed to have the property "std::skipws" set.
      std::string identifier;
-     char c;
-     *line_stream >> std::skipws >> c; //skipping whitespaces
-     line_stream->putback(c);
-     for (; *line_stream >> std::noskipws >> c && (isalnum(c) || c == '_'); identifier += c);
+     
+     for (; *line_stream >> c && (isalnum(c) || c == '_'); identifier += c);
      line_stream->putback(c);
      if (identifier.empty()) {
          throw std::runtime_error{"read_identifier error"};
@@ -110,3 +108,4 @@ catch(std::out_of_range){
 	 return result;
 
  }
+
