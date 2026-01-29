@@ -210,9 +210,9 @@ again these are just my opinion, dont judge
             a = a ^ b;
             return a;
         }
-        template<typename type_of_config_or_pattern>
+        template<typename config>
         struct Semantical_analyzer_config_entry {
-            type_of_config_or_pattern the_pattern_to_check;
+            config the_pattern_to_check;
             std::reference_wrapper < std::string > name_of_non_term_symbol_to_check;
             Settings_for_semantical_rules all_settings;
 
@@ -230,29 +230,29 @@ again these are just my opinion, dont judge
             }
 
         };
-        template<typename type_of_config_or_pattern>
+        template<typename config>
         struct Non_terminal_name_entry {
             
             uint64_t name;
             union {
-                type_of_config_or_pattern pattern;
-                type_of_config_or_pattern output_config_data;//dont even think of making this one const! (it wont allow branching)
+                config pattern;
+                config output_config_data;//dont even think of making this one const! (it wont allow branching)
                 //keep the type of both as std::string !!!!!
             
             };
-            using sub_entry_type = std::vector < std::reference_wrapper < Non_terminal_name_entry<type_of_config_or_pattern> >>; 
+            using sub_entry_type = std::vector < std::reference_wrapper < Non_terminal_name_entry<config> >>; 
             sub_entry_type sub_entries;
-            using all_semantical_analysis_rules_type = std::vector < std::vector < Semantical_analyzer_config_entry >>;
+            using all_semantical_analysis_rules_type = std::vector < std::vector < Semantical_analyzer_config_entry<config>>>;
             is_moved_from_bool is_moved_from;
             all_semantical_analysis_rules_type all_semantical_analysis_rules;
             ~Non_terminal_name_entry() {}//for supressing warnings of implicitly deleted destructor
-            Non_terminal_name_entry(const Non_terminal_name_entry<type_of_config_or_pattern>&) = default;
-            Non_terminal_name_entry(Non_terminal_name_entry<type_of_config_or_pattern>&) = default;
-            Non_terminal_name_entry(Non_terminal_name_entry<type_of_config_or_pattern>&&) = default;//moving, however, wont be so I allowed it
-            Non_terminal_name_entry(std::string a, std::string b, sub_entry_type c, all_semantical_analysis_rules_type d) :name{a}, pattern{b}, sub_entries{c}, all_semantical_analysis_rules{d}
+            Non_terminal_name_entry(const Non_terminal_name_entry<config>&) = default;
+            Non_terminal_name_entry(Non_terminal_name_entry<config>&) = default;
+            Non_terminal_name_entry(Non_terminal_name_entry<config>&&) = default;//moving, however, wont be so I allowed it
+            Non_terminal_name_entry(std::string a, std::string b, sub_entry_type c, all_semantical_analysis_rules_type<config> d) :name{a}, pattern{b}, sub_entries{c}, all_semantical_analysis_rules{d}
             {}
         };
-        template<typename type_of_config_or_pattern>
+        template<typename config>
         class Siblings {
         private:
             //keep the data members are lightweight as possible because I am passing them by value in other parts of the code.
@@ -261,14 +261,14 @@ again these are just my opinion, dont judge
             representation_type Representation;
             //basically representation_type is the sub entries type.
             //like initialize it with sub entries of a non terminal entry
-            using representation_type_without_reference_wrapper = std::vector < std::reference_wrapper < Non_terminal_name_entry >>;
-            using sub_entries_type = std::vector < std::reference_wrapper < Non_terminal_name_entry<type_of_config_or_pattern> >>;
+            using representation_type_without_reference_wrapper = std::vector < std::reference_wrapper < Non_terminal_name_entry<config> >>;
+            using sub_entries_type = std::vector < std::reference_wrapper < Non_terminal_name_entry<config> >>;
             int current_sibling_index;
         public:
-            inline std::vector<Semantical_analyzer_config_entry>::iterator begin() {
+            inline std::vector<Semantical_analyzer_config_entry<config>>::iterator begin() {
                 return this->get_semantic_rules_for_current_sibling().begin();
             }
-            inline std::vector<Semantical_analyzer_config_entry>::iterator end() {
+            inline std::vector<Semantical_analyzer_config_entry<config>>::iterator end() {
                 return this->get_semantic_rules_for_current_sibling().end();
             }
             Siblings(representation_type a, int b) : Representation{ a }, current_sibling_index{ b } {}
@@ -282,7 +282,7 @@ again these are just my opinion, dont judge
             void set_current_sibling_index(int a) {
                 current_sibling_index = a;
             }
-            Non_terminal_name_entry const & get_current_sibling() {
+            Non_terminal_name_entry<config> const & get_current_sibling() {
                 return (Representation.get())[current_sibling_index].get();
             }
             bool check_if_current_sibling_has_no_children() {
@@ -292,7 +292,7 @@ again these are just my opinion, dont judge
             sub_entries_type get_sub_entries_of_current_subling() {
                 return get_current_sibling().sub_entries;
             }
-            std::vector<absolute_base::Semantical_analyzer_config_entry>& get_semantic_rules_for_current_sibling() {
+            std::vector<absolute_base::Semantical_analyzer_config_entry<config>>& get_semantic_rules_for_current_sibling() {
                 return get_current_sibling().all_semantical_analysis_rules[get_current_sibling_index()];
             }
             inline void dig_one_generation_in(){
@@ -303,37 +303,37 @@ again these are just my opinion, dont judge
 
 
         };
-        template<typename type_of_config_or_pattern>
+        template<typename config>
         class All_non_terminal_entries { 
             //the traversal begin() returns the last element, and end() returns one before the
                         //first element, thats because the last entry will be the one that the user of this
                         //structure will PROBABLY traverse from.
         public: virtual void add_non_term_symbol_name(std::string name)=0;//this adds the non term symbol only to fast traversal list
-              virtual void add_non_term_pattern_for_newest_entry(std::string pattern)=0;//this adds the newest element to the fast search map as well, after it has enter the pattern into the newest element traversal list
+              virtual void add_non_term_pattern_for_newest_entry(config pattern)=0;//this adds the newest element to the fast search map as well, after it has enter the pattern into the newest element traversal list
               virtual std::string& get_pattern_of_nested_non_term_symbol_pattern(std::string sub_symbol_name)=0;//this gets the pattern for a name, from the map, and the reason I say for nested non term symbol is because it is generally used for finding the symbols for nested non term symbols
               virtual void add_nested_non_term_symbol_to_the_newest_entry(std::string sub_symbol_name)=0;//this just takes a string, which it assumes to be the name of a non term symbol, and finds the non term symbol(from the map), and adds it's reference into the nested non term symbol list of the newest entry
-              virtual void add_semantic_rule_for_newest_sub_entry(const Semantical_analyzer_config_entry&& semantical_rule_entry)=0;//this is my favorite(I spend 4 days on making this), so all it does is that it finds the latest entry from the fast traversal list, then finds the latest sub entry in that, and adds this semantic rule entry for that sub entry 
+              virtual void add_semantic_rule_for_newest_sub_entry(const Semantical_analyzer_config_entry<config>&& semantical_rule_entry)=0;//this is my favorite(I spend 4 days on making this), so all it does is that it finds the latest entry from the fast traversal list, then finds the latest sub entry in that, and adds this semantic rule entry for that sub entry 
               virtual std::reference_wrapper < std::string > get_parmenant_name_of_nested_non_term_symbol_pattern(std::string sub_symbol_name)=0;//returns the permanent reference to a non term name
               virtual void print_all_content()=0;
-              virtual Non_terminal_name_entry<type_of_config_or_pattern>& get_current_non_term_entry(int index)=0;//simply gets the non term entry at the given index
-              virtual Non_terminal_name_entry<type_of_config_or_pattern>& get_current_nested_non_term_entry(int index_for_nested_non_term, int index)=0;//simple gets the nested non term entry at the given indexes, or in [index][index_for_nested_non_term]
+              virtual Non_terminal_name_entry<config>& get_current_non_term_entry(int index)=0;//simply gets the non term entry at the given index
+              virtual Non_terminal_name_entry<config>& get_current_nested_non_term_entry(int index_for_nested_non_term, int index)=0;//simple gets the nested non term entry at the given indexes, or in [index][index_for_nested_non_term]
              
-              using ReverseIt = std::reverse_iterator<std::deque < Non_terminal_name_entry<type_of_config_or_pattern> >::iterator>;
-              using ReverseIt = std::reverse_iterator<std::deque < Non_terminal_name_entry<type_of_config_or_pattern> >::iterator>;
+              using ReverseIt = std::reverse_iterator<std::deque < Non_terminal_name_entry<config> >::iterator>;
+              using ReverseIt = std::reverse_iterator<std::deque < Non_terminal_name_entry<config> >::iterator>;
             virtual ReverseIt end() = 0;
             virtual ReverseIt physical_end() = 0;
 
             virtual ReverseIt begin() = 0;
-            virtual Non_terminal_name_entry<type_of_config_or_pattern>* find_entry(std::string) = 0;
+            virtual Non_terminal_name_entry<config>* find_entry(std::string) = 0;
 
-            virtual void add_a_child_to_entry(Non_terminal_name_entry<type_of_config_or_pattern>* entry_to_be_added_to, absolute_base::Non_terminal_name_entry&& entry_to_add) = 0;
-            virtual void add_semantic_rule_to_entry(Non_terminal_name_entry<type_of_config_or_pattern>* entry_to_be_added_to,  Semantical_analyzer_config_entry&& semantical_rule_entry, int sibling_index, int semantic_entry_index) = 0;
-            virtual void remove_entry( Non_terminal_name_entry<type_of_config_or_pattern>* entry_to_add) = 0;
-            virtual void remove_semantic_rule_of_entry(Non_terminal_name_entry<type_of_config_or_pattern>* entry_to_remove_from, int sibling_index, int index_of_semantic_rule) = 0;
+            virtual void add_a_child_to_entry(Non_terminal_name_entry<config>* entry_to_be_added_to, absolute_base::Non_terminal_name_entry<config>&& entry_to_add) = 0;
+            virtual void add_semantic_rule_to_entry(Non_terminal_name_entry<config>* entry_to_be_added_to,  Semantical_analyzer_config_entry<config>&& semantical_rule_entry, int sibling_index, int semantic_entry_index) = 0;
+            virtual void remove_entry( Non_terminal_name_entry<config>* entry_to_add) = 0;
+            virtual void remove_semantic_rule_of_entry(Non_terminal_name_entry<config>* entry_to_remove_from, int sibling_index, int index_of_semantic_rule) = 0;
             
 
         };
-        template<typename type_of_config_or_pattern>
+        template<typename config>
         class All_non_terminal_entries_implementation : public  All_non_terminal_entries<type_of_config_or_pattern> {
             
               ReverseIt end() override{
@@ -348,13 +348,13 @@ again these are just my opinion, dont judge
                   return list_of_all_non_term_entries_for_fast_traversal.rbegin();
 
               }
-              using Iterator_for_list_of_entries = std::deque<Non_terminal_name_entry<type_of_config_or_pattern>>::iterator;
+              using Iterator_for_list_of_entries = std::deque<Non_terminal_name_entry<config>>::iterator;
         private:
             //this type isnt a Value oriented type, but rather a reference type to a large
             // global "database" of the entire program.
             //the two types and aliases are just implementation details, please ignore it tho, if you arent implementing this class.
             
-            using Reference_to_Non_terminal_name_entry = std::reference_wrapper < Non_terminal_name_entry<type_of_config_or_pattern> >;
+            using Reference_to_Non_terminal_name_entry = std::reference_wrapper < Non_terminal_name_entry<config> >;
             
 
             //it should be obvious that the map is for fast lookups, and deque is for fast traversal:
@@ -362,18 +362,18 @@ again these are just my opinion, dont judge
             std::map < uint64_t,
                 Iterator_for_list_of_entries
                 > map_for_fast_retrival_of_entries;
-            std::deque < Non_terminal_name_entry<type_of_config_or_pattern> > list_of_all_non_term_entries_for_fast_traversal;
+            std::deque < Non_terminal_name_entry<config> > list_of_all_non_term_entries_for_fast_traversal;
 
         };
-        template<typename type_of_config_or_pattern>
-        void dig_to_the_leaves_of_the_family_tree(Siblings<type_of_config_or_pattern> current_generation, std::stack< Siblings<type_of_config_or_pattern>>* family_tree) {
+        template<typename config>
+        void dig_to_the_leaves_of_the_family_tree(Siblings<config> current_generation, std::stack< Siblings<config>>* family_tree) {
         //the algorithm gurrentied that only leaf nodes are the current_generation after this function is called
         //PERFECT!!
 
             do {
                 if(( current_generation.get_current_sibling_index() - 1 )=>0){
                 
-                (*family_tree).push(Siblings<type_of_config_or_pattern>{ current_generation(), current_generation.get_current_sibling_index() - 1 });
+                (*family_tree).push(Siblings<config>{ current_generation(), current_generation.get_current_sibling_index() - 1 });
                 }
                 current_generation.dig_one_generation_in();
             }while(current_generation.check_if_current_sibling_has_no_children() != true);
