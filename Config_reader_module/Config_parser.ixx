@@ -45,7 +45,7 @@ export   namespace config_parsing_tools {
 
 
          template<typename config>
-         inline void escape_backslash_capital_n_by_reading_nested_symbols(std::spanstream* line_stream, absolute_base::All_non_terminal_entries<config>* all_entries,std::string* input_string, size_t* where_is_it_found) {
+         inline void escape_backslash_capital_delimeter_by_reading_nested_symbols(std::spanstream* line_stream, absolute_base::All_non_terminal_entries<config>* all_entries,std::string* input_string, size_t* where_is_it_found) {
            
             constexpr size_t size_of_common_escape_charactors = 2;
 
