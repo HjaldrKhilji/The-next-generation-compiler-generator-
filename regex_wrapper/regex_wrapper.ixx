@@ -67,16 +67,17 @@ namespace estd {
 
 
 	struct processed_string{
-    std::string escape_charactor_for_delimeter;
+    
 	std::string string_to_match;
 	
 	}
-	void read_input(std::istream& stream, processed_string& str, absolute_base::All_non_terminal_entries<config> all_non_term_entries){
+	void read_input(std::istream& stream, processed_string& str, char delimeter, char charactor_to_escape_delimeter_with, absolute_base::All_non_terminal_entries<config> all_non_term_entries){
 	stream>>str;
 	common_functions::escape_string(
     &str, 
-    {"\\", escape_charactor_for_delimeter, "\U"},
-	{Function_object_to_escape_escape_charactors}
+    {"\\\\", "\\"+std::string{charactor_to_escape_delimeter_with}, "\U"},
+	{Function_object_to_escape_escape_charactors{"\\", 2},
+      }
 	);
 	return stream;
 	}
