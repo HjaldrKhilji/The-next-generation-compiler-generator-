@@ -85,10 +85,10 @@ export   namespace config_parsing_tools {
            }
 
          }
-         std::string get_raw_input(std::istream* input_stream) {
+         std::string get_raw_input(std::istream* input_stream, char *delemeter) {
            
             std::string raw_input{};
-            *input_stream>>delimeter;
+            *input_stream>>*delimeter;
             std::getline( *input_stream,raw_input, delimeter);
 
             return raw_input;
@@ -100,11 +100,12 @@ export   namespace config_parsing_tools {
 
         }
         template<typename config>
-         void parse_raw_input(absolute_base::All_non_terminal_entries<config>* all_entries, std::spanstream *line_stream) {
+         void parse_raw_input(absolute_base::All_non_terminal_entries<config>* all_entries, std::spanstream *line_stream, char *delemeter,  char *escape_charactor_for_delimeter) {
 
            
             constexpr size_t size_of_common_escape_charactors = 2;
             uint64_t non_terminal_name = absolute_base::read_number_from_string_at_a_position<uint64_t>(line_stream);
+            *line_stream>>*escape_charactor_for_delimeter;
             config non_terminal_pattern;
             *line_stream >> non_terminal_pattern;
             all_entries->add_non_term_symbol_name(non_terminal_name);
@@ -170,6 +171,7 @@ export   namespace config_parsing_tools {
             std::istringstream line_stream{ "" };
             std::unique_ptr<std::istream> input_stream;
            char delimeter;
+           char escape_charactor_for_delimeter;//\escape_charactor_for_delimeter will become delimeter
             
         };
     }  
