@@ -17,7 +17,7 @@ module;
 module all_declarations;
 
 template<typename args...>
-        void escape_string(std::string* input_string,
+        void common_functions::escape_string(std::string* input_string,
             const std::vector < std::string >& strings_to_be_replaced,
             const std::vector < std::function < std::string, int*, args...> >
             function_to_be_run_for_each,
@@ -110,5 +110,6 @@ catch(std::out_of_range){
 	 return result;
 
  }
+
 
 
