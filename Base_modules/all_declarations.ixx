@@ -76,8 +76,9 @@ again these are just my opinion, dont judge
 */
 // so yeah thats all the reasons that I have
     namespace common_functions {
-        using escape_charactor_function_wrapper_type = std::function < void(
-            std::string* input_string, size_t* where_is_it_found) >;
+       template<typename args...>
+        using escape_charactor_function_wrapper_type = std::function < args...>;
+  
         void escape_string(std::string* input_string,
             const std::vector < std::string >& strings_to_be_replaced,
             const std::vector < escape_charactor_function_wrapper_type >
