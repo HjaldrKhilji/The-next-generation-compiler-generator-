@@ -17,78 +17,7 @@ import All_declarations;
 export   namespace config_parsing_tools {
 
     namespace Config_reader_helper {
-   
-        class Function_object_to_escape_escape_charactors { //lambda has to be used with common_functions::escape_string() function
-        public:
-            std::string string_to_be_replaced_with;
-            size_t size_of_the_replacement_of_escape_string;
-
-            size_t size_of_escape_charactor;
-            Function_object_to_escape_escape_charactors(std::string y, size_t x) : string_to_be_replaced_with{
-              y
-            },
-                size_of_the_replacement_of_escape_string{
-                  y.length()
-            },
-                size_of_escape_charactor{
-                  x
-            } {
-            }
-            template<typename config>
-         inline void operator()(std::spanstream* line_stream, absolute_base::All_non_terminal_entries<config>* all_entries,std::string* input_string, size_t* where_is_it_found) {
-                input_string->replace(*where_is_it_found,
-                    size_of_escape_charactor, std::move(string_to_be_replaced_with));
-                *where_is_it_found += size_of_the_replacement_of_escape_string;
-            }
-        };
-
-
-
-         template<typename config>
-         inline void escape_backslash_capital_delimeter_by_reading_nested_symbols(std::spanstream* line_stream, absolute_base::All_non_terminal_entries<config>* all_entries,std::string* input_string, size_t* where_is_it_found) {
-           
-            constexpr size_t size_of_common_escape_charactors = 2;
-
-            std::string temp_input = get_raw_input(line_stream);
-
-            input_string->replace(
-                *where_is_it_found,
-                size_of_common_escape_charactors,
-                std::move(temp_input));
-
-        };
-
-
-         template<typename config>
-         inline void escape_backslash_capital_a_by_reading_nested_symbols(std::spanstream* line_stream, absolute_base::All_non_terminal_entries<config>* all_entries,std::string* input_string, size_t* where_is_it_found) {
-           
-            constexpr size_t size_of_common_escape_charactors = 2;
-
-            uint64_t name = absolute_base::read_number_from_string_at_a_position<uint64_t>(line_stream);
-            all_entries->add_nested_non_term_symbol_to_the_newest_entry(name);
-            input_string->replace(
-                *where_is_it_found,
-                size_of_common_escape_charactors, "");
-
-
-            semantical_analyzer_entry_reader();
-
-        }
-        template<typename config>
-         inline void escape_backslash_capital_u_by_reading_nested_symbols(std::spanstream* line_stream, absolute_base::All_non_terminal_entries<config>* all_entries,std::string* input_string, size_t* where_is_it_found) {
-           
-            constexpr size_t size_of_common_escape_charactors = 2;
-
-            uint64_t name = absolute_base::read_number_from_string_at_a_position<uint64_t>(line_stream);
-            std::string& the_nested_non_term_entry_pattern = all_entries->get_pattern_of_nested_non_term_symbol_pattern(name);
-            input_string->replace(
-                *where_is_it_found,
-                size_of_common_escape_charactors, the_nested_non_term_entry_pattern);
-
-            where_is_it_found += the_nested_non_term_entry_pattern.length();
-
-        }
-        
+  
           
         template<typename config>
          inline void parse_config_for_semantic_entry(std::spanstream* line_stream,absolute_base::Settings_for_semantical_rules* settings_for_current_config, unsigned int* minimum_amount_of_Matches, unsigned int* maximum_amount_of_matches) {
@@ -159,8 +88,8 @@ export   namespace config_parsing_tools {
          std::string get_raw_input(std::istream* input_stream) {
            
             std::string raw_input{};
-            delimeter = *input_stream;
-            std::getline(*input_stream, delimeter);
+            *input_stream>>delimeter;
+            std::getline( *input_stream,raw_input, delimeter);
 
             return raw_input;
         }
