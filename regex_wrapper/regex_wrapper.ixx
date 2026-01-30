@@ -2,13 +2,82 @@ module;
 #include<vector>
 #include<string>
 module estd_regex;
+import all_declarations;
 namespace estd {
+
+ namespace escape_functions{
+    using Config_reader_helper;
+        class Function_object_to_escape_escape_charactors { //lambda has to be used with common_functions::escape_string() function
+        public:
+            std::string string_to_be_replaced_with;
+            size_t size_of_the_replacement_of_escape_string;
+
+            size_t size_of_escape_charactor;
+            Function_object_to_escape_escape_charactors(std::string y, size_t x) : string_to_be_replaced_with{
+              y
+            },
+                size_of_the_replacement_of_escape_string{
+                  y.length()
+            },
+                size_of_escape_charactor{
+                  x
+            } {
+            }
+            template<typename config>
+         inline void operator()(std::spanstream* line_stream, absolute_base::All_non_terminal_entries<config>* all_entries,std::string* input_string, size_t* where_is_it_found) {
+                input_string->replace(*where_is_it_found,
+                    size_of_escape_charactor, std::move(string_to_be_replaced_with));
+                *where_is_it_found += size_of_the_replacement_of_escape_string;
+            }
+        };
+
+
+
+         template<typename config>
+         inline void escape_backslash_capital_delimeter_by_reading_nested_symbols(std::spanstream* line_stream, absolute_base::All_non_terminal_entries<config>* all_entries,std::string* input_string, size_t* where_is_it_found) {
+           
+            constexpr size_t size_of_common_escape_charactors = 2;
+
+            std::string temp_input = get_raw_input(line_stream);
+
+            input_string->replace(
+                *where_is_it_found,
+                size_of_common_escape_charactors,
+                std::move(temp_input));
+
+        };
+
+
+         template<typename config>
+         inline void escape_backslash_capital_a_by_reading_nested_symbols(std::spanstream* line_stream, absolute_base::All_non_terminal_entries<config>* all_entries,std::string* input_string, size_t* where_is_it_found) {
+           
+            constexpr size_t size_of_common_escape_charactors = 2;
+
+            uint64_t name = absolute_base::read_number_from_string_at_a_position<uint64_t>(line_stream);
+            all_entries->add_nested_non_term_symbol_to_the_newest_entry(name);
+            input_string->replace(
+                *where_is_it_found,
+                size_of_common_escape_charactors, "");
+
+
+            semantical_analyzer_entry_reader();
+
+        }
+        }
+
+
 	struct processed_string{
+    std::string escape_charactor_for_delimeter;
 	std::string string_to_match;
+	
 	}
-	std::istream& operator>>(std::istream stream, processed_string str){
-	stream>>string_to_match;
-	//to be done
+	void read_input(std::istream& stream, processed_string& str, absolute_base::All_non_terminal_entries<config> all_non_term_entries){
+	stream>>str;
+	common_functions::escape_string(
+    &str, 
+    {"\\", escape_charactor_for_delimeter, "\U"},
+	{Function_object_to_escape_escape_charactors}
+	);
 	return stream;
 	}
 	namespace helper_functions= printing_tools::helper_templates_for_options::helpers_for_arithmetic_options;
