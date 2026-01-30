@@ -3,13 +3,22 @@ module;
 #include<string>
 module estd_regex;
 namespace estd {
+	struct processed_string{
+	std::string string_to_match;
+	}
+	std::istream& operator>>(std::istream stream, processed_string str){
+	stream>>string_to_match;
+	//to be done
+	return stream;
+	}
+	namespace helper_functions= printing_tools::helper_templates_for_options::helpers_for_arithmetic_options;
 	//aliases to change if you want to move away from boost
 	struct part_of_regex{
       bool ignore;
       bool optional;
       uint64_t minimum_number_of_time_to_match;
       uint64_t maximum_number_of_times_to_match;
-      std::string string_to_match;
+      processed_string string_to_match;
       std::pair<bool, std::string::size_type>match(const std::string &string_to_match_it_in, std::string::size_type starting_position){
       std::string::size_type position=starting_position;
       uint64_t i=0;
@@ -62,6 +71,16 @@ namespace estd {
          return true;
 
 	}
+	}
+	std::istream& operator>>(std::istream stream, regex_pattern pattern){
+	for(auto &x:pattern){
+	stream>>x.ignore;
+	stream>>x.optional;
+	stream>>x.minimum_number_of_time_to_match;
+	stream>>x.maximum_number_of_times_to_match;
+	stream>>x.string_to_match;
+	}
+	return  stream;
 	}
     //a faster (and simpler) alternative to even boost regex
     
