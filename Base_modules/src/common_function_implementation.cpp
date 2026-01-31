@@ -36,7 +36,7 @@ tempate<typename arg...>
                  strings_to_be_replaced[index],
                  position_of_the_match_found_last)) != std::string::npos) {
                  function_to_be_run_for_each[index](stream,
-                     input_string, &position_of_the_match_found_last,  arguments);
+                     input_string, &position_of_the_match_found_last,  arguments...);
 				 
              }
          }
@@ -110,6 +110,7 @@ catch(std::out_of_range){
 	 return result;
 
  }
+
 
 
 
