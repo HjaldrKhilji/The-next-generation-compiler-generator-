@@ -3,10 +3,10 @@ module;
 #include<string>
 module estd_regex;
 import all_declarations;
+import Config_parser;
 namespace estd {
 
  namespace escape_functions{
-    using Config_reader_helper;
         
          template<typename config>
         inline void escape_double_backslash_by_reading_nested_symbols()(std::spanstream* line_stream,std::string* input_string, std::string::size_type* where_is_it_found,char delimeter,  absolute_base::All_non_terminal_entries<config>* all_entries) {
@@ -44,7 +44,7 @@ namespace estd {
                 size_of_string_to_replace, std::string{""});
 
 
-            semantical_analyzer_entry_reader();
+            config_parsing_tools::Config_reader_helper::semantical_analyzer_entry_reader();
 
         }
         }
