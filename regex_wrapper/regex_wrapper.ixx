@@ -15,7 +15,7 @@ namespace estd {
             input_string->replace(
                 *where_is_it_found,
                 size_of_string_to_replace,
-                '\');
+                '\\');
 		}
 
          template<typename config>
