@@ -7,34 +7,19 @@ namespace estd {
 
  namespace escape_functions{
     using Config_reader_helper;
-        class Function_object_to_escape_escape_charactors { //lambda has to be used with common_functions::escape_string() function
-        public:
-            std::string string_to_be_replaced_with;
-            size_t size_of_the_replacement_of_escape_string;
-
-            size_t size_of_escape_charactor;
-            Function_object_to_escape_escape_charactors(std::string y, size_t x) : string_to_be_replaced_with{
-              y
-            },
-                size_of_the_replacement_of_escape_string{
-                  y.length()
-            },
-                size_of_escape_charactor{
-                  x
-            } {
-            }
-            template<typename config>
-         inline void operator()(std::spanstream* line_stream, absolute_base::All_non_terminal_entries<config>* all_entries,std::string* input_string, size_t* where_is_it_found) {
-                input_string->replace(*where_is_it_found,
-                    size_of_escape_charactor, std::move(string_to_be_replaced_with));
-                *where_is_it_found += size_of_the_replacement_of_escape_string;
-            }
-        };
-
-
+        
+         template<typename config>
+        inline void escape_double_backslash_by_reading_nested_symbols()(std::spanstream* line_stream,std::string* input_string, size_t* where_is_it_found,  absolute_base::All_non_terminal_entries<config>* all_entries) {
+           constexpr size_t size_of_common_escape_charactors = 2;
+		   
+            input_string->replace(
+                *where_is_it_found,
+                size_of_common_escape_charactors,
+                '\');
+		}
 
          template<typename config>
-         inline void escape_backslash_capital_delimeter_by_reading_nested_symbols(std::spanstream* line_stream, absolute_base::All_non_terminal_entries<config>* all_entries,std::string* input_string, size_t* where_is_it_found) {
+        inline void escape_backslash_delimeter_escaper_by_reading_nested_symbols()(std::spanstream* line_stream,std::string* input_string, size_t* where_is_it_found,  absolute_base::All_non_terminal_entries<config>* all_entries) {
            
             constexpr size_t size_of_common_escape_charactors = 2;
 
@@ -49,7 +34,7 @@ namespace estd {
 
 
          template<typename config>
-         inline void escape_backslash_capital_a_by_reading_nested_symbols(std::spanstream* line_stream, absolute_base::All_non_terminal_entries<config>* all_entries,std::string* input_string, size_t* where_is_it_found) {
+        inline void escape_backslash_a_by_reading_nested_symbols()(std::spanstream* line_stream,std::string* input_string, size_t* where_is_it_found,  absolute_base::All_non_terminal_entries<config>* all_entries) {
            
             constexpr size_t size_of_common_escape_charactors = 2;
 
@@ -70,14 +55,16 @@ namespace estd {
     
 	std::string string_to_match;
 	
-	}
-	void read_input(std::istream& stream, processed_string& str, char delimeter, char charactor_to_escape_delimeter_with, absolute_base::All_non_terminal_entries<config> all_non_term_entries){
+	};
+	void read_input(std::istream& stream, processed_string& str, char delimeter, char charactor_to_escape_delimeter_with, absolute_base::All_non_terminal_entries<config>* all_non_term_entries){
 	stream>>str;
 	common_functions::escape_string(
     &str, 
-    {"\\\\", "\\"+std::string{charactor_to_escape_delimeter_with}, "\U"},
-	{Function_object_to_escape_escape_charactors{"\\", 2},
-      }
+    {"\\\\", "\\"+std::string{charactor_to_escape_delimeter_with}, "\a"},
+	{&escape_double_backslash_by_reading_nested_symbols,
+     &escape_backslash_delimeter_escaper_by_reading_nested_symbols,
+     &escape_backslash_a_by_reading_nested_symbols},
+	all_non_term_entries
 	);
 	return stream;
 	}
