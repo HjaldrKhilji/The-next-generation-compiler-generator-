@@ -15,12 +15,12 @@ module;
 // I used AI to keep track of the headers needed 
 
 module all_declarations;
-
-template<typename args...>
-        void common_functions::escape_string(std::string* input_string,
+tempate<typename arg...>
+       void common_functions::escape_string(std::string* input_string,
             const std::vector < std::string >& strings_to_be_replaced,
-            const std::vector < std::function < std::string, int*, args...> >
+            const std::vector < std::function < std::spanstream*, std::string*, std::string::size_type*, args...> >
             function_to_be_run_for_each,
+			std::spanstream* stream,
 			args... arguments){
      for (size_t index = 0; index < strings_to_be_replaced.size(); index++) {
          //precondition: input_string, strings_to_be_replaced, function_to_be_run_for_each are in a valid state
@@ -30,13 +30,13 @@ template<typename args...>
          // corrsponding function in function_to_be_run_for_each, corrsponding in this sentence means the function element from  function_to_be_run_for_each
          //that has the same index as the element whose match is found.
          //UGLY LOW LEVEL CODE ALERT: DONT TOUCH THIS UGLY CODE, UNLESS YOU REALLY REALLY HAVE TO CHANGE IT!!!!!!!
-         size_t position_of_the_match_found_last = 0;
+         std::string::size_type position_of_the_match_found_last = 0;
          try {
              while ((position_of_the_match_found_last = input_string->find(
                  strings_to_be_replaced[index],
                  position_of_the_match_found_last)) != std::string::npos) {
-                 function_to_be_run_for_each[index](input_string,
-                     &position_of_the_match_found_last, arguments);
+                 function_to_be_run_for_each[index](stream,
+                     input_string, &position_of_the_match_found_last,  arguments);
 				 
              }
          }
@@ -110,6 +110,7 @@ catch(std::out_of_range){
 	 return result;
 
  }
+
 
 
 
