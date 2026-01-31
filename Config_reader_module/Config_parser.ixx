@@ -50,14 +50,16 @@ export   namespace config_parsing_tools {
             }
 
         }
+        
         template<typename config>
-        inline absolute_base::Semantical_analyzer_config_entry return_semantical_analyzer_entry(std::spanstream* line_stream, absolute_base::All_non_terminal_entries* all_entries) {
-            
-
-            
+         inline void semantical_analyzer_entry_reader(std::spanstream* line_stream, absolute_base::All_non_terminal_entries<config>* all_entries, char delimeter, char charactor_to_escape_delimeter_with) {
+             
+             
+            while((*line_stream >> c)) {
+              
             uint64_t non_terminal_name_to_search_inside = absolute_base::read_number_from_string_at_a_position<uint64_t>(line_stream);
             config semantic_pattern_to_check{};
-            *line_stream >> semantic_pattern_to_check;
+	        read_input(line_stream, semantic_pattern_to_check, delimeter, charactor_to_escape_delimeter_with, all_non_term_entries);
             unsigned int minimum_amount_of_Matches = 0;
             unsigned int maximum_amount_of_matches = 0; //only used if settings_for_semantic_rules dosent have check_atleast on.
             
@@ -66,22 +68,13 @@ export   namespace config_parsing_tools {
             //notice by default check_exist and check_atleast are turned on
             parse_config_for_semantic_entry<config>(line_stream,&fully_parsed_config, &minimum_amount_of_Matches, &maximum_amount_of_matches);
             
-            return absolute_base::Semantical_analyzer_config_entry{
+             all_entries->add_semantic_rule_for_newest_sub_entry(absolute_base::Semantical_analyzer_config_entry{
               all_entries.get_parmenant_name_of_nested_non_term_symbol_pattern(non_terminal_name_to_search_inside),
                 semantic_pattern_to_check,
                 fully_parsed_config,
                 minimum_amount_of_Matches,
                 maximum_amount_of_matches
-            };
-            //this function can be used in Printer.ixx to help the user insert a new semantic entry to a non_term entry
-        }
-        template<typename config>
-         inline void semantical_analyzer_entry_reader(std::spanstream* line_stream, absolute_base::All_non_terminal_entries<config>* all_entries) {
-             
-             
-            while((*line_stream >> c)) {
-           
-             all_entries->add_semantic_rule_for_newest_sub_entry(return_semantical_analyzer_entry(line_stream, all_entries));
+            });
            }
 
          }
@@ -89,28 +82,29 @@ export   namespace config_parsing_tools {
            
             std::string raw_input{};
             *input_stream>>*delimeter;
-            std::getline( *input_stream,raw_input, delimeter);
+            std::getline( *input_stream,raw_input, *delimeter);
 
             return raw_input;
         }
         template<typename config>
          void push_latest_entry_as_sub_entry_of_an_entry(absolute_base::All_non_terminal_entries<config>* all_entries,  absolute_base::Non_terminal_name_entry<config>* entry_to_push_it_into) {
             
+         
             all_entries->add_a_child_to_entry(entry_to_push_it_into, *(all_entries->physical_end()));
 
         }
         template<typename config>
-         void parse_raw_input(absolute_base::All_non_terminal_entries<config>* all_entries, std::spanstream *line_stream, char *delemeter,  char *escape_charactor_for_delimeter) {
+         void parse_raw_input(absolute_base::All_non_terminal_entries<config>* all_entries, std::spanstream *line_stream, char *delemeter,  char *charactor_to_escape_delimeter_with) {
 
            
             constexpr size_t size_of_common_escape_charactors = 2;
             uint64_t non_terminal_name = absolute_base::read_number_from_string_at_a_position<uint64_t>(line_stream);
             *line_stream>>*escape_charactor_for_delimeter;
             config non_terminal_pattern;
-            *line_stream >> non_terminal_pattern;
+	        read_input(line_stream, non_terminal_pattern, delimeter, charactor_to_escape_delimeter_with, all_non_term_entries);
             all_entries->add_non_term_symbol_name(non_terminal_name);
             
-            all_entries->add_non_term_pattern_for_newest_entry("(" + non_terminal_pattern + ")");
+            all_entries->add_non_term_pattern_for_newest_entry(non_terminal_pattern);
         }
         };
         template<typename config>
