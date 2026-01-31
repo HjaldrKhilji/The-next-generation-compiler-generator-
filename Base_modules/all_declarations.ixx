@@ -79,7 +79,7 @@ again these are just my opinion, dont judge
        tempate<typename arg...>
        void escape_string(std::string* input_string,
             const std::vector < std::string >& strings_to_be_replaced,
-            const std::vector < std::function < std::spanstream*, std::string*, size_t*, args...> >
+            const std::vector < std::function < std::spanstream*, std::string*, std::string::size_type*, args...> >
             function_to_be_run_for_each,
 			std::spanstream* stream,
 			args... arguments);
