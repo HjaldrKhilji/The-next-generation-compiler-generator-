@@ -81,7 +81,7 @@ again these are just my opinion, dont judge
             const std::vector < std::string >& strings_to_be_replaced,
             const std::vector < std::function < std::spanstream*, std::string*, size_t*, args...> >
             function_to_be_run_for_each,
-			std::spanstream*,
+			std::spanstream* stream,
 			args... arguments);
         std::string read_identifier(std::istringstream* line_stream);
         template <typename T>
