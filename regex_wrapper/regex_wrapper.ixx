@@ -41,7 +41,7 @@ namespace estd {
             all_entries->add_nested_non_term_symbol_to_the_newest_entry(name);
             input_string->replace(
                 *where_is_it_found,
-                size_of_string_to_replace, "");
+                size_of_string_to_replace, '');
 
 
             semantical_analyzer_entry_reader();
