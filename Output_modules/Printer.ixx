@@ -55,7 +55,7 @@ export namespace printing_tools {
             //ONLY USE WHEN YOU WILL RUN push_latest_entry_as_sub_entry_of_an_entry AFTER THIS FUNCTION CALL
         }
         //I did not use function wrappers because of some wierd errors, that according to AI were because of my compile time environment, since I tried all fixes. In the future try using function wrappers istead, if possible.
-        using Option_functions_wrapper_type = std::string::size_type(Printer::*)(const std::string&, std::string::size_type*, std::string*, std::string::size_type*);
+        using Option_functions_wrapper_type = void(Printer::*)(const std::string&, std::string::size_type*, std::string*, std::string::size_type*);
 
         void additional_setup_for_family_tree() {
             int current_sibling_index = (*(all_config_for_output->begin())).sub_entries.size() - 1;
