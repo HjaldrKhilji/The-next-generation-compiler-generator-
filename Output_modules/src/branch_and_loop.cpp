@@ -84,7 +84,7 @@ namespace loop_and_branch_helpers {
 
          Polymorphic_accumulator x_value;
          Polymorphic_accumulator y_value;
-         constexpr if (store_in_hashed_or_non_hashed) {
+          if constexpr(store_in_hashed_or_non_hashed) {
              x_value = all_variable_ordered_storage.at(x);
              y_value = all_variable_ordered_storage.at(y);
 
@@ -154,7 +154,7 @@ namespace loop_and_branch_helpers {
          std::string y = read_from_string<uint64_t, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
          Polymorphic_accumulator x_value;
          Polymorphic_accumulator y_value;
-         constexpr if (store_in_hashed_or_non_hashed) {
+          if constexpr(store_in_hashed_or_non_hashed) {
               x_value = all_variable_ordered_storage.at(x);
               y_value = all_variable_ordered_storage.at(y);
             
