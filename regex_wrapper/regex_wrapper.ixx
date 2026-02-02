@@ -9,7 +9,7 @@ namespace estd {
  namespace escape_functions{
         
          template<typename config>
-        inline void escape_double_backslash_by_reading_nested_symbols()(std::spanstream* line_stream,std::string* input_string, std::string::size_type* where_is_it_found,char delimeter,  absolute_base::All_non_terminal_entries<config>* all_entries) {
+        inline void escape_double_backslash()(std::spanstream* line_stream,std::string* input_string, std::string::size_type* where_is_it_found,char delimeter,  absolute_base::All_non_terminal_entries<config>* all_entries) {
            constexpr size_t size_of_string_to_replace = 2;
 		   
             input_string->replace(
@@ -62,7 +62,7 @@ namespace estd {
     {"\\"+std::string{charactor_to_escape_delimeter_with}, "\a", "\\\\"},
 	{&escape_functions::escaping_delimeter,
      &escape_functions::escape_backslash_a_by_reading_nested_symbols,
-	 &escape_functions::escape_double_backslash_by_reading_nested_symbols},
+	 &escape_functions::escape_double_backslash},
 	charactor_to_escape_delimeter_with,
 	all_non_term_entries
 	);
