@@ -799,14 +799,14 @@ template<bool source_is_output_config_or_output_data, bool erase_from_ordered_or
 
             }
         }
-template<char *delimeter, bool source_is_output_config_or_output_data>
+template<shared_ptr<char>* delimeter, bool source_is_output_config_or_output_data>
 void change_input_delimeter(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
      if constexpr(source_is_output_config_or_output_data){
-        *delimeter=output_config[*position];
+        *(*delimeter)=output_config[*position];
         static_cast<uint64_t>(*position)++;
     }
     else{
-        *delimeter=(*output_data)[*output_data_position];
+        *(*delimeter)=(*output_data)[*output_data_position];
         static_cast<uint64_t>(*output_data_position)++;
     }
 }
