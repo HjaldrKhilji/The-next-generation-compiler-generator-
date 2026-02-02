@@ -11,6 +11,7 @@ module;
 
 module Printer;
 import Driver;
+import all_declarations;
 //this file contains options that dont read user input to find other options at runtime
 namespace printing_tools {
     namespace options {
@@ -510,7 +511,7 @@ namespace printing_tools {
 
 
                 using T_result_type = helper_templates_for_options::helpers_for_arithmetic_options::Accumulator<left_hand_side_type>;
-                constexpr if (operator_name == '+') {
+                 if constexpr(operator_name == '+') {
                     T_result_type result =
                         T_result_type{ read_from_string<left_hand_side_type, left_hand_side_branch >(output_config, output_data, position, output_data_position) } +
                         T_result_type{ read_from_string<left_hand_side_type, left_hand_side_branch >(output_config, output_data, position, output_data_position) }
@@ -553,7 +554,7 @@ namespace printing_tools {
             using helper_templates_for_options::helpers_for_arithmetic_options::read_polymorphically_from_string;
             using T_result_type = helper_templates_for_options::helpers_for_arithmetic_options::Accumulator<Polymorphic_accumulator>;
             try {
-                constexpr if (operator_name == '+') {
+                 if constexpr (operator_name == '+') {
                     T_result_type result =
                         T_result_type{ read_polymorphically_from_string(output_config, position) }
                     + T_result_type{ read_polymorphically_from_string(output_config, position) };
@@ -642,7 +643,7 @@ namespace printing_tools {
             try {
                 using helper_templates_for_options::helpers_for_arithmetic_options::read_from_string;
                 std::string variable_name = read_from_string<std::string, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
-                constexpr if (get_from_ordered_or_else_hashed) {
+                 if constexpr(get_from_ordered_or_else_hashed) {
                     auto value = all_variable_ordered_storage.at(variable_name);
                     value.pump(const_cast<std::string&>(output_config));
                 }
@@ -672,7 +673,7 @@ namespace printing_tools {
             try {
                 using helper_templates_for_options::helpers_for_arithmetic_options::read_from_string;
                 uint64_t variable_name = helper_templates_for_options::read_from_string<uint64_t, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
-                constexpr if (get_from_ordered_or_else_hashed) {
+                 if constexpr(get_from_ordered_or_else_hashed) {
                     all_variable_ordered_storage[variable_name] = helper_templates_for_options::helpers_for_arithmetic_options::read_polymorphically_from_string
                         <source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
                 }
@@ -699,7 +700,7 @@ namespace printing_tools {
             try {
                 using helper_templates_for_options::helpers_for_arithmetic_options::read_from_string;
                 uint64_t variable_name = helper_templates_for_options::read_from_string<uint64_t, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
-                constexpr if (get_from_ordered_or_else_hashed) {
+                 if constexpr(get_from_ordered_or_else_hashed) {
                     auto value = all_variable_ordered_storage.at(variable_name);
                     value.pump(output_data,output_data_position);
                 }
@@ -723,8 +724,8 @@ template<bool source_is_output_config_or_output_data, bool get_from_ordered_or_e
 void store_in_cache(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
     uint64_t cache_name = helper_templates_for_options::read_from_string<uint64_t>(output_config, position);
 
-    constexpr if (get_from_ordered_or_else_hashed) {
-        constexpr if (source_is_output_config_or_output_data) {
+     if constexpr(get_from_ordered_or_else_hashed) {
+         if constexpr(source_is_output_config_or_output_data) {
             output_config = all_variable_ordered_storage.get(variable_name);
         }
         else {
@@ -733,7 +734,7 @@ void store_in_cache(const std::string& output_config, std::string::size_type* po
         }
     }
     else {
-        constexpr if (source_is_output_config_or_output_data) {
+         if constexpr (source_is_output_config_or_output_data) {
             output_config = all_variable_ordered_storage.get(variable_name);
         }
         else {
@@ -747,8 +748,8 @@ template<bool source_is_output_config_or_output_data, bool get_from_ordered_or_e
 void get_from_cache(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
     uint64_t cache_name = helper_templates_for_options::read_from_string<uint64_t>(output_config, position);
 
-    constexpr if (get_from_ordered_or_else_hashed) {
-        constexpr if (source_is_output_config_or_output_data) {
+     if constexpr (get_from_ordered_or_else_hashed) {
+         if constexpr(source_is_output_config_or_output_data) {
             output_config = all_variable_ordered_storage.get(variable_name);
         }
         else {
@@ -757,7 +758,7 @@ void get_from_cache(const std::string& output_config, std::string::size_type* po
         }
     }
     else {
-        constexpr if (source_is_output_config_or_output_data) {
+         if constexpr(source_is_output_config_or_output_data) {
             output_config = all_variable_ordered_storage.get(variable_name);
         }
         else {
@@ -778,7 +779,7 @@ template<bool source_is_output_config_or_output_data, bool erase_from_ordered_or
             try {
                 using helper_templates_for_options::helpers_for_arithmetic_options::read_from_string;
                 uint64_t variable_name = helper_templates_for_options::read_from_string<uint64_t, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
-                constexpr if (erase_from_ordered_or_else_hashed) {
+                 if constexpr (erase_from_ordered_or_else_hashed) {
                      all_variable_ordered_storage.erase(variable_name);
                     
                 }
@@ -800,14 +801,54 @@ template<bool source_is_output_config_or_output_data, bool erase_from_ordered_or
         }
 template<char Printer::*delimeter, bool source_is_output_config_or_output_data>
 void change_input_delimeter(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
-    if(source_is_output_config_or_output_data){
+     if constexpr(source_is_output_config_or_output_data){
         *delimeter=output_config[*position];
         static_cast<uint64_t>(*position)++;
     }
     else{
-        delimeter=(*output_data)[*output_data_position];
+        *delimeter=(*output_data)[*output_data_position];
         static_cast<uint64_t>(*output_data_position)++;
     }
+}
+template<bool source_is_output_config_or_output_data>
+void escape_charactor(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
+    std::string escape_charactor=helper_templates_for_options::read_from_string<std::string, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
+    std::string doube_slash_alternative=helper_templates_for_options::read_from_string<std::string, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
+    char char_to_escape;
+    char slash_alternative;
+    if(source_is_output_config_or_output_data){
+        char_to_escape=output_config[*position];
+        static_cast<uint64_t>(*position)++;
+        slash_alternative=output_config[*position];
+        static_cast<uint64_t>(*position)++;
+    }
+    else{
+        char_to_escape=(*output_data)[*output_data_position];
+        static_cast<uint64_t>(*output_data_position)++;
+        slash_alternative=(*output_data)[*output_data_position];
+        static_cast<uint64_t>(*output_data_position)++;
+    }
+    absolute_base::escape_string(
+    str, 
+    {escape_charactor, doube_slash_alternative},
+    {[&char_to_escape, &slash_alternative, size_of_string=escape_charactor.length() ](){ 
+
+
+            input_string->replace(
+                *where_is_it_found,
+                size_of_string,
+                std::string{char_to_escape});
+          },
+        [&char_to_escape, &slash_alternative, size_of_string=escape_charactor.length()](){ 
+
+
+            input_string->replace(
+                *where_is_it_found,
+                size_of_string,
+                std::string{slash_alternative});
+          }
+        }
+    )
 }
 void no_op(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
 
