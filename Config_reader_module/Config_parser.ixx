@@ -78,11 +78,11 @@ export   namespace config_parsing_tools {
            }
 
          }
-         std::string get_raw_input(std::istream* input_stream, char delimeter) {
+         std::string get_raw_input(std::istream* input_stream, char *delimeter) {
            
             std::string raw_input{};
-            std::getline( *input_stream,raw_input, delimeter);
-
+            std::getline( *input_stream,raw_input, *delimeter);
+			
             return raw_input;
         }
         template<typename config>
@@ -93,9 +93,9 @@ export   namespace config_parsing_tools {
 
         }
         template<typename config>
-         void parse_raw_input(absolute_base::All_non_terminal_entries<config>* all_entries, std::spanstream *line_stream, char delemeter,  char charactor_to_escape_delimeter_with) {
+         void parse_raw_input(absolute_base::All_non_terminal_entries<config>* all_entries, std::spanstream *line_stream, char *delemeter,  char charactor_to_escape_delimeter_with) {
 
-           
+            *line_stream>>*delemeter;
             constexpr size_t size_of_common_escape_charactors = 2;
             uint64_t non_terminal_name = absolute_base::read_number_from_string_at_a_position<uint64_t>(line_stream);
             config non_terminal_pattern;
@@ -116,8 +116,8 @@ export   namespace config_parsing_tools {
               
                 line_stream.clear();
 
-                line_stream.str(get_raw_input(&input_stream, delimeter));
-                Config_reader_helper::parse_raw_input(&all_entries, &line_stream, delimeter, escape_charactor_for_delimeter);
+                line_stream.str(get_raw_input(&input_stream, &delimeter));
+                Config_reader_helper::parse_raw_input(&all_entries, &line_stream, &delimeter);
 
             }
             std::istringstream& current_line() {
@@ -151,7 +151,7 @@ export   namespace config_parsing_tools {
 
 
             
-            Config_reader(std::istream* a, char b, char c) :input_stream{a}, delimeter{b}, escape_charactor_for_delimeter{C}  { }
+            Config_reader(std::istream* a, char b) :input_stream{a}, delimeter{b} { }
             
             Config_reader(Config_reader&) = default;
             Config_reader(Config_reader&&) = default;
@@ -163,7 +163,6 @@ export   namespace config_parsing_tools {
             std::istringstream line_stream{ "" };
             std::unique_ptr<std::istream> input_stream;
            char delimeter;
-           char escape_charactor_for_delimeter;//\escape_charactor_for_delimeter will become delimeter
             
         };
     }  
