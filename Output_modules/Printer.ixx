@@ -48,7 +48,7 @@ export namespace printing_tools {
         void read_single_entry_and_push_it_as_the_sub_entry_an_the_entry_passed(absolute_Base::Non_terminal_name_entry* entry) {
             std::string input_line{};
             std::getline(*input, input_line);//note *input is passed by reference
-            config_parsing_tools::Config_reader_helper::parse_raw_input(all_config_for_output.get(), std::spanstream{ std::move(input_line) });
+            config_parsing_tools::Config_reader_helper::parse_raw_input<list_of_entries_to_push_it_in>(std::spanstream{ std::move(input_line) });
             push_latest_entry_as_sub_entry_of_an_entry(this->list_of_entries_to_push_it_in, entry);
             //read a new entry function
             //used for adding new sub entries to the current entry processed using options
