@@ -78,10 +78,10 @@ export   namespace config_parsing_tools {
            }
 
          }
-         std::string get_raw_input(std::istream* input_stream, char *delimeter) {
+         std::string get_raw_input(std::istream* input_stream, char delimeter) {
            
             std::string raw_input{};
-            std::getline( *input_stream,raw_input, *delimeter);
+            std::getline( *input_stream,raw_input, delimeter);
 
             return raw_input;
         }
@@ -116,7 +116,7 @@ export   namespace config_parsing_tools {
               
                 line_stream.clear();
 
-                line_stream.str(get_raw_input(&input_stream, &delimeter));
+                line_stream.str(get_raw_input(&input_stream, delimeter));
                 Config_reader_helper::parse_raw_input(&all_entries, &line_stream, delimeter, escape_charactor_for_delimeter);
 
             }
