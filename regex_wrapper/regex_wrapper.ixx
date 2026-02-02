@@ -59,10 +59,10 @@ namespace estd {
 	stream>>*str;
 	common_functions::escape_string(
     str, 
-    {"\\\\", "\\"+std::string{charactor_to_escape_delimeter_with}, "\a"},
-	{&escape_functions::escape_double_backslash_by_reading_nested_symbols,
-     &escape_functions::escaping_delimeter,
-     &escape_functions::escape_backslash_a_by_reading_nested_symbols},
+    {"\\"+std::string{charactor_to_escape_delimeter_with}, "\a", "\\\\"},
+	{&escape_functions::escaping_delimeter,
+     &escape_functions::escape_backslash_a_by_reading_nested_symbols,
+	 &escape_functions::escape_double_backslash_by_reading_nested_symbols},
 	charactor_to_escape_delimeter_with,
 	all_non_term_entries
 	);
