@@ -8,42 +8,22 @@ namespace estd {
 
  namespace escape_functions{
         
-         template<typename config>
-        inline void escape_double_backslash()(std::spanstream* line_stream,std::string* input_string, std::string::size_type* where_is_it_found,char delimeter,  absolute_base::All_non_terminal_entries<config>* all_entries) {
-           constexpr size_t size_of_string_to_replace = 2;
-		   
-            input_string->replace(
-                *where_is_it_found,
-                size_of_string_to_replace,
-                "\\");
-		}
-
-         template<typename config>
-        inline void escaping_delimeter()(std::spanstream* line_stream,std::string* input_string, std::string::size_type* where_is_it_found,char delimeter,  absolute_base::All_non_terminal_entries<config>* all_entries) {
-           
-            constexpr size_t size_of_string_to_replace = 2;
-
-
-            input_string->replace(
-                *where_is_it_found,
-                size_of_string_to_replace,
-                std::string{delimeter});
-
-        }
+         
 
 
          template<typename config>
         inline void escape_backslash_a_by_reading_nested_symbols()(std::spanstream* line_stream,std::string* input_string, std::string::size_type* where_is_it_found,char delimeter,  absolute_base::All_non_terminal_entries<config>* all_entries) {
            
-            constexpr size_t size_of_string_to_replace = 2;
 
             uint64_t name = absolute_base::read_number_from_string_at_a_position<uint64_t>(line_stream);
-            all_entries->add_nested_non_term_symbol_to_the_newest_entry(name);
-            input_string->replace(
-                *where_is_it_found,
-                size_of_string_to_replace, std::string{""});
+            config_parsing_tools::Config_reader_helper::semantical_analyzer_entry_reader();
 
+        }
+		template<typename config>
+        inline void get_next_part_of_string()(std::spanstream* line_stream,std::string* input_string, std::string::size_type* where_is_it_found,char delimeter,  absolute_base::All_non_terminal_entries<config>* all_entries) {
+           
 
+            uint64_t name = absolute_base::read_number_from_string_at_a_position<uint64_t>(line_stream);
             config_parsing_tools::Config_reader_helper::semantical_analyzer_entry_reader();
 
         }
