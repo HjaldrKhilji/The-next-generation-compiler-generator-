@@ -161,10 +161,10 @@ static const Option_functions_wrapper_type operations_dispatch_table[256] = {
     &options::subtract_from_output_data_position<false>, /* 0x11 */
     &options::start_nested<true>,                        /* 0x12 */
     &options::start_nested<false>,                       /* 0x13 */
-    &options::add_entry<true,  &Printer::all_config_for_input>,    /* 0x14 */
-    &options::add_entry<false, &Printer::all_config_for_input>,    /* 0x15 */
-    &options::remove_entry<true,  &Printer::all_config_for_input>, /* 0x16 */
-    &options::remove_entry<false, &Printer::all_config_for_input>, /* 0x17 */
+    &options::add_entry<true,  Printer::all_config_for_input>,    /* 0x14 */
+    &options::add_entry<false, Printer::all_config_for_input>,    /* 0x15 */
+    &options::remove_entry<true,  Printer::all_config_for_input>, /* 0x16 */
+    &options::remove_entry<false, Printer::all_config_for_input>, /* 0x17 */
 
     /* 0x18 - 0x1B: RESERVED */
     &options::no_op, &options::no_op, &options::no_op, &options::no_op
@@ -195,22 +195,22 @@ static const Option_functions_wrapper_type operations_dispatch_table[256] = {
     &options::no_op, &options::no_op, &options::no_op, &options::no_op,
 
     /* 0x40 - 0x4F: SEMANTIC ENTRIES */
-    &options::add_semantic_entry_to_non_term_entry_passed<true,  true,  true,  &Printer::all_config_for_input>, /* 0x40 */
-    &options::add_semantic_entry_to_non_term_entry_passed<true,  true,  false, &Printer::all_config_for_input>, /* 0x41 */
-    &options::add_semantic_entry_to_non_term_entry_passed<true,  false, true,  &Printer::all_config_for_input>, /* 0x42 */
-    &options::add_semantic_entry_to_non_term_entry_passed<true,  false, false, &Printer::all_config_for_input>, /* 0x43 */
-    &options::add_semantic_entry_to_non_term_entry_passed<false, true,  true,  &Printer::all_config_for_input>, /* 0x44 */
-    &options::add_semantic_entry_to_non_term_entry_passed<false, true,  false, &Printer::all_config_for_input>, /* 0x45 */
-    &options::add_semantic_entry_to_non_term_entry_passed<false, false, true,  &Printer::all_config_for_input>, /* 0x46 */
-    &options::add_semantic_entry_to_non_term_entry_passed<false, false, false, &Printer::all_config_for_input>, /* 0x47 */
-    &options::remove_semantic_entry_to_non_term_entry_passed<true,  true,  true,  &Printer::all_config_for_input>, /* 0x48 */
-    &options::remove_semantic_entry_to_non_term_entry_passed<true,  true,  false, &Printer::all_config_for_input>, /* 0x49 */
-    &options::remove_semantic_entry_to_non_term_entry_passed<true,  false, true,  &Printer::all_config_for_input>, /* 0x4A */
-    &options::remove_semantic_entry_to_non_term_entry_passed<true,  false, false, &Printer::all_config_for_input>, /* 0x4B */
-    &options::remove_semantic_entry_to_non_term_entry_passed<false, true,  true,  &Printer::all_config_for_input>, /* 0x4C */
-    &options::remove_semantic_entry_to_non_term_entry_passed<false, true,  false, &Printer::all_config_for_input>, /* 0x4D */
-    &options::remove_semantic_entry_to_non_term_entry_passed<false, false, true,  &Printer::all_config_for_input>, /* 0x4E */
-    &options::remove_semantic_entry_to_non_term_entry_passed<false, false, false, &Printer::all_config_for_input>, /* 0x4F */
+    &options::add_semantic_entry_to_non_term_entry_passed<true,  true,  true,  Printer::all_config_for_input>, /* 0x40 */
+    &options::add_semantic_entry_to_non_term_entry_passed<true,  true,  false, Printer::all_config_for_input>, /* 0x41 */
+    &options::add_semantic_entry_to_non_term_entry_passed<true,  false, true,  Printer::all_config_for_input>, /* 0x42 */
+    &options::add_semantic_entry_to_non_term_entry_passed<true,  false, false, Printer::all_config_for_input>, /* 0x43 */
+    &options::add_semantic_entry_to_non_term_entry_passed<false, true,  true,  Printer::all_config_for_input>, /* 0x44 */
+    &options::add_semantic_entry_to_non_term_entry_passed<false, true,  false, Printer::all_config_for_input>, /* 0x45 */
+    &options::add_semantic_entry_to_non_term_entry_passed<false, false, true,  Printer::all_config_for_input>, /* 0x46 */
+    &options::add_semantic_entry_to_non_term_entry_passed<false, false, false, Printer::all_config_for_input>, /* 0x47 */
+    &options::remove_semantic_entry_to_non_term_entry_passed<true,  true,  true,  Printer::all_config_for_input>, /* 0x48 */
+    &options::remove_semantic_entry_to_non_term_entry_passed<true,  true,  false, Printer::all_config_for_input>, /* 0x49 */
+    &options::remove_semantic_entry_to_non_term_entry_passed<true,  false, true,  Printer::all_config_for_input>, /* 0x4A */
+    &options::remove_semantic_entry_to_non_term_entry_passed<true,  false, false, Printer::all_config_for_input>, /* 0x4B */
+    &options::remove_semantic_entry_to_non_term_entry_passed<false, true,  true,  Printer::all_config_for_input>, /* 0x4C */
+    &options::remove_semantic_entry_to_non_term_entry_passed<false, true,  false, Printer::all_config_for_input>, /* 0x4D */
+    &options::remove_semantic_entry_to_non_term_entry_passed<false, false, true,  Printer::all_config_for_input>, /* 0x4E */
+    &options::remove_semantic_entry_to_non_term_entry_passed<false, false, false, Printer::all_config_for_input>, /* 0x4F */
 
     /* 0x50 - 0x56: POLYMORPHIC MATH */
     &options::polymorphic_calculator<'+'>, &options::polymorphic_calculator<'-'>, /* 0x50, 0x51 */
@@ -313,14 +313,19 @@ static const Option_functions_wrapper_type operations_dispatch_table[256] = {
     &options::get_from_cache<true,  false>, /* 0xBE */
     &options::get_from_cache<false, true>,  /* 0xBF */
 
-    /* 0xC0 - 0xC9: RESERVED */
+    /*0xC0 - 0xC3: delemiter changing and escape character options*/
+    &options::change_input_delimeter<Printer::delimeter, true>,
+    &options::change_input_delimeter<Printer::delimeter, false>,
+    &options::escape_charactor<true>,
+    &options::escape_charactor<false>
+    /* 0xC4 - 0xC9: RESERVED */
     &options::no_op, &options::no_op, &options::no_op, &options::no_op,
     &options::no_op, &options::no_op, &options::no_op, &options::no_op,
     &options::no_op, &options::no_op,
 
     /* 0xCA - 0xCB: MULTITHREADING FLAGS */
-    &options::change_value_of_bool_owned_by_shared_ptr<&Printer::multithreaded, true>,  /* 0xCA */
-    &options::change_value_of_bool_owned_by_shared_ptr<&Printer::multithreaded, false>, /* 0xCB */
+    &options::change_value_of_bool_owned_by_shared_ptr<Printer::multithreaded, true>,  /* 0xCA */
+    &options::change_value_of_bool_owned_by_shared_ptr<Printer::multithreaded, false>, /* 0xCB */
 
     /* 0xCC - 0xFF: RESERVED (52 slots) */
     &options::no_op, &options::no_op, &options::no_op, &options::no_op,
