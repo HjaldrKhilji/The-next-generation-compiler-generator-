@@ -156,7 +156,7 @@ static const Option_functions_wrapper_type operations_dispatch_table[256] = {
     &options::no_op, &options::no_op, &options::no_op, &options::no_op,
     &options::no_op, &options::no_op,
 
-    /* 0x10 - 0x17: STRUCTURAL */
+    /* 0x10 - 0x17: STRUCTURAL (Updated Template Args) */
     &options::subtract_from_output_data_position<true>,  /* 0x10 */
     &options::subtract_from_output_data_position<false>, /* 0x11 */
     &options::start_nested<true>,                        /* 0x12 */
@@ -167,13 +167,13 @@ static const Option_functions_wrapper_type operations_dispatch_table[256] = {
     &options::remove_entry<false, &Printer::all_config_for_input>, /* 0x17 */
 
     /* 0x18 - 0x1B: RESERVED */
-    &options::no_op, &options::no_op, &options::no_op, &options::no_op
+    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
 
-    /* 0x1C - 0x2F: FLOW CONTROL AND VARIABLES*/
-    &options:remove_polymorphic<true, true> //0x1C
-    &options:remove_polymorphic<true, false> //0x1D
-    &options:remove_polymorphic<false, true> //0x1E
-    &options:remove_polymorphic<false, false> //0x1F
+    /* 0x1C - 0x2F: FLOW CONTROL AND VARIABLES */
+    &options::remove_polymorphic<true, true>,  /* 0x1C */
+    &options::remove_polymorphic<true, false>, /* 0x1D */
+    &options::remove_polymorphic<false, true>, /* 0x1E */
+    &options::remove_polymorphic<false, false>,/* 0x1F */
     &options::loop<true,  true>,   &options::loop<true,  false>,   /* 0x20, 0x21 */
     &options::loop<false, true>,   &options::loop<false, false>,   /* 0x22, 0x23 */
     &options::branch<true,  true>, &options::branch<true,  false>, /* 0x24, 0x25 */
@@ -194,7 +194,7 @@ static const Option_functions_wrapper_type operations_dispatch_table[256] = {
     &options::no_op, &options::no_op, &options::no_op, &options::no_op,
     &options::no_op, &options::no_op, &options::no_op, &options::no_op,
 
-    /* 0x40 - 0x4F: SEMANTIC ENTRIES */
+    /* 0x40 - 0x4F: SEMANTIC ENTRIES (Updated Template Args) */
     &options::add_semantic_entry_to_non_term_entry_passed<true,  true,  true,  &Printer::all_config_for_input>, /* 0x40 */
     &options::add_semantic_entry_to_non_term_entry_passed<true,  true,  false, &Printer::all_config_for_input>, /* 0x41 */
     &options::add_semantic_entry_to_non_term_entry_passed<true,  false, true,  &Printer::all_config_for_input>, /* 0x42 */
@@ -313,13 +313,13 @@ static const Option_functions_wrapper_type operations_dispatch_table[256] = {
     &options::get_from_cache<true,  false>, /* 0xBE */
     &options::get_from_cache<false, true>,  /* 0xBF */
 
-    /*0xC0 - 0xC3: delemiter changing and escape character options*/
-    &options::change_input_delimeter<&Printer::delimeter, true>,
-    &options::change_input_delimeter<&Printer::delimeter, false>,
-    &options::escape_charactor<true>,
-    &options::escape_charactor<false>
+    /* 0xC0 - 0xC3: DELIMITER AND ESCAPE OPTIONS */
+    &options::change_input_delimeter<&Printer::delimeter, true>,  /* 0xC0 */
+    &options::change_input_delimeter<&Printer::delimeter, false>, /* 0xC1 */
+    &options::escape_charactor<true>,                             /* 0xC2 */
+    &options::escape_charactor<false>,                            /* 0xC3 */
+
     /* 0xC4 - 0xC9: RESERVED */
-    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
     &options::no_op, &options::no_op, &options::no_op, &options::no_op,
     &options::no_op, &options::no_op,
 
@@ -342,8 +342,6 @@ static const Option_functions_wrapper_type operations_dispatch_table[256] = {
     &options::no_op, &options::no_op, &options::no_op, &options::no_op,
     &options::no_op, &options::no_op, &options::no_op, &options::no_op
 };
-
-
 
     };
 
