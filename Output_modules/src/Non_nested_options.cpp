@@ -438,8 +438,8 @@ namespace printing_tools {
                 std::span<char> sub_span{ output_config.data() + *position, output_config.size() - *position) };
 
                 Semantical_analyzer_config_entry semantic_entry =
-                    config_parsing_tools::Config_reader_helper::return_semantical_analyzer_entry(
-                        sub_span,list_of_entries_to_find_it_in
+                    config_parsing_tools::Config_reader_helper::return_semantical_analyzer_entry<list_of_entries_to_find_it_in>(
+                        sub_span
                     );
                 list_of_entries_to_find_it_in->add_semantic_rule_to_entry(info_needed.non_term_entry, std::move(semantic_entry), info_needed.sibling_index, info_needed.semantic_entry_index);
             }
