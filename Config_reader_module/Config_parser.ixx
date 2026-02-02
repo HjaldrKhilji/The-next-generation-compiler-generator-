@@ -117,7 +117,7 @@ export   namespace config_parsing_tools {
               
                 line_stream.clear();
 
-                line_stream.str(get_raw_input(&all_entries, &input_stream, delimeter));
+                line_stream.str(get_raw_input(&input_stream, delimeter));
                 Config_reader_helper::parse_raw_input(&all_entries, &line_stream, delimeter, escape_charactor_for_delimeter);
 
             }
