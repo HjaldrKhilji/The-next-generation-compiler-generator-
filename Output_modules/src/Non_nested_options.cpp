@@ -112,7 +112,7 @@ namespace printing_tools {
         void add_entry(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
             try {
                 Non_terminal_name_entry* non_term_entry = helper_templates_for_options::return_non_terminal_entry<search>(output_config, position, *list_of_entries_to_find_it_in);
-                config_parsing_tools::Config_reader_helper::push_latest_entry_as_sub_entry_of_an_entry(non_term_entry, *list_of_entries_to_find_it_in);
+                config_parsing_tools::Config_reader_helper::push_latest_entry_as_sub_entry_of_an_entry(*list_of_entries_to_find_it_in,non_term_entry);
             }
             catch (std::string error_sent_by_reporter) {
                 throw std::string{ "OPTION TO ADD NON TERMINAL ENTRY: " + error_sent_by_reporter };
@@ -416,7 +416,7 @@ namespace printing_tools {
         void add_entry(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
             try {
                 Non_terminal_name_entry* non_term_entry = helper_templates_for_options::return_non_terminal_entry<search>(output_config, position, list_of_entries_to_find_it_in);
-                config_parsing_tools::Config_reader_helper::push_latest_entry_as_sub_entry_of_an_entry<list_of_entries_to_find_it_in>(non_term_entry);
+                config_parsing_tools::Config_reader_helper::push_latest_entry_as_sub_entry_of_an_entry(*list_of_entries_to_find_it_in,non_term_entry);
             }
             catch (std::string error_sent_by_reporter) {
                 throw std::string{ "OPTION TO ADD NON TERMINAL ENTRY: " + error_sent_by_reporter };
