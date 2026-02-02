@@ -767,7 +767,7 @@ void get_from_cache(const std::string& output_config, std::string::size_type* po
     }
 
 }
-template<std::shared_ptr<bool> Printer::bool_to_set, bool source_is_output_config_or_output_data>
+template<bool Printer::*bool_to_set, bool source_is_output_config_or_output_data>
 void change_value_of_bool_owned_by_shared_ptr(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
     *bool_to_set = helper_templates_for_options::read_from_string<bool, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
 
@@ -798,6 +798,17 @@ template<bool source_is_output_config_or_output_data, bool erase_from_ordered_or
 
             }
         }
+template<char Printer::*delimeter, bool source_is_output_config_or_output_data>
+void change_input_delimeter(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
+    if(source_is_output_config_or_output_data){
+        *delimeter=output_config[*position];
+        static_cast<uint64_t>(*position)++;
+    }
+    else{
+        delimeter=(*output_data)[*output_data_position];
+        static_cast<uint64_t>(*output_data_position)++;
+    }
+}
 void no_op(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
 
 
