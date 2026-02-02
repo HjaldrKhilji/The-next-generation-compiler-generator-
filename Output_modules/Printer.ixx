@@ -132,8 +132,8 @@ export namespace printing_tools {
 
         Output_stream_handler_ptr output;
 
-        std::unique_ptr<absolute_base::All_non_terminal_entries> all_config_for_output;
-        std::shared_ptr<absolute_base::All_non_terminal_entries> all_config_for_input;
+        std::unique_ptr<absolute_base::All_non_terminal_entries<estd::processed_string>> all_config_for_output;
+        std::shared_ptr<absolute_base::All_non_terminal_entries<estd::regex_pattern>> all_config_for_input;
 
 
         Input_stream_handler_ptr input;
