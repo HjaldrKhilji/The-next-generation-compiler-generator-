@@ -92,11 +92,11 @@ namespace printing_tools {
             *output << output_data;
         }
 
-        template<bool search, absolute_base::All_non_terminal_entries Printer::* list_of_entries_to_find_it_in>
+        template<bool search, absolute_base::All_non_terminal_entries* list_of_entries_to_find_it_in>
         void remove_entry(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
             try {
-                Non_terminal_name_entry* non_term_entry = helper_templates_for_options::return_non_terminal_entry<search>(output_config, position, list_of_entries_to_find_it_in);
-                this->list_of_entries_to_find_it_in->remove_entry(non_term_entry);
+                Non_terminal_name_entry* non_term_entry = helper_templates_for_options::return_non_terminal_entry<search, list_of_entries_to_find_it_in>(output_config, position);
+                list_of_entries_to_find_it_in->remove_entry(non_term_entry);
             }
             catch (std::string error_sent_by_reporter) {
 
@@ -108,11 +108,11 @@ namespace printing_tools {
 
             }
         }
-        template<bool search, absolute_base::All_non_terminal_entries Printer::* list_of_entries_to_find_it_in>
+        template<bool search, absolute_base::All_non_terminal_entries* list_of_entries_to_find_it_in>
         void add_entry(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
             try {
-                Non_terminal_name_entry* non_term_entry = helper_templates_for_options::return_non_terminal_entry<search>(output_config, position, list_of_entries_to_find_it_in);
-                config_parsing_tools::Config_reader_helper::push_latest_entry_as_sub_entry_of_an_entry<this->list_of_entries_to_find_it_in>(non_term_entry);
+                Non_terminal_name_entry* non_term_entry = helper_templates_for_options::return_non_terminal_entry<search, list_of_entries_to_find_it_in>(output_config, position);
+                config_parsing_tools::Config_reader_helper::push_latest_entry_as_sub_entry_of_an_entry<list_of_entries_to_find_it_in>(non_term_entry);
             }
             catch (std::string error_sent_by_reporter) {
                 throw std::string{ "OPTION TO ADD NON TERMINAL ENTRY: " + error_sent_by_reporter };
@@ -125,19 +125,19 @@ namespace printing_tools {
 
         }
 
-        template<bool find_parent_entry, bool find_nested_entry_technique, bool check_semantic_entry, absolute_base::All_non_terminal_entries Printer::* list_of_entries_to_find_it_in>
+        template<bool find_parent_entry, bool find_nested_entry_technique, bool check_semantic_entry, absolute_base::All_non_terminal_entries* list_of_entries_to_find_it_in>
         void add_semantic_entry_to_non_term_entry_passed(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
             try {
                 indexes_and_non_term_entry info_needed = helper_templates_for_options::return_semantic_entry
-                    <find_parent_entry, find_nested_entry_technique, check_semantic_entry>
-                    (output_config, position, this->list_of_entries_to_find_it_in);
+                    <find_parent_entry, find_nested_entry_technique, check_semantic_entry, list_of_entries_to_find_it_in>
+                    (output_config, position);
                 std::span<char> sub_span{ output_config.data() + *position, output_config.size() - *position) };
 
                 Semantical_analyzer_config_entry semantic_entry =
-                    config_parsing_tools::Config_reader_helper::return_semantical_analyzer_entry(
-                        sub_span, this->list_of_entries_to_find_it_in
+                    config_parsing_tools::Config_reader_helper::return_semantical_analyzer_entry<list_of_entries_to_find_it_in>(
+                        sub_span
                     );
-                this->list_of_entries_to_find_it_in->add_semantic_rule_to_entry(info_needed.non_term_entry, std::move(semantic_entry), info_needed.sibling_index, info_needed.semantic_entry_index);
+                list_of_entries_to_find_it_in->add_semantic_rule_to_entry(info_needed.non_term_entry, std::move(semantic_entry), info_needed.sibling_index, info_needed.semantic_entry_index);
             }
             catch (std::string error_sent_by_reporter) {
                 throw std::string{ "OPTION TO ADD SEMANTIC ENTRY TO THE NON TERMINAL ENTRY PASSED: " + error_sent_by_reporter };
@@ -148,14 +148,14 @@ namespace printing_tools {
 
             }
         }
-        template<bool find_parent_entry, bool find_nested_entry_technique, bool check_semantic_entry, absolute_base::All_non_terminal_entries Printer::* list_of_entries_to_find_it_in>
+        template<bool find_parent_entry, bool find_nested_entry_technique, bool check_semantic_entry, absolute_base::All_non_terminal_entries*  list_of_entries_to_find_it_in>
 
         void remove_semantic_entry_to_non_term_entry_passed(const std::string& output_config, std::string::size_type* position, std::string* output_data, , std::string::size_type* output_data_position) {
             try {
                 indexes_and_non_term_entry info_needed = helper_templates_for_options::return_semantic_entry
-                    <find_parent_entry, find_nested_entry_technique, check_semantic_entry>
-                    (output_config, position, this->list_of_entries_to_find_it_in);
-                this->list_of_entries_to_find_it_in->remove_latest_semantic_rule_for_entry(info_needed.non_term_entry, info_needed.sibling_index, info_needed.semantic_entry_index);
+                    <find_parent_entry, find_nested_entry_technique, check_semantic_entry, list_of_entries_to_find_it_in>
+                    (output_config, position);
+                list_of_entries_to_find_it_in->remove_latest_semantic_rule_for_entry(info_needed.non_term_entry, info_needed.sibling_index, info_needed.semantic_entry_index);
             }
             catch (std::string error_sent_by_reporter) {
                 throw std::string{ "OPTION TO REMOVE SEMANTIC ENTRY FROM THE NON TERMINAL ENTRY PASSED: " + error_sent_by_reporter };
@@ -356,7 +356,7 @@ namespace printing_tools {
             return delimiter_position + 1;//+1 is to skip the delemiter_position index itself
         }
 
-        std::string::size_type option_to_change_input_stream(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
+        void option_to_change_input_stream(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
             std::string file_name;
             try {
                 file_name = absolute_base::read_string_from_string_at_a_position(output_config, &position);
@@ -373,26 +373,26 @@ namespace printing_tools {
             return delimiter_position + 1;//+1 is to skip the delemiter_position index itself
         }
 
-        std::string::size_type option_to_decrypt(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
+        void option_to_decrypt(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
 
             //      ~       ###TODO LATER###     ~
             return 0;
 
         }
-        std::string::size_type option_to_encrypt(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
+        void option_to_encrypt(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
 
             //      ~       ###TODO LATER###     ~
             return 0;
 
         }
-        std::string::size_type option_to_hash(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
+        void option_to_hash(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
 
             //      ~       ###TODO LATER###     ~
             return 0;
 
         }
 
-        std::string::size_type print_output(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
+        void print_output(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
             *output << output_data;
         }
 
