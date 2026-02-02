@@ -78,12 +78,8 @@ export   namespace config_parsing_tools {
            }
 
          }
-         std::string get_raw_input(std::istream* input_stream, char *delimeter) {
-           
-            std::string raw_input{};
-            std::getline( *input_stream,raw_input, *delimeter);
-			
-            return raw_input;
+         void get_raw_input(std::istream* input_stream, std::string* input, char *delimeter) {
+           std::getline(input_stream, input, delimeter);
         }
         template<typename config>
          void push_latest_entry_as_sub_entry_of_an_entry(absolute_base::All_non_terminal_entries<config>* all_entries,  absolute_base::Non_terminal_name_entry<config>* entry_to_push_it_into) {
@@ -93,7 +89,7 @@ export   namespace config_parsing_tools {
 
         }
         template<typename config>
-         void parse_raw_input(absolute_base::All_non_terminal_entries<config>* all_entries, std::spanstream *line_stream, char *delemeter,  char charactor_to_escape_delimeter_with, std::istream* input_stream) {
+         void parse_raw_input(absolute_base::All_non_terminal_entries<config>* all_entries, char *delemeter,  char charactor_to_escape_delimeter_with, std::istream* input_stream) {
 
             *line_stream>>*delemeter;
             constexpr size_t size_of_common_escape_charactors = 2;
@@ -114,7 +110,7 @@ export   namespace config_parsing_tools {
 
             void change_current_line() {
               
-                line_stream.clear();
+                
 
                 line_stream.str(get_raw_input(&input_stream, &delimeter));
                 Config_reader_helper::parse_raw_input(&all_entries, &line_stream, &delimeter, input_stream->get());
@@ -160,7 +156,8 @@ export   namespace config_parsing_tools {
             }
         private:
             absolute_base::All_non_terminal_entries_implementation<config> all_entries{};
-            std::istringstream line_stream{ "" };
+            std::string current_input;
+			std::string::size_type position;
             std::unique_ptr<std::istream> input_stream;
            char delimeter;
             
