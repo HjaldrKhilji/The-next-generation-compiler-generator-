@@ -12,10 +12,10 @@ namespace printing_tools{
 namespace helper_templates_for_options {
     
    
-    template<bool search>
-    inline Non_terminal_name_entry* return_non_terminal_entry(const std::string& output_config, std::string::size_type* position, absolute_base::All_non_terminal_entries* list_of_entries_to_find_it_in);
-    template<> 
-     void return_non_terminal_entry<true>(const std::string& output_config, std::string::size_type* position, absolute_base::All_non_terminal_entries* list_of_entries_to_find_it_in) {
+    template<bool search, absolute_base::All_non_terminal_entries* list_of_entries_to_find_it_in>
+    inline Non_terminal_name_entry* return_non_terminal_entry(const std::string& output_config, std::string::size_type* position);
+    template<absolute_base::All_non_terminal_entries* list_of_entries_to_find_it_in> 
+     void return_non_terminal_entry<true>(const std::string& output_config, std::string::size_type* position) {
         uint64_t non_terminal_entry_name = absolute_base::read_number_from_string_at_a_position<uint64_t>(output_config, position);
         try {
             auto entry_found = std::find_if(list_of_entries_to_find_it_in->begin(), list_of_entries_to_find_it_in->end(),
@@ -36,8 +36,8 @@ namespace helper_templates_for_options {
         }
         return entry_found;
     }
-    template<>
-    inline Non_terminal_name_entry* return_non_terminal_entry<false>(const std::string& output_config, std::string::size_type* position, absolute_base::All_non_terminal_entries* list_of_entries_to_find_it_in) {
+    template<absolute_base::All_non_terminal_entries* list_of_entries_to_find_it_in>
+    inline Non_terminal_name_entry* return_non_terminal_entry<false>(const std::string& output_config, std::string::size_type* position) {
         if (!list_of_entries_to_find_it_in->size()) {
             throw std::string{ "semantic entry not found (PRINTER ERROR)" };
         }
@@ -46,11 +46,11 @@ namespace helper_templates_for_options {
 
 
 
-    template<bool check>
-    inline int return_semantic_entry_helper(const std::string& output_config, std::string::size_type* position, const Sibling& entry_containing_semantic_entry, absolute_base::All_non_terminal_entries* list_of_entries_to_find_it_in);
+    template<bool check, absolute_base::All_non_terminal_entries* list_of_entries_to_find_it_in>
+    inline int return_semantic_entry_helper(const std::string& output_config, std::string::size_type* position, const Sibling& entry_containing_semantic_entry);
     
-    template<>
-    int return_semantic_entry_helper<true>(const std::string& output_config, std::string::size_type* position, const Sibling& entry_containing_semantic_entry, absolute_base::All_non_terminal_entries* list_of_entries_to_find_it_in) {
+    template<absolute_base::All_non_terminal_entries* list_of_entries_to_find_it_in>
+    int return_semantic_entry_helper<true>(const std::string& output_config, std::string::size_type* position, const Sibling& entry_containing_semantic_entry) {
         std::string semantic_entry_pattern = absolute_base::read_string_from_string_at_a_position(output_config, position);
         int index{ 0 };
         auto entry_found = std::find_if(entry_containing_semantic_entry->begin(), entry_containing_semantic_entry->end(),
@@ -64,8 +64,8 @@ namespace helper_templates_for_options {
         }
         return index;
     }
-    template<>
-    inline int return_semantic_entry_helper<true>(const std::string& output_config, std::string::size_type* position, const Sibling& entry_containing_semantic_entry, Non_terminal_name_entry* list_of_entries_to_find_it_in) {
+    template<absolute_base::All_non_terminal_entries* list_of_entries_to_find_it_in>
+    inline int return_semantic_entry_helper<true>(const std::string& output_config, std::string::size_type* position, const Sibling& entry_containing_semantic_entry) {
         if (!entry_containing_semantic_entry.size()) {
             throw std::string{ "semantic entry not found" };
         }
@@ -99,8 +99,8 @@ namespace helper_templates_for_options {
             int semantic_entry_index;
             Non_terminal_name_entry* non_term_entry;
         };
-    template<bool find_parent_entry,bool find_nested_non_term_entry_using_number_or_name, bool check_semantic_entry>
-    indexes_and_non_term_entry return_semantic_entry_index(const std::string& output_config, std::string::size_type* position, absolute_base::All_non_terminal_entries* list_of_entries_to_find_it_in) {
+    template<bool find_parent_entry,bool find_nested_non_term_entry_using_number_or_name, bool check_semantic_entry, absolute_base::All_non_terminal_entries* list_of_entries_to_find_it_in>
+    indexes_and_non_term_entry return_semantic_entry_index(const std::string& output_config, std::string::size_type* position) {
     Non_terminal_name_entry* entry = return_non_terminal_entry<find_parent_entry>(output_config, position, list_of_entries_to_find_it_in);
 
     int sibling_index=
