@@ -23,22 +23,22 @@ template<typename config>
 using absolute_base::All_non_terminal_entries_implementation;
 
 template<typename config>
-void All_non_terminal_entries_implementation::add_a_child_to_entry
-(absolute_base::Non_terminal_name_entry<config> *entry_to_be_added_to,  absolute_base::Non_terminal_name_entry<config>&& entry_to_add) final {
+void All_non_terminal_entries::add_a_child_to_entry
+(absolute_base::Non_terminal_name_entry<config> *entry_to_be_added_to,  absolute_base::Non_terminal_name_entry<config>&& entry_to_add)  {
     if (!map_for_fast_retrival_of_entries.contains(entry_to_be_added_to->name)) {
         throw std::string{ "COMPILER: entry not found" };
     }
     map_for_fast_retrival_of_entries[entry_to_be_added_to->name]->sub_entry.push_back(std::move(entry_to_add));
 }
 template<typename config>
-void All_non_terminal_entries_implementation::add_semantic_rule_to_entry(absolute_base::Non_terminal_name_entry<config>* entry_to_be_added_to,  Semantical_analyzer_config_entry<config>&& semantical_rule_entry, int sibling_index, int semantic_entry_index) final {
+void All_non_terminal_entries::add_semantic_rule_to_entry(absolute_base::Non_terminal_name_entry<config>* entry_to_be_added_to,  Semantical_analyzer_config_entry<config>&& semantical_rule_entry, int sibling_index, int semantic_entry_index)  {
     auto& semantic_rules_for_entry = entry_to_be_added_to.all_semantical_analysis_rules[sibling_index];
     semantic_rules_for_entry.insert(semantic_rules_for_entry.begin() + semantic_entry_index, std::move(semantical_rule_entry));
 
 }
 template<typename config>
-void All_non_terminal_entries_implementation::remove_entry
-(absolute_base::Non_terminal_name_entry<config>* entry_to_remove) final {
+void All_non_terminal_entries::remove_entry
+(absolute_base::Non_terminal_name_entry<config>* entry_to_remove)  {
     auto map_iterator = map_for_fast_retrival_of_entries.find(entry_to_remove->name);
     //it is the caller's(the whole projects) job to make sure that entry_to_remove is in the map
     
@@ -51,7 +51,7 @@ void All_non_terminal_entries_implementation::remove_entry
 }
 template<typename config>
 
-void All_non_terminal_entries_implementation::remove_semantic_rule_of_entry(absolute_base::Non_terminal_name_entry<config>* entry_to_remove_from, int sibling_index, int index_of_semantic_rule) final {
+void All_non_terminal_entries::remove_semantic_rule_of_entry(absolute_base::Non_terminal_name_entry<config>* entry_to_remove_from, int sibling_index, int index_of_semantic_rule)  {
     auto& semantic_rules_for_entry = entry_to_remove_from.all_semantical_analysis_rules[sibling_index];
     semantic_rules_for_entry.erase(v.begin() + index_of_semantic_rule);
 }
@@ -108,7 +108,7 @@ void absolute_base::check_pattern(const std::vector < Semantical_analyzer_config
     }
 
 template<typename config>
-void All_non_terminal_entries_implementation::print_all_content() final {
+void All_non_terminal_entries::print_all_content()  {
     //precondition:*this's  invariant is valid
     
     std::cout << "number of entries: " << list_of_all_non_term_entries_for_fast_traversal.size() << std::endl;
@@ -138,7 +138,7 @@ void All_non_terminal_entries_implementation::print_all_content() final {
     }
 }
 template<typename config>
-void All_non_terminal_entries_implementation::add_non_term_symbol_name(uint64_tname) final {
+void All_non_terminal_entries::add_non_term_symbol_name(uint64_tname)  {
   //precondition: "name" paremeter can not be empty
   //precondition: list_of_all_non_term_entries_for_fast_traversal is in a valid state 
   //postcondition: an entry is added to the "traversal list" only, hence you can only access the entry by traversing the deque,
@@ -153,7 +153,7 @@ void All_non_terminal_entries_implementation::add_non_term_symbol_name(uint64_tn
 
   }
 template<typename config>
-  void All_non_terminal_entries_implementation::add_non_term_pattern_for_newest_entry(config pattern) final {
+  void All_non_terminal_entries::add_non_term_pattern_for_newest_entry(config pattern)  {
     //precondition: "pattern" paremeter dose'nt contain a invalid regex expression
     //precondition: list_of_all_non_term_entries_for_fast_traversal is in a valid state and contains atleast a single entry
     //precondition: map_for_fast_retrival_of_entries is also in a valid state, and is amenable(mutable) enough to have a data inserted into it
@@ -170,7 +170,7 @@ template<typename config>
 
   }
 template<typename config>
-  config& All_non_terminal_entries_implementation::get_pattern_of_nested_non_term_symbol_pattern(uint64_t sub_symbol_name) final {
+  config& All_non_terminal_entries::get_pattern_of_nested_non_term_symbol_pattern(uint64_t sub_symbol_name)  {
   //precondition: "sub_symbol_name" paremeter can not be empty
   //precondition: map_for_fast_retrival_of_entries is in a valid state and is not empty
   //postcondition: the entry corrsponding to the key "sub_symbol_name" from map_for_fast_retrival_of_entries, and the copy of the 
@@ -184,7 +184,7 @@ template<typename config>
 
   }
 template<typename config>
-  std::reference_wrapper < std::string > All_non_terminal_entries_implementation::get_parmenant_name_of_nested_non_term_symbol_pattern(uint64_t sub_symbol_name) final {
+  std::reference_wrapper < std::string > All_non_terminal_entries::get_parmenant_name_of_nested_non_term_symbol_pattern(uint64_t sub_symbol_name)  {
 //precondition: "sub_symbol_name" paremeter can not be empty
   //precondition: map_for_fast_retrival_of_entries is in a valid state and is not empty
   //postcondition: the entry corrsponding to the key "sub_symbol_name" from map_for_fast_retrival_of_entries, and the reference wrapper containing
@@ -199,7 +199,7 @@ template<typename config>
 
   }
 template<typename config>
-  void All_non_terminal_entries_implementation::add_nested_non_term_symbol_to_the_newest_entry(uint64_t sub_symbol_name) final {
+  void All_non_terminal_entries::add_nested_non_term_symbol_to_the_newest_entry(uint64_t sub_symbol_name)  {
     //precondition: "sub_symbol_name" paremeter can not be empty
     //precondition: map_for_fast_retrival_of_entries is in a valid state and is not empty
     //precondition: list_of_all_non_term_entries_for_fast_traversal is in a valid state and contains atleast a single entry
@@ -213,7 +213,7 @@ template<typename config>
 
   }
 template<typename config>
-  void All_non_terminal_entries_implementation::add_semantic_rule_for_newest_sub_entry<config>(const absolute_base::Semantical_analyzer_config_entry<config> && semantical_rule_entry) final {
+  void All_non_terminal_entries::add_semantic_rule_for_newest_sub_entry<config>(const absolute_base::Semantical_analyzer_config_entry<config> && semantical_rule_entry)  {
     //I am using const rvalue reference to force the programmer to first gather all information, and then built the object using that in the same line as calling the function
     //hence avoiding any idiotic errors that he could do with such a important data structure, while trying to be "clever"
     //precondition: the paremeter "semantical_rule_entry" is in a valid state
@@ -239,14 +239,14 @@ template<typename config>
     }
   }
 template<typename config>
-  absolute_base::Non_terminal_name_entry<config>& All_non_terminal_entries_implementation::get_current_non_term_entry(int index) final {
+  absolute_base::Non_terminal_name_entry<config>& All_non_terminal_entries::get_current_non_term_entry(int index)  {
       //precondition:index is not negative and list_of_all_non_term_entries_for_fast_traversal is in a valid state
       //postcondition: returns a non term entry at the given index to the caller
       return list_of_all_non_term_entries_for_fast_traversal[index];
 
   }
 template<typename config>
-  absolute_base::Non_terminal_name_entry<config>& All_non_terminal_entries_implementation::get_current_nested_non_term_entry(int index_for_nested_non_term, int index) final {
+  absolute_base::Non_terminal_name_entry<config>& All_non_terminal_entries::get_current_nested_non_term_entry(int index_for_nested_non_term, int index)  {
       //precondition:the given indexes are not negative and list_of_all_non_term_entries_for_fast_traversal is in a valid state
     //postcondition: returns a nested non term entry at the index "[index][index_for_nested_non_term]"
       return *(list_of_all_non_term_entries_for_fast_traversal[index].sub_entries[index_for_nested_non_term]);
