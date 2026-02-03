@@ -67,7 +67,7 @@ export   namespace config_parsing_tools {
         }
         
         template<typename config>
-         inline void semantical_analyzer_entry_reader(const line_stream& input_stream, absolute_base::All_non_terminal_entries<config>* all_entries, char delimeter, char charactor_to_escape_delimeter_with) {
+         inline void semantical_analyzer_entry_reader(const line_stream& input_stream, absolute_base::All_non_terminal_entries<config>* all_entries, char delimeter) {
              
              
             while((char c, line_stream >> c, c)) {
@@ -75,7 +75,7 @@ export   namespace config_parsing_tools {
             uint64_t non_terminal_name_to_search_inside;
 			line_stream>>non_terminal_name_to_search_inside;
 			config semantic_pattern_to_check{};
-	        read_input(line_stream, semantic_pattern_to_check, delimeter, charactor_to_escape_delimeter_with, all_non_term_entries, nullptr);
+	        read_input(line_stream, semantic_pattern_to_check, delimeter, all_non_term_entries, nullptr);
             unsigned int minimum_amount_of_Matches = 0;
             unsigned int maximum_amount_of_matches = 0; //only used if settings_for_semantic_rules dosent have check_atleast on.
             
@@ -85,7 +85,6 @@ export   namespace config_parsing_tools {
             parse_config_for_semantic_entry<config>(line_stream,&fully_parsed_config, &minimum_amount_of_Matches, &maximum_amount_of_matches);
             
              all_entries->add_semantic_rule_for_newest_sub_entry(absolute_base::Semantical_analyzer_config_entry{
-              all_entries.get_parmenant_name_of_nested_non_term_symbol_pattern(non_terminal_name_to_search_inside),
                 semantic_pattern_to_check,
                 fully_parsed_config,
                 minimum_amount_of_Matches,
@@ -103,7 +102,7 @@ export   namespace config_parsing_tools {
 
         }
         template<typename config>
-        inline void parse_raw_input(absolute_base::All_non_terminal_entries<config>* all_entries, char *delemeter,  char charactor_to_escape_delimeter_with, const line_stream& input_stream, std::istream* extra_input) {
+        inline void parse_raw_input(absolute_base::All_non_terminal_entries<config>* all_entries, char *delemeter, const line_stream& input_stream, std::istream* extra_input) {
 
             line_stream>>*delemeter;
             constexpr size_t size_of_common_escape_charactors = 2;
@@ -111,7 +110,7 @@ export   namespace config_parsing_tools {
             input_stream>>non_terminal_name;
 			all_entries->add_non_term_symbol_name(non_terminal_name);
             config non_terminal_pattern;
-	        read_input(line_stream, non_terminal_pattern, delimeter, charactor_to_escape_delimeter_with, all_non_term_entries, input_stream, extra_input);
+	        read_input(line_stream, non_terminal_pattern, delimeter, all_non_term_entries, input_stream, extra_input);
             all_entries->add_non_term_pattern_for_newest_entry(non_terminal_pattern);
         }
         };
