@@ -183,21 +183,7 @@ template<typename config>
     return (map_for_fast_retrival_of_entries.at(sub_symbol_name))->pattern;
 
   }
-template<typename config>
-  std::reference_wrapper < std::string > All_non_terminal_entries::get_parmenant_name_of_nested_non_term_symbol_pattern(uint64_t sub_symbol_name)  {
-//precondition: "sub_symbol_name" paremeter can not be empty
-  //precondition: map_for_fast_retrival_of_entries is in a valid state and is not empty
-  //postcondition: the entry corrsponding to the key "sub_symbol_name" from map_for_fast_retrival_of_entries, and the reference wrapper containing
-  //a reference to the data member "pattern" of the entry is returned
-    if (!map_for_fast_retrival_of_entries.contains(sub_symbol_name)) {
-     
-      throw std::string("COMPILER: get_parmenant_name_of_nested_non_term_symbol_pattern error");
 
-    }
-
-    return map_for_fast_retrival_of_entries.at(sub_symbol_name)->name;
-
-  }
 template<typename config>
   void All_non_terminal_entries::add_nested_non_term_symbol_to_the_newest_entry(uint64_t sub_symbol_name)  {
     //precondition: "sub_symbol_name" paremeter can not be empty
