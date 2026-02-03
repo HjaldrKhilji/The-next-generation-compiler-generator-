@@ -19,13 +19,13 @@ export   namespace config_parsing_tools {
 	struct line_stream{
 	std::string string_buffer;
 	std::string::size_type position;
-	void operator>>(uint64_t& dest){
+	void operator>>(uint64_t& dest) const {
 	dest= absolute_base::read_number_from_string_at_a_position<uint64>(string_buffer, &position);
 	}
-	void operator>>(std::string& dest){
+	void operator>>(std::string& dest) const {
 	dest= absolute_base::read_number_from_string_at_a_position<std::string>(string_buffer, &position);
 	}
-	void operator>>(char &dest){
+	void operator>>(char &dest) const {
 	dest= string_buffer[position];
 	static_cast<uint64_t>(position)++;
 	}
