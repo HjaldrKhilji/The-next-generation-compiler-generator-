@@ -67,7 +67,7 @@ export   namespace config_parsing_tools {
         }
         
         template<typename config>
-         inline void semantical_analyzer_entry_reader(const line_stream& input_stream, absolute_base::All_non_terminal_entries<config>* all_entries, char delimeter) {
+         inline void semantical_analyzer_entry_reader(const line_stream& input_stream, absolute_base::All_non_terminal_entries<config>* all_entries) {
              
              
             while((char c, line_stream >> c, c)) {
@@ -75,7 +75,7 @@ export   namespace config_parsing_tools {
             uint64_t non_terminal_name_to_search_inside;
 			line_stream>>non_terminal_name_to_search_inside;
 			config semantic_pattern_to_check{};
-	        read_input(line_stream, semantic_pattern_to_check, delimeter, all_non_term_entries, nullptr);
+	        read_input(line_stream, semantic_pattern_to_check, all_non_term_entries, nullptr);
             unsigned int minimum_amount_of_Matches = 0;
             unsigned int maximum_amount_of_matches = 0; //only used if settings_for_semantic_rules dosent have check_atleast on.
             
@@ -102,15 +102,14 @@ export   namespace config_parsing_tools {
 
         }
         template<typename config>
-        inline void parse_raw_input(absolute_base::All_non_terminal_entries<config>* all_entries, char *delemeter, const line_stream& input_stream, std::istream* extra_input) {
+        inline void parse_raw_input(absolute_base::All_non_terminal_entries<config>* all_entries, const line_stream& input_stream, std::istream* extra_input) {
 
-            line_stream>>*delemeter;
             constexpr size_t size_of_common_escape_charactors = 2;
 			uint64_t non_terminal_name;
             input_stream>>non_terminal_name;
 			all_entries->add_non_term_symbol_name(non_terminal_name);
             config non_terminal_pattern;
-	        read_input(line_stream, non_terminal_pattern, delimeter, all_non_term_entries, input_stream, extra_input);
+	        read_input(line_stream, non_terminal_pattern, all_non_term_entries, input_stream, extra_input);
             all_entries->add_non_term_pattern_for_newest_entry(non_terminal_pattern);
         }
         };
@@ -129,7 +128,7 @@ export   namespace config_parsing_tools {
                     try {
 						std::getline(input_stream, current_input.string_buffer, delimeter);
 						current_input>>delimeter;
-						Config_reader_helper::parse_raw_input(&all_entries, &line_stream, &delimeter, input_stream->get());
+						Config_reader_helper::parse_raw_input(&all_entries, &line_stream, input_stream->get());
 
                     }
                     catch (...) {
