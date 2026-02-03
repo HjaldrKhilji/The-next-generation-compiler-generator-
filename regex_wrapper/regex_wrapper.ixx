@@ -7,17 +7,25 @@ import Config_parser;
 namespace estd {
 
  namespace option_functions{
-        using option_function_signature=void(  absolute_base::All_non_terminal_entries <config>*,  std::istream *, char);
-        void sub_entry(bsolute_base::All_non_terminal_entries <config>* all_non_term_entries,  std::istream *extra_input, char line_delimeter){
-		
+		template<typename config>
+        using option_function_signature=void(  absolute_base::All_non_terminal_entries <config>*, const config_parsing_tools::line_stream& stream, std::istream *, char);
+        template<config>
+		void sub_entry(absolute_base::All_non_terminal_entries <config>* all_non_term_entries, const config_parsing_tools::line_stream& stream,  std::istream *extra_input, char line_delimeter){
+		uint_64 name;
+		stream>>name;
+		all_non_term_entires.add_nested_non_term_symbol_to_the_newest_entry(name);
 		}
-		void semantic_entries( absolute_base::All_non_terminal_entries <config>* all_non_term_entries,  std::istream *extra_input, char line_delimeter){
-		
+		template<typename config>
+		void semantic_entries( absolute_base::All_non_terminal_entries <config>* all_non_term_entries,const config_parsing_tools::line_stream& stream,  std::istream *extra_input, char line_delimeter){
+		semantical_analyzer_entry_reader<config>
 		}
-		
+		template<typename config>
+		void 
+		template<typename config>
 
-		std::vector<option_function_signature> options{};
-
+		class all_options{
+		static std::vector<option_function_signature<config>> options{};
+		}
 
          
         }
@@ -28,7 +36,7 @@ namespace estd {
 	std::string string_to_match;
 	
 	};
-	void read_input(config_parsing_tools::line_stream& stream, processed_string* str, char delimeter, char charactor_to_escape_delimeter_with, absolute_base::All_non_terminal_entries <config>* all_non_term_entries,  std::istream *extra_input){
+	void read_input(const config_parsing_tools::line_stream& stream, processed_string* str, char delimeter, absolute_base::All_non_terminal_entries <config>* all_non_term_entries,  std::istream *extra_input){
 	stream>>*str;
 	
 	}
@@ -93,13 +101,13 @@ namespace estd {
 
 	}
 	}
-	void read_input(config_parsing_tools::line_stream& stream, regex_patterm* str, char delimeter, char charactor_to_escape_delimeter_with, absolute_base::All_non_terminal_entries<config>* all_non_term_entries, std::istream *extra_input){
+	void read_input(const config_parsing_tools::line_stream& stream, regex_patterm* str, char delimeter, absolute_base::All_non_terminal_entries<config>* all_non_term_entries, std::istream *extra_input){
 	for(auto &x:pattern){
 	stream>>x->ignore;
 	stream>>x->optional;
 	stream>>x->minimum_number_of_time_to_match;
 	stream>>x->maximum_number_of_times_to_match;
-	read_input(stream, x->string_to_match, delimeter, charactor_to_escape_delimeter_with, all_non_term_entries, extra_input, current_aka_latest_entry);
+	read_input(stream, x->string_to_match, delimeter, all_non_term_entries, extra_input, current_aka_latest_entry);
 	
 	}
     //a faster (and simpler) alternative to even boost regex
