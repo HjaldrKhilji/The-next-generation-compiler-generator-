@@ -20,7 +20,7 @@ namespace estd {
 	std::string string_to_match;
 	
 	};
-	void read_input(config_parsing_tools::line_stream& stream, processed_string* str, char delimeter, char charactor_to_escape_delimeter_with, absolute_base::All_non_terminal_entries<config>* all_non_term_entries,  std::istream *extra_input){
+	void read_input(config_parsing_tools::line_stream& stream, processed_string* str, char delimeter, char charactor_to_escape_delimeter_with, absolute_base::All_non_terminal_entries<config>* all_non_term_entries,  std::istream *extra_input, absolute_base::Non_terminal_entry* current_aka_latest_entry){
 	stream>>*str;
 	
 	}
@@ -85,13 +85,13 @@ namespace estd {
 
 	}
 	}
-	void read_input(config_parsing_tools::line_stream& stream, regex_patterm* str, char delimeter, char charactor_to_escape_delimeter_with, absolute_base::All_non_terminal_entries<config>* all_non_term_entries, std::istream *extra_input){
+	void read_input(config_parsing_tools::line_stream& stream, regex_patterm* str, char delimeter, char charactor_to_escape_delimeter_with, absolute_base::All_non_terminal_entries<config>* all_non_term_entries, std::istream *extra_input,  absolute_base::Non_terminal_entry *current_aka_latest_entry){
 	for(auto &x:pattern){
 	stream>>x->ignore;
 	stream>>x->optional;
 	stream>>x->minimum_number_of_time_to_match;
 	stream>>x->maximum_number_of_times_to_match;
-	read_input(stream, x->string_to_match, delimeter, charactor_to_escape_delimeter_with, all_non_term_entries, extra_input);
+	read_input(stream, x->string_to_match, delimeter, charactor_to_escape_delimeter_with, all_non_term_entries, extra_input, current_aka_latest_entry);
 	
 	}
     //a faster (and simpler) alternative to even boost regex
