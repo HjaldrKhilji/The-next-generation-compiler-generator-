@@ -46,21 +46,6 @@ tempate<typename arg...>
          }
      }
   }
- std::string common_functions::read_identifier(std::spanstream* line_stream) {
-     //precondition: line_stream is in a valid state and is not empty
-     //post condition: std::string preceded by list of ignored white spaces, and terminated by a non alpha numeric character that is not a underscore
-     //is returned
-     ///post condition : line_stream argument's state is changed to have the property "std::skipws" set.
-     std::string identifier;
-     
-     for (; *line_stream >> c && (isalnum(c) || c == '_'); identifier += c);
-     line_stream->putback(c);
-     if (identifier.empty()) {
-         throw std::runtime_error{"read_identifier error"};
-     }
-     return identifier;
-
- }
 
  template <common_functions::Numeric T>
 T common_functions::read_number_from_string_at_a_position(const std::string& source, std::string::size_type* position) {
@@ -110,6 +95,7 @@ catch(std::out_of_range){
 	 return result;
 
  }
+
 
 
 
