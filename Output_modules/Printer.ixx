@@ -9,7 +9,7 @@ module;
 #include<future>
 
 #include <spanstream> 
-
+#include<limits>
 #include <array>          
 // For the fixed-size dispatch table
 // For data structures
@@ -144,7 +144,7 @@ export namespace printing_tools {
         std::shared_ptr<char> delimeter;
 
         // The complete, fixed-size instruction set (AI generated(i wouldnt write all this myself) (256 entries)
-static const Option_functions_wrapper_type operations_dispatch_table[256] = {
+static const std::array<Option_functions_wrapper_type,std::numeric_limits<char>::max()> operations_dispatch_table[256] = {
     /* 0x00 - 0x05: UTILITY */
     &options::print_output,                         /* 0x00 */
     &options::option_to_replicate_output,           /* 0x01 */
