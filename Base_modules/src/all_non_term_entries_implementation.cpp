@@ -24,21 +24,21 @@ using absolute_base::All_non_terminal_entries_implementation;
 
 template<typename config>
 void All_non_terminal_entries_implementation::add_a_child_to_entry
-(absolute_base::Non_terminal_name_entry<config> *entry_to_be_added_to,  absolute_base::Non_terminal_name_entry<config>&& entry_to_add) override{
+(absolute_base::Non_terminal_name_entry<config> *entry_to_be_added_to,  absolute_base::Non_terminal_name_entry<config>&& entry_to_add) final {
     if (!map_for_fast_retrival_of_entries.contains(entry_to_be_added_to->name)) {
         throw std::string{ "COMPILER: entry not found" };
     }
     map_for_fast_retrival_of_entries[entry_to_be_added_to->name]->sub_entry.push_back(std::move(entry_to_add));
 }
 template<typename config>
-void All_non_terminal_entries_implementation::add_semantic_rule_to_entry(absolute_base::Non_terminal_name_entry<config>* entry_to_be_added_to,  Semantical_analyzer_config_entry<config>&& semantical_rule_entry, int sibling_index, int semantic_entry_index) override {
+void All_non_terminal_entries_implementation::add_semantic_rule_to_entry(absolute_base::Non_terminal_name_entry<config>* entry_to_be_added_to,  Semantical_analyzer_config_entry<config>&& semantical_rule_entry, int sibling_index, int semantic_entry_index) final {
     auto& semantic_rules_for_entry = entry_to_be_added_to.all_semantical_analysis_rules[sibling_index];
     semantic_rules_for_entry.insert(semantic_rules_for_entry.begin() + semantic_entry_index, std::move(semantical_rule_entry));
 
 }
 template<typename config>
 void All_non_terminal_entries_implementation::remove_entry
-(absolute_base::Non_terminal_name_entry<config>* entry_to_remove) override {
+(absolute_base::Non_terminal_name_entry<config>* entry_to_remove) final {
     auto map_iterator = map_for_fast_retrival_of_entries.find(entry_to_remove->name);
     //it is the caller's(the whole projects) job to make sure that entry_to_remove is in the map
     
@@ -51,19 +51,19 @@ void All_non_terminal_entries_implementation::remove_entry
 }
 template<typename config>
 
-void All_non_terminal_entries_implementation::remove_semantic_rule_of_entry(absolute_base::Non_terminal_name_entry<config>* entry_to_remove_from, int sibling_index, int index_of_semantic_rule) override {
+void All_non_terminal_entries_implementation::remove_semantic_rule_of_entry(absolute_base::Non_terminal_name_entry<config>* entry_to_remove_from, int sibling_index, int index_of_semantic_rule) final {
     auto& semantic_rules_for_entry = entry_to_remove_from.all_semantical_analysis_rules[sibling_index];
     semantic_rules_for_entry.erase(v.begin() + index_of_semantic_rule);
 }
 
 template<typename config>
 
-void absolute_base::Semantical_analyzer_config_entry::check_pattern(const std::vector < Semantical_analyzer_config_entry<config> >& semantical_checks, const std::string& text) {
+void absolute_base::Semantical_analyzer_config_entry::check_pattern(const std::vector < Semantical_analyzer_config_entry<config> >& semantical_checks, const std::string& text)  {
     std::string failed_matches{};
     uint64_t semantic_entry_index{};
     for (auto& x : semantical_checks) {
         uint64_t number_of_matches{};
-        while(x.regex_match(text)){
+        while(x.the_pattern_to_check.regex_match(text)){
             number_of_matches++;
         }
         if (all_settings == Settings_for_semantical_rules::NONE && number_of_matches) {
