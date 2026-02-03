@@ -1,6 +1,7 @@
 module;
 #include<vector>
 #include<string>
+#include <limits>
 module estd_regex;
 import all_declarations;
 import Config_parser;
@@ -22,12 +23,25 @@ namespace estd {
 		const config_parsing_tools::line_stream stream_used_to_parse_semantic_rules{std::getline(*extra_input, current_input.string_buffer, delimeter)};
 		semantical_analyzer_entry_reader<config>(stream_used_to_parse_semantic_rules,all_non_term_entries);
 		}
+		
 		template<typename config>
-		void 
+		void contaconate_pattern( absolute_base::All_non_terminal_entries <config>* all_non_term_entries,const config_parsing_tools::line_stream& stream,  std::istream *extra_input){	
+		uint_64 index;
+		stream>>index;
+		all_non_term_entries.begin()->pattern+=get_current_non_term_entry(index)->pattern;
+		}
 		template<typename config>
-
+		void no_op( absolute_base::All_non_terminal_entries <config>* all_non_term_entries,const config_parsing_tools::line_stream& stream,  std::istream *extra_input){	
+		}
+		template<typename config>
 		struct all_options{
-		static constexpr std::array<option_function_signature<config>> options{};
+		static constexpr std::array<option_function_signature<config>,std::numeric_limits<char>::max()> options
+		{
+		&option_function_signature,
+		&semantic_entries,
+		&contaconate_pattern<config>,
+		&no_op //everything after this gets no_op by default
+		};
 		};
 
          
@@ -39,9 +53,14 @@ namespace estd {
 	std::string string_to_match;
 	
 	};
+	template<typename config>
 	void read_input(const config_parsing_tools::line_stream& stream, processed_string* str, absolute_base::All_non_terminal_entries <config>* all_non_term_entries,  std::istream *extra_input){
 	stream>>*str;
-	
+	std::string options;
+	stream>>options;
+	for(auto x: options){
+	all_options::options[x];
+	}
 	}
 	namespace helper_functions= printing_tools::helper_templates_for_options::helpers_for_arithmetic_options;
 	//aliases to change if you want to move away from boost
@@ -104,6 +123,7 @@ namespace estd {
 
 	}
 	}
+	template<typename config>
 	void read_input(const config_parsing_tools::line_stream& stream, regex_patterm* str, absolute_base::All_non_terminal_entries<config>* all_non_term_entries, std::istream *extra_input){
 	for(auto &x:pattern){
 	stream>>x->ignore;
