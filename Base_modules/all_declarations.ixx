@@ -214,13 +214,13 @@ again these are just my opinion, dont judge
         template<typename config>
         struct Semantical_analyzer_config_entry {
             config the_pattern_to_check;
-            std::reference_wrapper < std::string > name_of_non_term_symbol_to_check;
             Settings_for_semantical_rules all_settings;
 
             unsigned int minimum_amount_of_matches;
             unsigned int maximum_amount_of_matches;
-            bool check_pattern(std::string text);
         };
+		void check_pattern(const std::vector < Semantical_analyzer_config_entry<config> >& semantical_checks, const std::string& text);
+
         struct is_moved_from_bool {
             
             bool is_moved_from=false;
