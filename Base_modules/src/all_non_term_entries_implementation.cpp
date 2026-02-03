@@ -128,7 +128,7 @@ void All_non_terminal_entries::print_all_content()  {
             for (auto semantic_rules_in_sub_entries : current_entry.all_semantical_analysis_rules[index]) {
                 std::cout << "number of semantic rules for current nested entry in current entry: " << current_entry.all_semantical_analysis_rules[index].size() << std::endl;
 
-                std::cout << semantic_rules_in_sub_entries.name_of_non_term_symbol_to_check.get() << " " << semantic_rules_in_sub_entries.the_pattern_to_check << " " <<
+                std::cout << " " << semantic_rules_in_sub_entries.the_pattern_to_check << " " <<
                     semantic_rules_in_sub_entries.minimum_amount_of_matches << " " << semantic_rules_in_sub_entries.maximum_amount_of_matches << std::endl;;
 
             }
