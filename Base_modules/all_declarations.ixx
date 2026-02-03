@@ -309,35 +309,19 @@ again these are just my opinion, dont judge
             //the traversal begin() returns the last element, and end() returns one before the
                         //first element, thats because the last entry will be the one that the user of this
                         //structure will PROBABLY traverse from.
-        public: virtual void add_non_term_symbol_name(std::string name)=0;//this adds the non term symbol only to fast traversal list
-              virtual void add_non_term_pattern_for_newest_entry(config pattern)=0;//this adds the newest element to the fast search map as well, after it has enter the pattern into the newest element traversal list
-              virtual config& get_pattern_of_nested_non_term_symbol_pattern(std::string sub_symbol_name)=0;//this gets the pattern for a name, from the map, and the reason I say for nested non term symbol is because it is generally used for finding the symbols for nested non term symbols
-              virtual void add_nested_non_term_symbol_to_the_newest_entry(std::string sub_symbol_name)=0;//this just takes a string, which it assumes to be the name of a non term symbol, and finds the non term symbol(from the map), and adds it's reference into the nested non term symbol list of the newest entry
-              virtual void add_semantic_rule_for_newest_sub_entry(const Semantical_analyzer_config_entry<config>&& semantical_rule_entry)=0;//this is my favorite(I spend 4 days on making this), so all it does is that it finds the latest entry from the fast traversal list, then finds the latest sub entry in that, and adds this semantic rule entry for that sub entry 
-              virtual std::reference_wrapper < std::string > get_parmenant_name_of_nested_non_term_symbol_pattern(std::string sub_symbol_name)=0;//returns the permanent reference to a non term name
-              virtual void print_all_content()=0;
-              virtual Non_terminal_name_entry<config>& get_current_non_term_entry(int index)=0;//simply gets the non term entry at the given index
-              virtual Non_terminal_name_entry<config>& get_current_nested_non_term_entry(int index_for_nested_non_term, int index)=0;//simple gets the nested non term entry at the given indexes, or in [index][index_for_nested_non_term]
+        public:  void add_non_term_symbol_name(std::string name)=0;//this adds the non term symbol only to fast traversal list
+               void add_non_term_pattern_for_newest_entry(config pattern)=0;//this adds the newest element to the fast search map as well, after it has enter the pattern into the newest element traversal list
+               config& get_pattern_of_nested_non_term_symbol_pattern(std::string sub_symbol_name)=0;//this gets the pattern for a name, from the map, and the reason I say for nested non term symbol is because it is generally used for finding the symbols for nested non term symbols
+               void add_nested_non_term_symbol_to_the_newest_entry(std::string sub_symbol_name)=0;//this just takes a string, which it assumes to be the name of a non term symbol, and finds the non term symbol(from the map), and adds it's reference into the nested non term symbol list of the newest entry
+               void add_semantic_rule_for_newest_sub_entry(const Semantical_analyzer_config_entry<config>&& semantical_rule_entry)=0;//this is my favorite(I spend 4 days on making this), so all it does is that it finds the latest entry from the fast traversal list, then finds the latest sub entry in that, and adds this semantic rule entry for that sub entry 
+               std::reference_wrapper < std::string > get_parmenant_name_of_nested_non_term_symbol_pattern(std::string sub_symbol_name)=0;//returns the permanent reference to a non term name
+               void print_all_content()=0;
+               Non_terminal_name_entry<config>& get_current_non_term_entry(int index)=0;//simply gets the non term entry at the given index
+               Non_terminal_name_entry<config>& get_current_nested_non_term_entry(int index_for_nested_non_term, int index)=0;//simple gets the nested non term entry at the given indexes, or in [index][index_for_nested_non_term]
              
               using ReverseIt = std::reverse_iterator<std::deque < Non_terminal_name_entry<config> >::iterator>;
               using ReverseIt = std::reverse_iterator<std::deque < Non_terminal_name_entry<config> >::iterator>;
-            virtual ReverseIt end() = 0;
-            virtual ReverseIt physical_end() = 0;
-
-            virtual ReverseIt begin() = 0;
-            virtual Non_terminal_name_entry<config>* find_entry(std::string) = 0;
-
-            virtual void add_a_child_to_entry(Non_terminal_name_entry<config>* entry_to_be_added_to, absolute_base::Non_terminal_name_entry<config>&& entry_to_add) = 0;
-            virtual void add_semantic_rule_to_entry(Non_terminal_name_entry<config>* entry_to_be_added_to,  Semantical_analyzer_config_entry<config>&& semantical_rule_entry, int sibling_index, int semantic_entry_index) = 0;
-            virtual void remove_entry( Non_terminal_name_entry<config>* entry_to_add) = 0;
-            virtual void remove_semantic_rule_of_entry(Non_terminal_name_entry<config>* entry_to_remove_from, int sibling_index, int index_of_semantic_rule) = 0;
-            
-
-        };
-        template<typename config>
-        class All_non_terminal_entries_implementation : public  All_non_terminal_entries<type_of_config_or_pattern> {
-            
-              ReverseIt end() final{
+             ReverseIt end() final{
                   auto iterator = list_of_all_non_term_entries_for_fast_traversal.rbegin();
                   for (; bool{ iterator->is_moved_from }; iterator++);
                       return iterator;
@@ -350,22 +334,30 @@ again these are just my opinion, dont judge
 
               }
               using Iterator_for_list_of_entries = std::deque<Non_terminal_name_entry<config>>::iterator;
-        private:
-            //this type isnt a Value oriented type, but rather a reference type to a large
-            // global "database" of the entire program.
-            //the two types and aliases are just implementation details, please ignore it tho, if you arent implementing this class.
-            
-            using Reference_to_Non_terminal_name_entry = std::reference_wrapper < Non_terminal_name_entry<config> >;
-            
+             Non_terminal_name_entry<config>* find_entry(std::string) = 0;
 
-            //it should be obvious that the map is for fast lookups, and deque is for fast traversal:
-            
-            std::map < uint64_t,
-                Iterator_for_list_of_entries
-                > map_for_fast_retrival_of_entries;
-            std::deque < Non_terminal_name_entry<config> > list_of_all_non_term_entries_for_fast_traversal;
+             void add_a_child_to_entry(Non_terminal_name_entry<config>* entry_to_be_added_to, absolute_base::Non_terminal_name_entry<config>&& entry_to_add) = 0;
+             void add_semantic_rule_to_entry(Non_terminal_name_entry<config>* entry_to_be_added_to,  Semantical_analyzer_config_entry<config>&& semantical_rule_entry, int sibling_index, int semantic_entry_index) = 0;
+             void remove_entry( Non_terminal_name_entry<config>* entry_to_add) = 0;
+             void remove_semantic_rule_of_entry(Non_terminal_name_entry<config>* entry_to_remove_from, int sibling_index, int index_of_semantic_rule) = 0;
+                 
+		        private:
+		            //this type isnt a Value oriented type, but rather a reference type to a large
+		            // global "database" of the entire program.
+		            //the two types and aliases are just implementation details, please ignore it tho, if you arent implementing this class.
+		            
+		            using Reference_to_Non_terminal_name_entry = std::reference_wrapper < Non_terminal_name_entry<config> >;
+		            
+		
+		            //it should be obvious that the map is for fast lookups, and deque is for fast traversal:
+		            
+		            std::map < uint64_t,
+		                Iterator_for_list_of_entries
+		                > map_for_fast_retrival_of_entries;
+		            std::deque < Non_terminal_name_entry<config> > list_of_all_non_term_entries_for_fast_traversal;
 
         };
+       
         template<typename config>
         void dig_to_the_leaves_of_the_family_tree(Siblings<config> current_generation, std::stack< Siblings<config>>* family_tree) {
         //the algorithm gurrentied that only leaf nodes are the current_generation after this function is called
