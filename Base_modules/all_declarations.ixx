@@ -23,58 +23,6 @@ module;
 
 export module All_declarations;//for c++ noobs, including myself, the module name dosent have to be the same as file name.
 
-//The reasons that I have so many incomplete todos is because my program's design is still evolving, tho the principle remains, hence I cant make my code readable before I finsih my design.
-//gcc dosent support import std; , so I didnt use it
-//why is the design not complete? its not because I dont know how to make this, but because some limitations of myself unfold, so while I have a idea of how to make it, there will be some limtiations stopping me from knowing exactly how to.
-//semantic analyzer has the worst error handling when compared to all the other parts of my code, so that a TODO
-//todo: add more error handling for all stream operations(in the implementation) and make exceptions give some sort of gurrenties of crashes, or on recovery, instead of just undefined
-//todo: MAKE THE implementation CODE READABLE 
-
-//My reasons for doing stuff in a certian way:
-
-//my comments in my source file might be hard to understand, but that because They are meant to be unambiguous and the subjective judgement of what unambiguous was done
-//on my test, so sorry if my taste does not matches your, and also my grammar and english kind of sucks ass, to be honest.
-//I only use regex for lexcial anaylsis, and semantical checks
-//PLEASE NOTE THAT I DIDNT USE FLAT MAPS FOR NON TERM ENTRIES, OR REGEX FUNCTIONS FOR ESCAPING STRINGS because:
-/*
-1.Flat maps arent insert ordered
-2.REGEX Functions for escaping strings are slow in C++, and I dont trust the boost library alternative functions
-3.REGEX functions didnt fullfill all my needs in a generic way, and I needed something more generic, like a regex 2.0
-I am still using REGEX underneath the regex 2.0, at the time that I added this comment, regex underneath regex 2.0 isnt fully done
-its regex 2.0 because the escape_string is highly generic, and the way I use it is also generic, The true regex 2.0 is the semantical analyser.
-*/
-/* 
-I used refernece wrappers because I Just dont like using pointers, in code that is meant to be low level and hard to read
-*/
-//I use istringstream a lot because of flexibility in error handling, parsing, but also for the sake of extending my code with ease.
-//I also believe that istringstream are actually faster for my case, again, I cant confirm, but the reason that I think this way is:
-/*
-
-it can help me read input directly into any type, I do get that some conversion will happen to the target type, but that is done using the standard
-library, so its still not that bad, in terms of performance because standard library tends to have optimized implementations
-
-think of how the stack operations in assembly can be used to make the logic of your code concise, and your code faster in doing so
-
-in this case, I want to make sure that when I read input, I move it as well, I also want to make sure that I can keep the logic concise.
-
-
-
-my future self: please dont replace istringstream( in other files), until the code is finished to the point that someone will actually use it, and question it for performance, so yeah, I need it!
- 
-to my future self:
-if you prove that istringstreams are inefficient, and escape_string function is too then just dont change the design, and try:
-1.defining your own line_stream whose interface is the same as istringstreams, make sure the istringstream alternative is well defined. 
-2.dont remove escape_string itself, just change the implementation
-
-with the current design, I can optimize the code, if my code is ever proven to be slower than what it can be.
-so dont change the design!!!!!!!!
-
-optimize only after the compiler generator is done
-
-again these are just my opinion, dont judge
-
-*/
-// so yeah thats all the reasons that I have
     namespace common_functions {
        tempate<typename arg...>
        void escape_string(std::string* input_string,
@@ -309,12 +257,11 @@ again these are just my opinion, dont judge
             //the traversal begin() returns the last element, and end() returns one before the
                         //first element, thats because the last entry will be the one that the user of this
                         //structure will PROBABLY traverse from.
-        public:  void add_non_term_symbol_name(std::string name)=0;//this adds the non term symbol only to fast traversal list
+        public:  void add_non_term_symbol_name(uint64_t name)=0;//this adds the non term symbol only to fast traversal list
                void add_non_term_pattern_for_newest_entry(config pattern)=0;//this adds the newest element to the fast search map as well, after it has enter the pattern into the newest element traversal list
-               config& get_pattern_of_nested_non_term_symbol_pattern(std::string sub_symbol_name)=0;//this gets the pattern for a name, from the map, and the reason I say for nested non term symbol is because it is generally used for finding the symbols for nested non term symbols
-               void add_nested_non_term_symbol_to_the_newest_entry(std::string sub_symbol_name)=0;//this just takes a string, which it assumes to be the name of a non term symbol, and finds the non term symbol(from the map), and adds it's reference into the nested non term symbol list of the newest entry
+               config& get_pattern_of_nested_non_term_symbol_pattern(uint64_t sub_symbol_name)=0;//this gets the pattern for a name, from the map, and the reason I say for nested non term symbol is because it is generally used for finding the symbols for nested non term symbols
+               void add_nested_non_term_symbol_to_the_newest_entry(uint64_t sub_symbol_name)=0;//this just takes a string, which it assumes to be the name of a non term symbol, and finds the non term symbol(from the map), and adds it's reference into the nested non term symbol list of the newest entry
                void add_semantic_rule_for_newest_sub_entry(const Semantical_analyzer_config_entry<config>&& semantical_rule_entry)=0;//this is my favorite(I spend 4 days on making this), so all it does is that it finds the latest entry from the fast traversal list, then finds the latest sub entry in that, and adds this semantic rule entry for that sub entry 
-               std::reference_wrapper < std::string > get_parmenant_name_of_nested_non_term_symbol_pattern(std::string sub_symbol_name)=0;//returns the permanent reference to a non term name
                void print_all_content()=0;
                Non_terminal_name_entry<config>& get_current_non_term_entry(int index)=0;//simply gets the non term entry at the given index
                Non_terminal_name_entry<config>& get_current_nested_non_term_entry(int index_for_nested_non_term, int index)=0;//simple gets the nested non term entry at the given indexes, or in [index][index_for_nested_non_term]
