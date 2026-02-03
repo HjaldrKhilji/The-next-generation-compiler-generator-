@@ -337,15 +337,15 @@ again these are just my opinion, dont judge
         template<typename config>
         class All_non_terminal_entries_implementation : public  All_non_terminal_entries<type_of_config_or_pattern> {
             
-              ReverseIt end() override{
+              ReverseIt end() final{
                   auto iterator = list_of_all_non_term_entries_for_fast_traversal.rbegin();
                   for (; bool{ iterator->is_moved_from }; iterator++);
                       return iterator;
               }
-              ReverseIt begin() override{
+              ReverseIt begin() final{
                   return list_of_all_non_term_entries_for_fast_traversal.rend();
 
-              }ReverseIt physical_end() override{
+              }ReverseIt physical_end() final{
                   return list_of_all_non_term_entries_for_fast_traversal.rbegin();
 
               }
