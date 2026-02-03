@@ -103,7 +103,7 @@ export   namespace config_parsing_tools {
 
         }
         template<typename config>
-         void parse_raw_input(absolute_base::All_non_terminal_entries<config>* all_entries, char *delemeter,  char charactor_to_escape_delimeter_with, const line_stream& input_stream) {
+        inline void parse_raw_input(absolute_base::All_non_terminal_entries<config>* all_entries, char *delemeter,  char charactor_to_escape_delimeter_with, const line_stream& input_stream) {
 
             line_stream>>*delemeter;
             constexpr size_t size_of_common_escape_charactors = 2;
@@ -125,11 +125,12 @@ export   namespace config_parsing_tools {
 
             
         public:
-            void get_and_parse_input() {
+            inline void get_and_parse_input() {
 
                 do {
                     try {
-						std::getline(input_stream, current_input->string_buffer, delimeter);
+						std::getline(input_stream, current_input.string_buffer, delimeter);
+						current_input>>delimeter;
 						Config_reader_helper::parse_raw_input(&all_entries, &line_stream, &delimeter, input_stream->get());
 
                     }
