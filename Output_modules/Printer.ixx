@@ -330,19 +330,7 @@ static const std::array<Option_functions_wrapper_type,std::numeric_limits<char>:
     &options::change_value_of_bool_owned_by_shared_ptr<&Printer::multithreaded, false>, /* 0xCB */
 
     /* 0xCC - 0xFF: RESERVED (52 slots) */
-    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
-    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
-    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
-    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
-    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
-    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
-    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
-    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
-    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
-    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
-    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
-    &options::no_op, &options::no_op, &options::no_op, &options::no_op,
-    &options::no_op, &options::no_op, &options::no_op, &options::no_op
+    &options::no_op //compiler fills the rest thanks to us specifying the size explicitly
 };
 
     };
