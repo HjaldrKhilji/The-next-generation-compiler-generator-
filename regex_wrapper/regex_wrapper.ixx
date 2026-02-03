@@ -1,4 +1,4 @@
-``````````````````````````````````module;
+module;
 #include<vector>
 #include<string>
 module estd_regex;
@@ -6,9 +6,17 @@ import all_declarations;
 import Config_parser;
 namespace estd {
 
- namespace escape_functions{
-        
-         
+ namespace option_functions{
+        using option_function_signature=void(  absolute_base::All_non_terminal_entries <config>*,  std::istream *, char);
+        void sub_entry(bsolute_base::All_non_terminal_entries <config>* all_non_term_entries,  std::istream *extra_input, char line_delimeter){
+		
+		}
+		void semantic_entries( absolute_base::All_non_terminal_entries <config>* all_non_term_entries,  std::istream *extra_input, char line_delimeter){
+		
+		}
+		
+
+		std::vector<option_function_signature> options{};
 
 
          
@@ -20,7 +28,7 @@ namespace estd {
 	std::string string_to_match;
 	
 	};
-	void read_input(config_parsing_tools::line_stream& stream, processed_string* str, char delimeter, char charactor_to_escape_delimeter_with, absolute_base::All_non_terminal_entries<config>* all_non_term_entries,  std::istream *extra_input, absolute_base::Non_terminal_entry* current_aka_latest_entry){
+	void read_input(config_parsing_tools::line_stream& stream, processed_string* str, char delimeter, char charactor_to_escape_delimeter_with, absolute_base::All_non_terminal_entries <config>* all_non_term_entries,  std::istream *extra_input){
 	stream>>*str;
 	
 	}
@@ -85,7 +93,7 @@ namespace estd {
 
 	}
 	}
-	void read_input(config_parsing_tools::line_stream& stream, regex_patterm* str, char delimeter, char charactor_to_escape_delimeter_with, absolute_base::All_non_terminal_entries<config>* all_non_term_entries, std::istream *extra_input,  absolute_base::Non_terminal_entry *current_aka_latest_entry){
+	void read_input(config_parsing_tools::line_stream& stream, regex_patterm* str, char delimeter, char charactor_to_escape_delimeter_with, absolute_base::All_non_terminal_entries<config>* all_non_term_entries, std::istream *extra_input){
 	for(auto &x:pattern){
 	stream>>x->ignore;
 	stream>>x->optional;
