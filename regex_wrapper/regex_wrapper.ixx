@@ -1,4 +1,4 @@
-module;
+``````````````````````````````````module;
 #include<vector>
 #include<string>
 module estd_regex;
@@ -11,22 +11,7 @@ namespace estd {
          
 
 
-         template<typename config>
-        inline void escape_backslash_a_by_reading_nested_symbols()(std::spanstream* line_stream,std::string* input_string, std::string::size_type* where_is_it_found,char delimeter,  absolute_base::All_non_terminal_entries<config>* all_entries) {
-           
-
-            uint64_t name = absolute_base::read_number_from_string_at_a_position<uint64_t>(line_stream);
-            config_parsing_tools::Config_reader_helper::semantical_analyzer_entry_reader();
-
-        }
-		template<typename config>
-        inline void get_next_part_of_string()(std::spanstream* line_stream,std::string* input_string, std::string::size_type* where_is_it_found,char delimeter,  absolute_base::All_non_terminal_entries<config>* all_entries) {
-           
-
-            uint64_t name = absolute_base::read_number_from_string_at_a_position<uint64_t>(line_stream);
-            config_parsing_tools::Config_reader_helper::semantical_analyzer_entry_reader();
-
-        }
+         
         }
 
 
@@ -35,17 +20,9 @@ namespace estd {
 	std::string string_to_match;
 	
 	};
-	void read_input(std::istream& stream, processed_string* str, char delimeter, char charactor_to_escape_delimeter_with, absolute_base::All_non_terminal_entries<config>* all_non_term_entries){
+	void read_input(config_parsing_tools::line_stream& stream, processed_string* str, char delimeter, char charactor_to_escape_delimeter_with, absolute_base::All_non_terminal_entries<config>* all_non_term_entries,  std::istream *extra_input){
 	stream>>*str;
-	common_functions::escape_string(
-    str, 
-    {"\\"+std::string{charactor_to_escape_delimeter_with}, "\a", "\\\\"},
-	{&escape_functions::escaping_delimeter,
-     &escape_functions::escape_backslash_a_by_reading_nested_symbols,
-	 &escape_functions::escape_double_backslash},
-	charactor_to_escape_delimeter_with,
-	all_non_term_entries
-	);
+	
 	}
 	namespace helper_functions= printing_tools::helper_templates_for_options::helpers_for_arithmetic_options;
 	//aliases to change if you want to move away from boost
@@ -108,13 +85,13 @@ namespace estd {
 
 	}
 	}
-	void read_input(std::istream& stream, regex_patterm* str, char delimeter, char charactor_to_escape_delimeter_with, absolute_base::All_non_terminal_entries<config>* all_non_term_entries){
+	void read_input(config_parsing_tools::line_stream& stream, regex_patterm* str, char delimeter, char charactor_to_escape_delimeter_with, absolute_base::All_non_terminal_entries<config>* all_non_term_entries, std::istream *extra_input){
 	for(auto &x:pattern){
 	stream>>x->ignore;
 	stream>>x->optional;
 	stream>>x->minimum_number_of_time_to_match;
 	stream>>x->maximum_number_of_times_to_match;
-	read_input(stream, x->string_to_match, delimeter, charactor_to_escape_delimeter_with, all_non_term_entries);
+	read_input(stream, x->string_to_match, delimeter, charactor_to_escape_delimeter_with, all_non_term_entries, extra_input);
 	
 	}
     //a faster (and simpler) alternative to even boost regex
