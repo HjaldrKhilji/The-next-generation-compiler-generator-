@@ -75,7 +75,7 @@ export   namespace config_parsing_tools {
             uint64_t non_terminal_name_to_search_inside;
 			line_stream>>non_terminal_name_to_search_inside;
 			config semantic_pattern_to_check{};
-	        read_input(line_stream, semantic_pattern_to_check, delimeter, charactor_to_escape_delimeter_with, all_non_term_entries, nullptr, nullptr);
+	        read_input(line_stream, semantic_pattern_to_check, delimeter, charactor_to_escape_delimeter_with, all_non_term_entries, nullptr);
             unsigned int minimum_amount_of_Matches = 0;
             unsigned int maximum_amount_of_matches = 0; //only used if settings_for_semantic_rules dosent have check_atleast on.
             
@@ -111,7 +111,7 @@ export   namespace config_parsing_tools {
             input_stream>>non_terminal_name;
 			all_entries->add_non_term_symbol_name(non_terminal_name);
             config non_terminal_pattern;
-	        read_input(line_stream, non_terminal_pattern, delimeter, charactor_to_escape_delimeter_with, all_non_term_entries, input_stream, extra_input, all_entries.begin() );
+	        read_input(line_stream, non_terminal_pattern, delimeter, charactor_to_escape_delimeter_with, all_non_term_entries, input_stream, extra_input);
             all_entries->add_non_term_pattern_for_newest_entry(non_terminal_pattern);
         }
         };
@@ -158,7 +158,7 @@ export   namespace config_parsing_tools {
                 return all_entries;
             }
         private:
-            absolute_base::All_non_terminal_entries_implementation<config> all_entries{};
+            absolute_base::All_non_terminal_entries<config> all_entries{};
             line_stream current_input{{},{0}};
             std::unique_ptr<std::istream> input_stream;
            char delimeter;
