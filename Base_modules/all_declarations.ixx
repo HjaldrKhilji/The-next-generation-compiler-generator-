@@ -27,9 +27,8 @@ export module All_declarations;//for c++ noobs, including myself, the module nam
        tempate<typename arg...>
        void escape_string(std::string* input_string,
             const std::vector < std::string >& strings_to_be_replaced,
-            const std::vector < std::function < std::spanstream*, std::string*, std::string::size_type*, args...> >
-            function_to_be_run_for_each,
-			std::spanstream* stream,
+            const std::vector < std::function < std::string*, std::string::size_type*, args...> >
+            std::function < std::string*, std::string::size_type*, args...>,
 			args... arguments);
         std::string read_identifier(std::istringstream* line_stream);
         template <typename T>
