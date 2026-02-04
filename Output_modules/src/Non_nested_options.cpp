@@ -696,21 +696,21 @@ namespace printing_tools {
         std::unordered_map<uint64_t, printing_tools::helper_templates_for_options::helpers_for_arithmetic_options::Polymorphic_accumulator> all_variable_hashed_storage{};
         std::vector< printing_tools::helper_templates_for_options::helpers_for_arithmetic_options::Polymorphic_accumulator> all_variable_linear_storage;
         
-        template<bool source_is_output_config_or_output_data, ternary_state get_from_ordered_or_else_hashed_or_vector>
+        template<bool source_is_output_config_or_output_data, ternary_state store_in_hashed_or_non_hashed_or_linear>
         void store_variable(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
             try {
                 using helper_templates_for_options::helpers_for_arithmetic_options::read_from_string;
                 uint64_t variable_name = helper_templates_for_options::read_from_string<uint64_t, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
-                 if constexpr(get_from_ordered_or_else_hashed==_true) {
+                 if constexpr(store_in_hashed_or_non_hashed_or_linear==_true) {
                     all_variable_ordered_storage[variable_name] = helper_templates_for_options::helpers_for_arithmetic_options::read_polymorphically_from_string
                         <source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
                 }
-                else if (get_from_ordered_or_else_hashed==_nuteral){
+                else if (store_in_hashed_or_non_hashed_or_linear==_nuteral){
                     all_variable_hashed_storage[variable_name] = helper_templates_for_options::helpers_for_arithmetic_options::read_polymorphically_from_string
                         <source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
 
                 }
-                else if (get_from_ordered_or_else_hashed==_nuteral){
+                else if (store_in_hashed_or_non_hashed_or_linear==_nuteral){
                all_variable_linear_storage[variable_name] = helper_templates_for_options::helpers_for_arithmetic_options::read_polymorphically_from_string
                         <source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
                     
@@ -728,20 +728,20 @@ namespace printing_tools {
 
         }
 
-        template<bool source_is_output_config_or_output_data,  ternary_state get_from_ordered_or_else_hashed_or_vector, bool pump_to_config_or_data>
+        template<bool source_is_output_config_or_output_data,  ternary_state store_in_hashed_or_non_hashed_or_linear, bool pump_to_config_or_data>
         void get_polymorphic(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
             try {
                 using helper_templates_for_options::helpers_for_arithmetic_options::read_from_string;
                 using helper_templates_for_options::helpers_for_arithmetic_options::Polymorphic_accumulator;
                 Polymorphic_accumulator value;
                 uint64_t variable_name = helper_templates_for_options::read_from_string<uint64_t, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
-                if constexpr(get_from_ordered_or_else_hashed==_true) {
+                if constexpr(store_in_hashed_or_non_hashed_or_linear==_true) {
                     value = all_variable_ordered_storage.at(variable_name);
                 }
-                else if (get_from_ordered_or_else_hashed==_nuteral){
+                else if (store_in_hashed_or_non_hashed_or_linear==_nuteral){
                     value = all_variable_hashed_storage.at(variable_name);
                 }
-                else if (get_from_ordered_or_else_hashed==_nuteral){
+                else if (store_in_hashed_or_non_hashed_or_linear==_nuteral){
                     value = all_variable_linear_storage.at(variable_name);
                 }
                 if constexpr(pump_to_config_or_data){
@@ -762,87 +762,18 @@ namespace printing_tools {
 
             }
 }
-template<bool source_is_output_config_or_output_data, ternary_state get_from_ordered_or_else_hashed>
-void  get_from_cache(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
-    uint64_t cache_name = helper_templates_for_options::read_from_string<uint64_t>(output_config, position);
-     *position= helper_templates_for_options::read_from_string<uint64_t>(output_config, position);
-
-     if constexpr(source_is_output_config_or_output_data) {
-
-         if constexpr(get_from_ordered_or_else_hashed==_true) {
-                    output_config = all_variable_ordered_storage.at(cache_name);
-                }
-                else if (get_from_ordered_or_else_hashed==_nuteral){
-                    output_config = all_variable_hashed_storage.at(cache_name);
-                }
-                else if (get_from_ordered_or_else_hashed==_nuteral){
-               output_config = all_variable_linear_storage.at(cache_name);
-                }
-         
-    }
-    else {
-         if constexpr(get_from_ordered_or_else_hashed==_true) {
-                *output_data = all_variable_ordered_storage.at(cache_name);
-                }
-                else if (get_from_ordered_or_else_hashed==_nuteral){
-                *output_data = all_variable_hashed_storage.at(cache_name);
-                }
-                else if (get_from_ordered_or_else_hashed==_nuteral){
-               *output_data = all_variable_linear_storage.at(cache_name);
-                }
-    }
-
-}
-template<bool source_is_output_config_or_output_data, ternary_state get_from_ordered_or_else_hashed>
-void store_in_cache(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
-     uint64_t cache_name = helper_templates_for_options::read_from_string<uint64_t>(output_config, position);
-     *position= helper_templates_for_options::read_from_string<uint64_t>(output_config, position);
-
-     if constexpr(source_is_output_config_or_output_data) {
-
-         if constexpr(get_from_ordered_or_else_hashed==_true) {
-                   all_variable_ordered_storage[cache_name]=output_config;
-                }
-                else if (get_from_ordered_or_else_hashed==_nuteral){
-                    all_variable_hashed_storage[cache_name]=output_config;
-                }
-                else if (get_from_ordered_or_else_hashed==_nuteral){
-                    all_variable_linear_storage[cache_name]=output_config;
-                }
-         
-    }
-    else {
-         if constexpr(get_from_ordered_or_else_hashed==_true) {
-                   all_variable_ordered_storage[cache_name]=output_config;
-                }
-                else if (get_from_ordered_or_else_hashed==_nuteral){
-                    all_variable_hashed_storage[cache_name]=output_config;
-                }
-                else if (get_from_ordered_or_else_hashed==_nuteral){
-                    all_variable_linear_storage[cache_name]=output_config;
-                }
-    }
-
-
-}
-template<bool *bool_to_set, bool source_is_output_config_or_output_data>
-void change_value_of_bool(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
-    *bool_to_set = helper_templates_for_options::read_from_string<bool, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
-
-
-}
-template<bool source_is_output_config_or_output_data, ternary_state erase_from_ordered_or_else_hashed>
+            template<bool source_is_output_config_or_output_data, ternary_state store_in_hashed_or_non_hashed_or_linear>
         void remove_polymorphic(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
             try {
                 using helper_templates_for_options::helpers_for_arithmetic_options::read_from_string;
                 uint64_t variable_name = helper_templates_for_options::read_from_string<uint64_t, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
-                 if constexpr(get_from_ordered_or_else_hashed==_true) {
+                 if constexpr(store_in_hashed_or_non_hashed_or_linear==_true) {
                      all_variable_ordered_storage.erase(variable_name);
                  }
-                 else if (get_from_ordered_or_else_hashed==_nuteral){
+                 else if (store_in_hashed_or_non_hashed_or_linear==_nuteral){
                      all_variable_hashed_storage.erase(variable_name);
                  }
-                 else if (get_from_ordered_or_else_hashed==_nuteral){
+                 else if (store_in_hashed_or_non_hashed_or_linear==_nuteral){
                      all_variable_linear_storage.erase(variable_name);
                  }
             }
@@ -856,14 +787,84 @@ template<bool source_is_output_config_or_output_data, ternary_state erase_from_o
 
             }
         }
-template<char* delimeter, bool source_is_output_config_or_output_data>
+template<bool source_is_output_config_or_output_data, ternary_state store_in_hashed_or_non_hashed_or_linear>
+void  get_from_cache(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
+    uint64_t cache_name = helper_templates_for_options::read_from_string<uint64_t>(output_config, position);
+     *position= helper_templates_for_options::read_from_string<uint64_t>(output_config, position);
+
+     if constexpr(source_is_output_config_or_output_data) {
+
+         if constexpr(store_in_hashed_or_non_hashed_or_linear==_true) {
+                    output_config = all_variable_ordered_storage.at(cache_name);
+                }
+                else if (store_in_hashed_or_non_hashed_or_linear==_nuteral){
+                    output_config = all_variable_hashed_storage.at(cache_name);
+                }
+                else if (store_in_hashed_or_non_hashed_or_linear==_nuteral){
+               output_config = all_variable_linear_storage.at(cache_name);
+                }
+         
+    }
+    else {
+         if constexpr(store_in_hashed_or_non_hashed_or_linear==_true) {
+                *output_data = all_variable_ordered_storage.at(cache_name);
+                }
+                else if (store_in_hashed_or_non_hashed_or_linear==_nuteral){
+                *output_data = all_variable_hashed_storage.at(cache_name);
+                }
+                else if (store_in_hashed_or_non_hashed_or_linear==_nuteral){
+               *output_data = all_variable_linear_storage.at(cache_name);
+                }
+    }
+
+}
+template<bool source_is_output_config_or_output_data, ternary_state store_in_hashed_or_non_hashed_or_linear>
+void store_in_cache(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
+     uint64_t cache_name = helper_templates_for_options::read_from_string<uint64_t>(output_config, position);
+     *position= helper_templates_for_options::read_from_string<uint64_t>(output_config, position);
+
+     if constexpr(source_is_output_config_or_output_data) {
+
+         if constexpr(store_in_hashed_or_non_hashed_or_linear==_true) {
+                   all_variable_ordered_storage[cache_name]=output_config;
+                }
+                else if (store_in_hashed_or_non_hashed_or_linear==_nuteral){
+                    all_variable_hashed_storage[cache_name]=output_config;
+                }
+                else if (store_in_hashed_or_non_hashed_or_linear==_nuteral){
+                    all_variable_linear_storage[cache_name]=output_config;
+                }
+         
+    }
+    else {
+         if constexpr(store_in_hashed_or_non_hashed_or_linear==_true) {
+                   all_variable_ordered_storage[cache_name]=output_config;
+                }
+                else if (store_in_hashed_or_non_hashed_or_linear==_nuteral){
+                    all_variable_hashed_storage[cache_name]=output_config;
+                }
+                else if (store_in_hashed_or_non_hashed_or_linear==_nuteral){
+                    all_variable_linear_storage[cache_name]=output_config;
+                }
+    }
+
+
+}
+template<bool& Printer::*bool_to_set,Printer* obj,  bool source_is_output_config_or_output_data>
+void change_value_of_bool(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
+    *(obj->bool_to_set) = helper_templates_for_options::read_from_string<bool, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
+
+
+}
+
+template<char& Printer::*delimeter,Printer* obj, bool source_is_output_config_or_output_data>
 void change_input_delimeter(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
      if constexpr(source_is_output_config_or_output_data){
-        *delimeter=output_config[*position];
+          *(obj->delimeter) =output_config[*position];
         static_cast<uint64_t>(*position)++;
     }
     else{
-        *delimeter=(*output_data)[*output_data_position];
+         *(obj->delimeter) =(*output_data)[*output_data_position];
         static_cast<uint64_t>(*output_data_position)++;
     }
 }
