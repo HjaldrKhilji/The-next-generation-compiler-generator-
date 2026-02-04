@@ -53,7 +53,7 @@ namespace loop_and_branch_helpers {
      }
  }
  
- template<bool source_is_output_config_or_output_data, bool store_in_hashed_or_non_hashed>
+ template<bool source_is_output_config_or_output_data, uint64_t store_in_hashed_or_non_hashed_or_linear>
  void loop(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
      //the function is unfortunately rather big, I find that sad since I cant fix it without ruining performance or logic flow
      try {
@@ -84,18 +84,19 @@ namespace loop_and_branch_helpers {
 
          Polymorphic_accumulator x_value;
          Polymorphic_accumulator y_value;
-          if constexpr(store_in_hashed_or_non_hashed) {
-             x_value = all_variable_ordered_storage.at(x);
-             y_value = all_variable_ordered_storage.at(y);
-
-         }
-         else {
-             x_value = all_variable_ordered_storage.at(x);
-             y_value = all_variable_hashed_storage.at(y);
-
-
-         }
-
+            if constexpr(store_in_hashed_or_non_hashed_or_linear==_true) {
+              x_value = all_variable_ordered_storage.at(x);
+              y_value = all_variable_ordered_storage.at(y);
+              }
+            else if (store_in_hashed_or_non_hashed_or_linear==_nuteral){
+                x_value = all_variable_ordered_storage.at(x);
+                y_value = all_variable_hashed_storage.at(y);
+               }
+             else if (store_in_hashed_or_non_hashed_or_linear==_nuteral){
+                x_value = all_variable_linear_storage.at(x);
+                y_value = all_variable_linear_storage.at(y);
+                 }
+         
          bool true_or_false = loop_and_branch_helpers::do_polymorphic_comparisions(comparision_operator_name, x_value, y_value);
          
          if (true_or_false) {
@@ -142,7 +143,7 @@ namespace loop_and_branch_helpers {
      }
 
  }
- template<bool source_is_output_config_or_output_data, bool store_in_hashed_or_non_hashed>
+ template<bool source_is_output_config_or_output_data, uint64_t store_in_hashed_or_non_hashed_or_linear>
  void branch(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
      try {
          using helper_templates_for_options::helpers_for_arithmetic_options::read_from_string;
@@ -154,17 +155,18 @@ namespace loop_and_branch_helpers {
          std::string y = read_from_string<uint64_t, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
          Polymorphic_accumulator x_value;
          Polymorphic_accumulator y_value;
-          if constexpr(store_in_hashed_or_non_hashed) {
+         if constexpr(store_in_hashed_or_non_hashed_or_linear==_true) {
               x_value = all_variable_ordered_storage.at(x);
               y_value = all_variable_ordered_storage.at(y);
-            
-         }
-         else {
-              x_value = all_variable_ordered_storage.at(x);
-              y_value = all_variable_hashed_storage.at(y);
-             
-
-         }
+              }
+            else if (store_in_hashed_or_non_hashed_or_linear==_nuteral){
+                x_value = all_variable_ordered_storage.at(x);
+                y_value = all_variable_hashed_storage.at(y);
+               }
+             else if (store_in_hashed_or_non_hashed_or_linear==_nuteral){
+                x_value = all_variable_linear_storage.at(x);
+                y_value = all_variable_linear_storage.at(y);
+                }
          
 
          bool true_or_false= loop_and_branch_helpers::do_polymorphic_comparisions(comparision_operator_name, x_value, y_value);
