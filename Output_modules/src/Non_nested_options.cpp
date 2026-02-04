@@ -170,7 +170,7 @@ namespace printing_tools {
                     config_parsing_tools::Config_reader_helper::return_semantical_analyzer_entry(
                         line_stream, obj->list_of_entries_to_find_it_in
                     );
-                obj->list_of_entries_to_find_it_in->add_semantic_rule_to_entry(info_needed->non_term_entry, std::move(semantic_entry), info_needed.sibling_index, info_needed.semantic_entry_index);
+                obj->list_of_entries_to_find_it_in->add_semantic_rule_to_entry(info_needed->non_term_entry, std::move(semantic_entry), info_needed.semantic_entry_index);
             }
             catch (std::string error_sent_by_reporter) {
                 throw std::string{ "OPTION TO ADD SEMANTIC ENTRY TO THE NON TERMINAL ENTRY PASSED: " + error_sent_by_reporter };
@@ -197,7 +197,7 @@ namespace printing_tools {
                     <find_parent_entry, find_nested_entry_technique, check_semantic_entry>
                     (output_data, output_data_position, obj->list_of_entries_to_find_it_in);
                 }
-                *list_of_entries_to_find_it_in->remove_latest_semantic_rule_for_entry(info_needed->non_term_entry, info_needed.sibling_index, info_needed.semantic_entry_index);
+                obj->list_of_entries_to_find_it_in->remove_semantic_rule_of_entry(info_needed->non_term_entry, info_needed.semantic_entry_index);
             }
             catch (std::string error_sent_by_reporter) {
                 throw std::string{ "OPTION TO REMOVE SEMANTIC ENTRY FROM THE NON TERMINAL ENTRY PASSED: " + error_sent_by_reporter };
