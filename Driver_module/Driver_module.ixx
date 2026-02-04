@@ -53,16 +53,24 @@ export namespace driver {
             input_file = 7,
             output_config_file = 8,
             input_config_file = 9,
-            multi_threaded_launch = 10;
-            run_engine_optimized_using_multi_threads = 11;
+            multi_threaded_launch = 10,
+            run_engine_optimized_using_multi_threads = 11,
+			default_input_config_delimeter=12,
+			default_output_config_delimeter=13,
+			input_delimeter=14
         };
-        static Driver_engine create_driver(std::string input_config_file, std::string output_config_file, std::string input_file, std::string output_file, std::string error_log_file_for_config, std::string error_log_file, bool debug_mode_for_reading_input_config, bool debug_mode_for_reading_output_config, bool debug_mode, bool multi_threaded_launch, bool multi_thread_optimization_paremeter) {
-            std::ostream error_log_stream_for_config{ error_log_file_for_config };
-            try {
+        static Driver_engine create_driver(std::string input_config_file, std::string output_config_file, std::string input_file, std::string output_file, std::string error_log_file_for_config, std::string error_log_file, bool debug_mode_for_reading_input_config, bool debug_mode_for_reading_output_config, bool debug_mode, bool multi_threaded_launch, bool multi_thread_optimization_paremeter, bool default_input_config_delimeter, bool default_output_config_delimeter, char input_delimeter) {
+            try{
+			std::ostream error_log_stream_for_config{ error_log_file_for_config };
+            }
+			catch(...){
+			std::cerr<<"\nfailed to open file in \"The next generation virtual machine\"\n";
+			}
+			try {
 
                 using All_entries = absolute_base::All_non_terminal_entries;
 
-                Config_reader read_input_stream = Config_reader{ file_stream_intializater<std::ifstream>(input_config_file) };
+                Config_reader read_input_stream = Config_reader{ file_stream_intializater<std::ifstream>(input_config_file), default_input_config_delimeter };
                 std::shared_ptr<All_entries> input_config = std::make_shared<All_entries>();
                 std::thread input_config_reader_thread{
                 [] {
@@ -81,7 +89,7 @@ export namespace driver {
                     }
                     } };
                 //as you can guess input config is shared because output needs to manage it(if the user asks by providing options) while input needs to use it
-                Config_reader output_config_stream = Config_reader{ file_stream_intializater<std::ofstream>(output_config_file) };
+                Config_reader output_config_stream = Config_reader{ file_stream_intializater<std::ofstream>(output_config_file), default_output_config_delimeter };
                 std::unique_ptr<All_entries> output_config = std::make_unique<All_entries>();
                 std::thread output_config_reader_thread{
                 [] {
