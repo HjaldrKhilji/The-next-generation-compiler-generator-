@@ -70,7 +70,6 @@ export   namespace config_parsing_tools {
          inline void semantical_analyzer_entry_reader(const line_stream& input_stream, absolute_base::All_non_terminal_entries<config>* all_entries, std::istream* extra_input) {
              
              
-            while((char c, line_stream >> c, c)) {
               
             uint64_t non_terminal_name_to_search_inside;
 			line_stream>>non_terminal_name_to_search_inside;
@@ -90,7 +89,7 @@ export   namespace config_parsing_tools {
                 minimum_amount_of_Matches,
                 maximum_amount_of_matches
             });
-           }
+           
 
          }
          
