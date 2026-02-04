@@ -92,11 +92,18 @@ namespace printing_tools {
             *output << output_data;
         }
 
-        template<bool search, absolute_base::All_non_terminal_entries* list_of_entries_to_find_it_in>
+        template<bool search, Printer* obj, bool source_is_config_or_data,
+        absolute_base::All_non_terminal_entries& Printer::*list_of_entries_to_find_it_in>
         void remove_entry(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
             try {
-                Non_terminal_name_entry* non_term_entry = helper_templates_for_options::return_non_terminal_entry<search>(output_config, position, list_of_entries_to_find_it_in);
-                list_of_entries_to_find_it_in->remove_entry(non_term_entry);
+                Non_terminal_name_entry* non_term_entry;
+                if constexpr(source_is_config_or_data){
+                non_term_entry = helper_templates_for_options::return_non_terminal_entry<search>(output_config, position, obj->list_of_entries_to_find_it_in);
+                }
+                else{
+                non_term_entry = helper_templates_for_options::return_non_terminal_entry<search>(*output_data, output_data_position, obj->list_of_entries_to_find_it_in);
+                }
+                obj->list_of_entries_to_find_it_in->remove_entry(non_term_entry);
             }
             catch (std::string error_sent_by_reporter) {
 
@@ -108,11 +115,18 @@ namespace printing_tools {
 
             }
         }
-        template<bool search, absolute_base::All_non_terminal_entries* list_of_entries_to_find_it_in>
+        template<bool search, Printer* obj,bool source_is_config_or_data,
+        absolute_base::All_non_terminal_entries& Printer::*list_of_entries_to_find_it_in>
         void add_entry(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
             try {
-                Non_terminal_name_entry* non_term_entry = helper_templates_for_options::return_non_terminal_entry<search>(output_config, position, list_of_entries_to_find_it_in);
-                config_parsing_tools::Config_reader_helper::push_latest_entry_as_sub_entry_of_an_entry(list_of_entries_to_find_it_in,non_term_entry);
+                Non_terminal_name_entry* non_term_entry;
+                if constexpr(source_is_config_or_data){
+                non_term_entry = helper_templates_for_options::return_non_terminal_entry<search>(output_config, position, obj->list_of_entries_to_find_it_in);
+                }
+                else{
+                non_term_entry = helper_templates_for_options::return_non_terminal_entry<search>(*output_data, output_data_position, obj->list_of_entries_to_find_it_in);  
+                }
+                config_parsing_tools::Config_reader_helper::push_latest_entry_as_sub_entry_of_an_entry(obj->list_of_entries_to_find_it_in,non_term_entry);
             }
             catch (std::string error_sent_by_reporter) {
                 throw std::string{ "OPTION TO ADD NON TERMINAL ENTRY: " + error_sent_by_reporter };
@@ -125,17 +139,17 @@ namespace printing_tools {
 
         }
 
-        template<bool find_parent_entry, bool find_nested_entry_technique, bool check_semantic_entry, absolute_base::All_non_terminal_entries* list_of_entries_to_find_it_in>
+        template<bool find_parent_entry, bool find_nested_entry_technique, bool check_semantic_entry, Printer* obj,bool source_is_config_or_data,
+        absolute_base::All_non_terminal_entries& Printer::*list_of_entries_to_find_it_in>
         void add_semantic_entry_to_non_term_entry_passed(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
             try {
                 indexes_and_non_term_entry info_needed = helper_templates_for_options::return_semantic_entry
                     <find_parent_entry, find_nested_entry_technique, check_semantic_entry>
-                    (output_config, position, list_of_entries_to_find_it_in);
-                std::span<char> sub_span{ output_config.data() + *position, output_config.size() - *position) };
-
+                    (output_config, position, obj->list_of_entries_to_find_it_in);
+                
                 Semantical_analyzer_config_entry semantic_entry =
                     config_parsing_tools::Config_reader_helper::return_semantical_analyzer_entry(
-                        sub_span, *list_of_entries_to_find_it_in
+                        line_stream, obj->list_of_entries_to_find_it_in
                     );
                 list_of_entries_to_find_it_in->add_semantic_rule_to_entry(info_needed.non_term_entry, std::move(semantic_entry), info_needed.sibling_index, info_needed.semantic_entry_index);
             }
