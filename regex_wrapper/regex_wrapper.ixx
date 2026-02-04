@@ -21,7 +21,7 @@ namespace estd {
 		char delimeter;
 		stream>>delimeter;
 		const config_parsing_tools::line_stream stream_used_to_parse_semantic_rules{std::getline(*extra_input, current_input.string_buffer, delimeter)};
-		semantical_analyzer_entry_reader<config>(stream_used_to_parse_semantic_rules,all_non_term_entries);
+		semantical_analyzer_entry_reader<config>(stream_used_to_parse_semantic_rules,all_non_term_entries, extra_input);
 		}
 		
 		template<typename config>
@@ -58,8 +58,8 @@ namespace estd {
 	stream>>*str;
 	std::string options;
 	stream>>options;
-	for(auto x: options){
-	all_options::options[x];
+	for(const auto x: options){
+	all_options::options[x](all_non_term_entries, stream, extra_input);
 	}
 	}
 	namespace helper_functions= printing_tools::helper_templates_for_options::helpers_for_arithmetic_options;
@@ -125,7 +125,7 @@ namespace estd {
 	}
 	template<typename config>
 	void read_input(const config_parsing_tools::line_stream& stream, regex_patterm* str, absolute_base::All_non_terminal_entries<config>* all_non_term_entries, std::istream *extra_input){
-	for(auto &x:pattern){
+	for(auto &x:*str){
 	stream>>x->ignore;
 	stream>>x->optional;
 	stream>>x->minimum_number_of_time_to_match;
