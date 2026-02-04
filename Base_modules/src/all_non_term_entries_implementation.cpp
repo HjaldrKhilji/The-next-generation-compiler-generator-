@@ -31,8 +31,8 @@ void All_non_terminal_entries::add_a_child_to_entry
     map_for_fast_retrival_of_entries[entry_to_be_added_to->name]->sub_entry.push_back(std::move(entry_to_add));
 }
 template<typename config>
-void All_non_terminal_entries::add_semantic_rule_to_entry(absolute_base::Non_terminal_name_entry<config>* entry_to_be_added_to,  Semantical_analyzer_config_entry<config>&& semantical_rule_entry, int sibling_index, int semantic_entry_index)  {
-    auto& semantic_rules_for_entry = entry_to_be_added_to.all_semantical_analysis_rules[sibling_index];
+void All_non_terminal_entries::add_semantic_rule_to_entry(absolute_base::Non_terminal_name_entry<config>* entry_to_be_added_to,  Semantical_analyzer_config_entry<config>&& semantical_rule_entry, int semantic_entry_index)  {
+    auto& semantic_rules_for_entry = entry_to_be_added_to.all_semantical_analysis_rules;
     semantic_rules_for_entry.insert(semantic_rules_for_entry.begin() + semantic_entry_index, std::move(semantical_rule_entry));
 
 }
@@ -51,8 +51,8 @@ void All_non_terminal_entries::remove_entry
 }
 template<typename config>
 
-void All_non_terminal_entries::remove_semantic_rule_of_entry(absolute_base::Non_terminal_name_entry<config>* entry_to_remove_from, int sibling_index, int index_of_semantic_rule)  {
-    auto& semantic_rules_for_entry = entry_to_remove_from.all_semantical_analysis_rules[sibling_index];
+void All_non_terminal_entries::remove_semantic_rule_of_entry(absolute_base::Non_terminal_name_entry<config>* entry_to_remove_from, int index_of_semantic_rule)  {
+    auto& semantic_rules_for_entry = entry_to_remove_from.all_semantical_analysis_rules;
     semantic_rules_for_entry.erase(v.begin() + index_of_semantic_rule);
 }
 
