@@ -188,7 +188,7 @@ export module All_declarations;//for c++ noobs, including myself, the module nam
             };
             using sub_entry_type = std::vector < std::reference_wrapper < Non_terminal_name_entry<config> >>; 
             sub_entry_type sub_entries;
-            using all_semantical_analysis_rules_type = std::vector < std::vector < Semantical_analyzer_config_entry<config>>>;
+            using all_semantical_analysis_rules_type =  std::vector < Semantical_analyzer_config_entry<config>>;
             is_moved_from_bool is_moved_from;
             all_semantical_analysis_rules_type all_semantical_analysis_rules;
             ~Non_terminal_name_entry() {}//for supressing warnings of implicitly deleted destructor
@@ -202,7 +202,7 @@ export module All_declarations;//for c++ noobs, including myself, the module nam
         class Siblings {
         private:
             //keep the data members are lightweight as possible because I am passing them by value in other parts of the code.
-            using representation_type = std::reference_wrapper < std::vector < std::reference_wrapper < Non_terminal_name_entry >>>;
+            using representation_type = std::reference_wrapper < std::vector < std::reference_wrapper < Non_terminal_name_entry<config> >>>;
             //the default constructor would obviously initialize the members as expected
             representation_type Representation;
             //basically representation_type is the sub entries type.
@@ -212,34 +212,34 @@ export module All_declarations;//for c++ noobs, including myself, the module nam
             int current_sibling_index;
         public:
             inline std::vector<Semantical_analyzer_config_entry<config>>::iterator begin() {
-                return this->get_semantic_rules_for_current_sibling().begin();
+                return get_semantic_rules_for_current_sibling().begin();
             }
             inline std::vector<Semantical_analyzer_config_entry<config>>::iterator end() {
-                return this->get_semantic_rules_for_current_sibling().end();
+                return get_semantic_rules_for_current_sibling().end();
             }
-            Siblings(representation_type a, int b) : Representation{ a }, current_sibling_index{ b } {}
-            representation_type_without_reference_wrapper& operator()() {
+            inline Siblings(representation_type a, int b) : Representation{ a }, current_sibling_index{ b } {}
+            inline representation_type_without_reference_wrapper& operator()() {
                 return Representation.get();
             }
 
-            int get_current_sibling_index() {
+            inline int get_current_sibling_index() {
                 return current_sibling_index;
             }
-            void set_current_sibling_index(int a) {
+            inline void set_current_sibling_index(int a) {
                 current_sibling_index = a;
             }
-            Non_terminal_name_entry<config> const & get_current_sibling() {
+            inline Non_terminal_name_entry<config> const & get_current_sibling() {
                 return (Representation.get())[current_sibling_index].get();
             }
-            bool check_if_current_sibling_has_no_children() {
+            inline bool check_if_current_sibling_has_no_children() {
                 return get_current_sibling().sub_entries.empty();
 
             }
-            sub_entries_type get_sub_entries_of_current_subling() {
+            inline sub_entries_type get_sub_entries_of_current_subling() {
                 return get_current_sibling().sub_entries;
             }
-            std::vector<absolute_base::Semantical_analyzer_config_entry<config>>& get_semantic_rules_for_current_sibling() {
-                return get_current_sibling().all_semantical_analysis_rules[get_current_sibling_index()];
+            inline std::vector<absolute_base::Semantical_analyzer_config_entry<config>>& get_semantic_rules_for_current_sibling() {
+                return get_current_sibling().all_semantical_analysis_rules;
             }
             inline void dig_one_generation_in(){
             Representation.get() = current_generation.get_sub_entries_of_current_subling();
