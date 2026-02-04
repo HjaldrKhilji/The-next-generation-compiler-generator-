@@ -125,12 +125,12 @@ export namespace input_tools {
             Input_reader(Input_reader&) = default;
             Input_reader(Input_reader&&) = default;
         private:
-            const std::unique_ptr<bool> multithreaded;
+            const Input_stream_handler_ptr input_stream;
             const absolute_base::Base_printer& output_manager;//this member should be passed the same istream as this class is
             const std::unique_ptr<absolute_base::All_non_terminal_entries<estd::regex_pattern>>  all_config;
-            std::string raw_input;
-            const Input_stream_handler_ptr input_stream;
+            const std::unique_ptr<bool> multithreaded;
             const std::unique_ptr<char> delimeter;
-           
+            std::string raw_input{};
+
         };
     };
