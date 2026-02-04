@@ -34,11 +34,12 @@ namespace printing_tools {
             return position + charactors_processed;
 
         }
-
+        template<bool source_is_output_config_or_output_data>
         void option_to_change_output_stream(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
             std::string file_name;
             try {
-                file_name = absolute_base::read_string_from_string_at_a_position(output_config, &position);
+            file_name= read_from_string<std::string, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position),
+            output.switchToNewStream(new std::ofstream{ file_name });
             }
             catch (std::string error_send_by_reader) {
 
@@ -48,14 +49,14 @@ namespace printing_tools {
                 throw std::string{ "OPTION TO CHANGE OUTPUT STREAM: totally unexpected error" };
 
             }
-            output.switchToNewStream(new std::ofstream{ file_name });
-            return delimiter_position + 1;//+1 is to skip the delemiter_position index itself
+         
         }
-
+        template<bool source_is_output_config_or_output_data>
         void option_to_change_input_stream(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
             std::string file_name;
             try {
-                file_name = absolute_base::read_string_from_string_at_a_position(output_config, &position);
+            file_name= read_from_string<std::string, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position),
+            input.switchToNewStream(new std::ifstream{ file_name });
             }
             catch (std::string error_send_by_reader) {
 
@@ -65,26 +66,21 @@ namespace printing_tools {
                 throw std::string{ "OPTION TO CHANGE INPUT STREAM: totally unexpected error" };
 
             }
-            input.switchToNewStream(new std::ifstream{ file_name });
-            return delimiter_position + 1;//+1 is to skip the delemiter_position index itself
         }
 
         void option_to_decrypt(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
 
             //      ~       ###TODO LATER###     ~
-            return 0;
 
         }
         void option_to_encrypt(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
 
             //      ~       ###TODO LATER###     ~
-            return 0;
 
         }
         void option_to_hash(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
 
             //      ~       ###TODO LATER###     ~
-            return 0;
 
         }
 
@@ -753,7 +749,7 @@ namespace printing_tools {
                     value = all_variable_linear_storage.at(variable_name);
                 }
                 if constexpr(pump_to_config_or_data){
-                value.pump(output_config, position);
+                value.pump(&(static_cast<std::string&>(output_config)), position);
                 }
                 else{
                 value.pump(output_data, output_data_position);
@@ -803,13 +799,13 @@ void  get_from_cache(const std::string& output_config, std::string::size_type* p
      if constexpr(source_is_output_config_or_output_data) {
 
          if constexpr(store_in_hashed_or_non_hashed_or_linear==_true) {
-                    output_config = all_variable_ordered_storage.at(cache_name);
+                    const_cast<std::string&>(output_config) = all_variable_ordered_storage.at(cache_name);
                 }
                 else if (store_in_hashed_or_non_hashed_or_linear==_nuteral){
-                    output_config = all_variable_hashed_storage.at(cache_name);
+                    const_cast<std::string&>(output_config) = all_variable_hashed_storage.at(cache_name);
                 }
                 else if (store_in_hashed_or_non_hashed_or_linear==_nuteral){
-               output_config = all_variable_linear_storage.at(cache_name);
+               const_cast<std::string&>(output_config) = all_variable_linear_storage.at(cache_name);
                 }
          
     }
@@ -896,7 +892,7 @@ void escape_charactor(const std::string& output_config, std::string::size_type* 
     }
     char doube_slash_alternative= slash_alternative+slash_alternative;
     absolute_base::escape_string(
-    str, 
+    output_data, 
     {escape_charactor, doube_slash_alternative},
     {[&char_to_escape, size_of_string=escape_charactor.length() ]( std::string*input_string, std::string::size_type*where_is_it_found){ 
 
