@@ -67,12 +67,8 @@ export   namespace config_parsing_tools {
         }
         
         template<typename config>
-         inline void semantical_analyzer_entry_reader(const line_stream& input_stream, absolute_base::All_non_terminal_entries<config>* all_entries, std::istream* extra_input) {
+         inline void semantical_analyzer_entry_reader(const uint64_t non_terminal_name_to_search_inside, absolute_base::All_non_terminal_entries<config>* all_entries, std::istream* extra_input) {
              
-             
-              
-            uint64_t non_terminal_name_to_search_inside;
-			line_stream>>non_terminal_name_to_search_inside;
 			config semantic_pattern_to_check{};
 	        read_input(line_stream, semantic_pattern_to_check, all_non_term_entries, extra_input);
             unsigned int minimum_amount_of_Matches = 0;
