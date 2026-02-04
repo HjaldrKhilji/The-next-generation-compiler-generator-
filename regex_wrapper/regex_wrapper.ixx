@@ -21,7 +21,9 @@ namespace estd {
 		char delimeter;
 		stream>>delimeter;
 		const config_parsing_tools::line_stream stream_used_to_parse_semantic_rules{std::getline(*extra_input, current_input.string_buffer, delimeter)};
-		semantical_analyzer_entry_reader<config>(stream_used_to_parse_semantic_rules,all_non_term_entries, extra_input);
+		uint64_t name;
+		stream>>name;
+		semantical_analyzer_entry_reader<config>(name,all_non_term_entries, extra_input);
 		}
 		
 		template<typename config>
