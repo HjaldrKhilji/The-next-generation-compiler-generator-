@@ -101,11 +101,12 @@ namespace printing_tools {
             *output << *position;
         }
         void print_all_memory_info(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
-        std::cout<<output_config.data()<<position<<output_data->data()<<output_data_position<<std::endl;
-        //in case you want low level access to their (raw) memories
+        std::cout<<static_cast<void*>(const_cast<char*>(output_config.data()))<<position<<static_cast<void*>(const_cast<char*>(output_data.data()))<<output_data_position<<std::endl;
+        //in case you want low level access to their (raw) memories, like no one like to use debuggers every single time
         }
-        template<bool search, Printer* obj, bool source_is_config_or_data,
-        absolute_base::All_non_terminal_entries& Printer::*list_of_entries_to_find_it_in>
+        template<bool search, bool source_is_config_or_data,Printer* obj,
+        absolute_base::All_non_terminal_entries<config>& Printer::*list_of_entries_to_find_it_in,
+        typename config>
         void remove_entry(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
             try {
                 Non_terminal_name_entry* non_term_entry;
@@ -127,8 +128,9 @@ namespace printing_tools {
 
             }
         }
-        template<bool search, Printer* obj,bool source_is_config_or_data,
-        absolute_base::All_non_terminal_entries& Printer::*list_of_entries_to_find_it_in>
+        template<bool search, bool source_is_config_or_data,Printer* obj,
+        absolute_base::All_non_terminal_entries<config>& Printer::*list_of_entries_to_find_it_in,
+        typename config>
         void add_entry(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
             try {
                 Non_terminal_name_entry* non_term_entry;
@@ -151,15 +153,18 @@ namespace printing_tools {
 
         }
 
-        template<bool find_parent_entry, bool find_nested_entry_technique, bool check_semantic_entry, Printer* obj,bool source_is_config_or_data,
-        absolute_base::All_non_terminal_entries& Printer::*list_of_entries_to_find_it_in>
+        template<bool find_parent_entry, bool find_nested_entry_technique, bool check_semantic_entry,bool source_is_config_or_data,
+        Printer* obj,
+        absolute_base::All_non_terminal_entries<config>& Printer::*list_of_entries_to_find_it_in,
+        typename config>
         void add_semantic_entry_to_non_term_entry_passed(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
             try {
                 helper_templates_for_options::indexes_and_non_term_entry info_needed;
                 if constexpr(source_is_config_or_data){
                 info_needed= helper_templates_for_options::return_semantic_entry
                     <find_parent_entry, find_nested_entry_technique, check_semantic_entry>
-                    (output_config, position, obj->list_of_entries_to_find_it_in);                }
+                    (output_config, position, obj->list_of_entries_to_find_it_in);
+                }
                 else{
                     info_needed= helper_templates_for_options::return_semantic_entry
                     <find_parent_entry, find_nested_entry_technique, check_semantic_entry>
@@ -181,8 +186,10 @@ namespace printing_tools {
 
             }
         }
-        template<bool find_parent_entry, bool find_nested_entry_technique, bool check_semantic_entry, Printer* obj,bool source_is_config_or_data,
-        absolute_base::All_non_terminal_entries& Printer::*list_of_entries_to_find_it_in>
+        template<bool find_parent_entry, bool find_nested_entry_technique, bool check_semantic_entry,bool source_is_config_or_data,
+        Printer* obj,
+        absolute_base::All_non_terminal_entries<config>& Printer::*list_of_entries_to_find_it_in,
+        typename config>
 
         void remove_semantic_entry_to_non_term_entry_passed(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
             try {
@@ -191,7 +198,8 @@ namespace printing_tools {
                 if constexpr(source_is_config_or_data){
                 info_needed= helper_templates_for_options::return_semantic_entry
                     <find_parent_entry, find_nested_entry_technique, check_semantic_entry>
-                    (output_config, position, obj->list_of_entries_to_find_it_in);                }
+                    (output_config, position, obj->list_of_entries_to_find_it_in);
+                }
                 else{
                     info_needed= helper_templates_for_options::return_semantic_entry
                     <find_parent_entry, find_nested_entry_technique, check_semantic_entry>
