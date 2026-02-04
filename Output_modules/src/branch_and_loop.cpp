@@ -53,7 +53,7 @@ namespace loop_and_branch_helpers {
      }
  }
  
- template<bool source_is_output_config_or_output_data, uint64_t store_in_hashed_or_non_hashed_or_linear>
+ template<bool source_is_output_config_or_output_data, ternary_state store_in_hashed_or_non_hashed_or_linear>
  void loop(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
      //the function is unfortunately rather big, I find that sad since I cant fix it without ruining performance or logic flow
      try {
@@ -143,7 +143,7 @@ namespace loop_and_branch_helpers {
      }
 
  }
- template<bool source_is_output_config_or_output_data, uint64_t store_in_hashed_or_non_hashed_or_linear>
+ template<bool source_is_output_config_or_output_data, ternary_state store_in_hashed_or_non_hashed_or_linear>
  void branch(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
      try {
          using helper_templates_for_options::helpers_for_arithmetic_options::read_from_string;
