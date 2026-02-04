@@ -678,34 +678,7 @@ namespace printing_tools {
 
         }
 
-        template<bool source_is_output_config_or_output_data, bool get_from_ordered_or_else_hashed>
-        void add_data_to_output_config(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
-            //can be used to make functions
-            using helper_templates_for_options::helpers_for_arithmetic_options::read_from_string;
-            try {
-                using helper_templates_for_options::helpers_for_arithmetic_options::read_from_string;
-                std::string variable_name = read_from_string<std::string, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
-                 if constexpr(get_from_ordered_or_else_hashed) {
-                    auto value = all_variable_ordered_storage.at(variable_name);
-                    value.pump(const_cast<std::string&>(output_config));
-                }
-                else {
-                    auto value = all_variable_hashed_storage.at(variable_name);
-                    value.pump(const_cast<std::string&>(output_config));
-
-                }
-            }
-
-            catch (std::string error_sent_by_reader)
-            {
-                throw std::string{ "POLYMORPHIC VARIABLE GET: " + error_sent_by_reader };
-            }
-            catch (...) {
-                throw std::string{ "POLYMORPHIC VARIABLE GET:  totally unexpected error" };
-
-            }
-
-        }
+    
        using ternary_state=uint8_t;
         template<char...>
         constexpr ternary_state operator"" _true() {
@@ -755,23 +728,29 @@ namespace printing_tools {
 
         }
 
-        template<bool source_is_output_config_or_output_data,  ternary_state get_from_ordered_or_else_hashed_or_vector>
+        template<bool source_is_output_config_or_output_data,  ternary_state get_from_ordered_or_else_hashed_or_vector, bool pump_to_config_or_data>
         void get_polymorphic(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
             try {
                 using helper_templates_for_options::helpers_for_arithmetic_options::read_from_string;
+                using helper_templates_for_options::helpers_for_arithmetic_options::Polymorphic_accumulator;
+                Polymorphic_accumulator value;
                 uint64_t variable_name = helper_templates_for_options::read_from_string<uint64_t, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position);
                 if constexpr(get_from_ordered_or_else_hashed==_true) {
-                    auto value = all_variable_ordered_storage.at(variable_name);
-                    value.pump(output_data,output_data_position);
+                    value = all_variable_ordered_storage.at(variable_name);
                 }
                 else if (get_from_ordered_or_else_hashed==_nuteral){
-                    auto value = all_variable_hashed_storage.at(variable_name);
-                    value.pump(output_data, output_data_position);
+                    value = all_variable_hashed_storage.at(variable_name);
                 }
                 else if (get_from_ordered_or_else_hashed==_nuteral){
-               auto value = all_variable_linear_storage.at(variable_name);
-                    value.pump(output_data, output_data_position);
+                    value = all_variable_linear_storage.at(variable_name);
                 }
+                if constexpr(pump_to_config_or_data){
+                value.pump(output_config, position);
+                }
+                else{
+                value.pump(output_data, output_data_position);
+                }
+                
             }
 
             catch (std::string error_sent_by_reader)
