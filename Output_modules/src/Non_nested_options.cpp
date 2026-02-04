@@ -18,7 +18,7 @@ namespace printing_tools {
         //     ~functions to apply options on output data~
 
 
-        std::string::size_type option_to_replicate_output(const std::string& output_config, std::string::size_type* position, std::string* output_data_to_append_to, std::string::size_type* output_data_position) {
+        void option_to_replicate_output(const std::string& output_config, std::string::size_type* position, std::string* output_data_to_append_to, std::string::size_type* output_data_position) {
             int number_of_times_to_replicate;
             try {
                 number_of_times_to_replicate = absolute_base::read_number_from_string_at_a_position<int>(output_config, &position);
@@ -35,7 +35,7 @@ namespace printing_tools {
 
         }
 
-        std::string::size_type option_to_change_output_stream(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
+        void option_to_change_output_stream(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
             std::string file_name;
             try {
                 file_name = absolute_base::read_string_from_string_at_a_position(output_config, &position);
@@ -52,7 +52,7 @@ namespace printing_tools {
             return delimiter_position + 1;//+1 is to skip the delemiter_position index itself
         }
 
-        std::string::size_type option_to_change_input_stream(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
+        void option_to_change_input_stream(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
             std::string file_name;
             try {
                 file_name = absolute_base::read_string_from_string_at_a_position(output_config, &position);
@@ -69,29 +69,41 @@ namespace printing_tools {
             return delimiter_position + 1;//+1 is to skip the delemiter_position index itself
         }
 
-        std::string::size_type option_to_decrypt(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
+        void option_to_decrypt(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
 
             //      ~       ###TODO LATER###     ~
             return 0;
 
         }
-        std::string::size_type option_to_encrypt(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
+        void option_to_encrypt(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
 
             //      ~       ###TODO LATER###     ~
             return 0;
 
         }
-        std::string::size_type option_to_hash(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
+        void option_to_hash(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
 
             //      ~       ###TODO LATER###     ~
             return 0;
 
         }
 
-        std::string::size_type print_output(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
-            *output << output_data;
+        void print_output(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
+            *output << *output_data;
         }
-
+        void print_output_config(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
+            *output << output_config;
+        }
+        void print_output_size(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
+            *output << *output_data_position;
+        }
+        void print_output_config_size(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
+            *output << *position;
+        }
+        void print_all_memory_info(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
+        std::cout<<output_config.data()<<position<<output_data->data()<<output_data_position<<std::endl;
+        //in case you want low level access to their (raw) memories
+        }
         template<bool search, Printer* obj, bool source_is_config_or_data,
         absolute_base::All_non_terminal_entries& Printer::*list_of_entries_to_find_it_in>
         void remove_entry(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
@@ -143,15 +155,22 @@ namespace printing_tools {
         absolute_base::All_non_terminal_entries& Printer::*list_of_entries_to_find_it_in>
         void add_semantic_entry_to_non_term_entry_passed(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
             try {
-                indexes_and_non_term_entry info_needed = helper_templates_for_options::return_semantic_entry
+                helper_templates_for_options::indexes_and_non_term_entry info_needed;
+                if constexpr(source_is_config_or_data){
+                info_needed= helper_templates_for_options::return_semantic_entry
                     <find_parent_entry, find_nested_entry_technique, check_semantic_entry>
-                    (output_config, position, obj->list_of_entries_to_find_it_in);
-                
+                    (output_config, position, obj->list_of_entries_to_find_it_in);                }
+                else{
+                    info_needed= helper_templates_for_options::return_semantic_entry
+                    <find_parent_entry, find_nested_entry_technique, check_semantic_entry>
+                    (output_data, output_data_position, obj->list_of_entries_to_find_it_in);
+                }
+               
                 Semantical_analyzer_config_entry semantic_entry =
                     config_parsing_tools::Config_reader_helper::return_semantical_analyzer_entry(
                         line_stream, obj->list_of_entries_to_find_it_in
                     );
-                list_of_entries_to_find_it_in->add_semantic_rule_to_entry(info_needed.non_term_entry, std::move(semantic_entry), info_needed.sibling_index, info_needed.semantic_entry_index);
+                obj->list_of_entries_to_find_it_in->add_semantic_rule_to_entry(info_needed->non_term_entry, std::move(semantic_entry), info_needed.sibling_index, info_needed.semantic_entry_index);
             }
             catch (std::string error_sent_by_reporter) {
                 throw std::string{ "OPTION TO ADD SEMANTIC ENTRY TO THE NON TERMINAL ENTRY PASSED: " + error_sent_by_reporter };
