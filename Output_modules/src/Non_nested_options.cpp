@@ -181,14 +181,23 @@ namespace printing_tools {
 
             }
         }
-        template<bool find_parent_entry, bool find_nested_entry_technique, bool check_semantic_entry,std::shared_ptr<absolute_base::All_non_terminal_entries>* list_of_entries_to_find_it_in>
+        template<bool find_parent_entry, bool find_nested_entry_technique, bool check_semantic_entry, Printer* obj,bool source_is_config_or_data,
+        absolute_base::All_non_terminal_entries& Printer::*list_of_entries_to_find_it_in>
 
         void remove_semantic_entry_to_non_term_entry_passed(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
             try {
-                indexes_and_non_term_entry info_needed = helper_templates_for_options::return_semantic_entry
+                
+                helper_templates_for_options::indexes_and_non_term_entry info_needed;
+                if constexpr(source_is_config_or_data){
+                info_needed= helper_templates_for_options::return_semantic_entry
                     <find_parent_entry, find_nested_entry_technique, check_semantic_entry>
-                    (output_config, position, *list_of_entries_to_find_it_in);
-                *list_of_entries_to_find_it_in->remove_latest_semantic_rule_for_entry(info_needed.non_term_entry, info_needed.sibling_index, info_needed.semantic_entry_index);
+                    (output_config, position, obj->list_of_entries_to_find_it_in);                }
+                else{
+                    info_needed= helper_templates_for_options::return_semantic_entry
+                    <find_parent_entry, find_nested_entry_technique, check_semantic_entry>
+                    (output_data, output_data_position, obj->list_of_entries_to_find_it_in);
+                }
+                *list_of_entries_to_find_it_in->remove_latest_semantic_rule_for_entry(info_needed->non_term_entry, info_needed.sibling_index, info_needed.semantic_entry_index);
             }
             catch (std::string error_sent_by_reporter) {
                 throw std::string{ "OPTION TO REMOVE SEMANTIC ENTRY FROM THE NON TERMINAL ENTRY PASSED: " + error_sent_by_reporter };
