@@ -115,9 +115,9 @@ export namespace printing_tools {
 
         using Input_stream_handler_ptr = absolute_base::Streamable_manager<std::istream, std::shared_ptr>;
         using Output_stream_handler_ptr = absolute_base::Streamable_manager<std::ostream, std::unique_ptr>;
-        Printer(Output_stream_handler_ptr a, std::unique_ptr<absolute_base::All_non_terminal_entries<estd::processed_string>> b,
-        std::shared_ptr<absolute_base::All_non_terminal_entries<estd::regex_pattern>> c, Input_stream_handler_ptr  d, 
-        std::shared_ptr<bool> e,  std::shared_ptr<char>  f) : output{ a }, all_config_for_output{ b }, all_config_for_input{ c }, input{ d }, multithreaded{ e }, delimeter{f}
+        Printer(Output_stream_handler_ptr a, absolute_base::All_non_terminal_entries<estd::processed_string> b,
+        absolute_base::All_non_terminal_entries<estd::regex_pattern>& c, Input_stream_handler_ptr  d, 
+        bool& e,  char&  f) : output{ a }, all_config_for_output{ b }, all_config_for_input{ c }, input{ d }, multithreaded{ e }, delimeter{f}
         {
             additional_setup_for_family_tree();
         }
@@ -133,15 +133,15 @@ export namespace printing_tools {
         Output_stream_handler_ptr output;
 
         absolute_base::All_non_terminal_entries<estd::processed_string> all_config_for_output;
-        std::shared_ptr<absolute_base::All_non_terminal_entries<estd::regex_pattern>> all_config_for_input;
+        absolute_base::All_non_terminal_entries<estd::regex_pattern>&  all_config_for_input;
 
 
         Input_stream_handler_ptr input;
 
         std::stack< Siblings > family_tree{};
 
-        std::shared_ptr<bool> multithreaded;
-        std::shared_ptr<char> delimeter;
+        bool& multithreaded;
+        char& delimeter;
 
         // The complete, fixed-size instruction set (AI generated(i wouldnt write all this myself) (256 entries)
 static const std::array<Option_functions_wrapper_type,std::numeric_limits<char>::max()> operations_dispatch_table[256] = {
