@@ -15,13 +15,10 @@ module;
 // I used AI to keep track of the headers needed 
 
 module all_declarations;
-tempate<typename arg...>
        void common_functions::escape_string(std::string* input_string,
             const std::vector < std::string >& strings_to_be_replaced,
-            const std::vector < std::function < std::spanstream*, std::string*, std::string::size_type*, args...> >
-            function_to_be_run_for_each,
-			std::spanstream* stream,
-			args... arguments){
+            const std::vector < std::function <  std::string*, std::string::size_type*> >
+			){
      for (size_t index = 0; index < strings_to_be_replaced.size(); index++) {
          //precondition: input_string, strings_to_be_replaced, function_to_be_run_for_each are in a valid state
          //precondition: the container "function_to_be_run_for_each" has the same size as strings_to_be_replaced
@@ -35,8 +32,8 @@ tempate<typename arg...>
              while ((position_of_the_match_found_last = input_string->find(
                  strings_to_be_replaced[index],
                  position_of_the_match_found_last)) != std::string::npos) {
-                 function_to_be_run_for_each[index](stream,
-                     input_string, &position_of_the_match_found_last,  arguments...);
+                 function_to_be_run_for_each[index](
+                     input_string, &position_of_the_match_found_last);
 				 
              }
          }
@@ -95,6 +92,7 @@ catch(std::out_of_range){
 	 return result;
 
  }
+
 
 
 
