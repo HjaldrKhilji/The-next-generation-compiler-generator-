@@ -116,7 +116,7 @@ export namespace input_tools {
 
 
         
-            using Input_stream_handler_ptr = absolute_base::Streamable_manager<std::istream, std::unique_ptr>;
+            using Input_stream_handler_ptr = absolute_base::Streamable_manager<std::istream, std::unique_ptr, std::unique_ptr>;
             Input_reader(Input_stream_handler_ptr a, const absolute_base::Base_printer& b, const std::unique_ptr<absolute_base::All_non_terminal_entries<estd::regex_pattern>> c, std::unique_ptr<bool> d, std::unique_ptr<char> e) :input_stream{ a }, output_manager{ b }, all_config{ c }, multithreaded{ d }, delimeter{e} {}
 
             
