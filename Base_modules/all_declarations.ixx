@@ -37,6 +37,10 @@ export module All_declarations;//for c++ noobs, including myself, the module nam
         std::string read_string_from_string_at_a_position(const std::string& source_string, std::string::size_type* position);
         inline bool convert_to_bool(std::string str);
         inline bool convert_to_bool(const std::string& input_str, std::string::size_type* position);
+		inline char convert_to_char(std::string str);
+        inline char convert_to_char(const std::string& input_str, std::string::size_type* position);
+
+
     }
     namespace common_concepts {
 
@@ -105,6 +109,7 @@ export module All_declarations;//for c++ noobs, including myself, the module nam
         
     }
     export namespace absolute_base {
+		using common_functions::convert_to_char;
         using common_concepts::Streamable;
         using common_functions:convert_to_bool;
         using common_concepts::Is_String_Or_Numeric;
