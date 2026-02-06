@@ -34,12 +34,13 @@ namespace printing_tools {
             return position + charactors_processed;
 
         }
-        template<bool source_is_output_config_or_output_data>
+        template<bool source_is_output_config_or_output_data,Printer* obj,
+        Printer::Output_stream_handler_reference  Printer::*output>
         void option_to_change_output_stream(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
             std::string file_name;
             try {
             file_name= read_from_string<std::string, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position),
-            output.switchToNewStream(new std::ofstream{ file_name });
+            obj->output.switchToNewStream(new std::ofstream{ file_name });
             }
             catch (std::string error_send_by_reader) {
 
@@ -51,12 +52,13 @@ namespace printing_tools {
             }
          
         }
-        template<bool source_is_output_config_or_output_data>
+        template<bool source_is_output_config_or_output_data,Printer* obj,
+        Printer::Input_stream_handler_reference  Printer::*input>
         void option_to_change_input_stream(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
             std::string file_name;
             try {
             file_name= read_from_string<std::string, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position),
-            input.switchToNewStream(new std::ifstream{ file_name });
+            obj->input.switchToNewStream(new std::ifstream{ file_name });
             }
             catch (std::string error_send_by_reader) {
 
