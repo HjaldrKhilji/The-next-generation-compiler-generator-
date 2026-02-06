@@ -58,6 +58,7 @@ export namespace driver {
 			default_input_config_delimeter=12,
 			default_output_config_delimeter=13,
 			input_delimeter=14
+			//the arguments that have a higher value come first, for example: the largest value is the first argument.
         };
 		 
         static Driver_engine create_driver(std::string input_config_file, std::string output_config_file, std::string input_file, std::string output_file, std::string error_log_file_for_config, std::string error_log_file, bool debug_mode_for_reading_input_config, bool debug_mode_for_reading_output_config, bool debug_mode, bool multi_threaded_launch, bool multi_thread_optimization_paremeter, bool default_input_config_delimeter, bool default_output_config_delimeter, char input_delimeter) {
