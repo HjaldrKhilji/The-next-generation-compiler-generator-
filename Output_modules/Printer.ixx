@@ -112,8 +112,8 @@ export namespace printing_tools {
 
     public:
 
-        using Input_stream_handler_reference = decltype(absolute_base::Streamable_manager<std::istream, std::unique_ptr>*)&;
-        using Output_stream_handler_reference =  decltype(absolute_base::Streamable_manager<std::ostream, std::unique_ptr>*)&;
+        using Input_stream_handler_reference = decltype(absolute_base::Streamable_manager<std::istream, std::unique_ptr, std::unique_ptr>*)&;
+        using Output_stream_handler_reference =  decltype(absolute_base::Streamable_manager<std::ostream, std::unique_ptr, std::unique_ptr>*)&;
         Printer(Output_stream_handler_reference a, absolute_base::All_non_terminal_entries<estd::processed_string> b,
         absolute_base::All_non_terminal_entries<estd::regex_pattern>& c, Input_stream_handler_reference  d, 
         bool& e,  char&  f) : output{ a }, all_config_for_output{ b }, all_config_for_input{ c }, input{ d }, multithreaded{ e }, delimeter{f}
