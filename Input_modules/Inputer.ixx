@@ -117,9 +117,9 @@ export namespace input_tools {
 
         
             using Input_stream_handler_ptr = absolute_base::Streamable_manager<std::istream, std::unique_ptr, std::unique_ptr>;
-            Input_reader(Input_stream_handler_ptr a, const absolute_base::Base_printer& b, 
+            Input_reader(Input_stream_handler_ptr a, const printing_tools::Printer b, 
    const std::unique_ptr<absolute_base::All_non_terminal_entries<estd::regex_pattern>> c, 
-std::unique_ptr<bool> d, std::unique_ptr<char> e) :input_stream{ a }, output_manager{ b }, all_config{ c }, multithreaded{ d }, delimeter{e} {}
+std::unique_ptr<bool> d, std::unique_ptr<char> e) :input_stream{ a }, output_manager{ std::move(b) }, all_config{ c }, multithreaded{ d }, delimeter{e} {}
 
             
 
@@ -128,7 +128,7 @@ std::unique_ptr<bool> d, std::unique_ptr<char> e) :input_stream{ a }, output_man
             Input_reader(Input_reader&&) = default;
         private:
             const Input_stream_handler_ptr input_stream;
-            const absolute_base::Base_printer& output_manager;//this member should be passed the same istream as this class is
+            printing_tools::Printer output_manager;//this member should be passed the same istream as this class is
             const std::unique_ptr<absolute_base::All_non_terminal_entries<estd::regex_pattern>>  all_config;
             const std::unique_ptr<bool> multithreaded;
             const std::unique_ptr<char> delimeter;
