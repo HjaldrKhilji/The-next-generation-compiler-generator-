@@ -152,19 +152,23 @@ namespace printing_tools {
                     return false;
                 }
             }
+            std::vector<std::string> all_polymorphic_strings{}
+            struct string_index{
+            uint64_t index;
+            }
             struct Polymorphic_accumulator {
-                std::variant<long long int, long double, std::string> internal_data;
+                std::variant<uint64_t, long double, all_polymorphic_strings> internal_data;
 
 
                 void pump(std::string* string_to_pump_to, std::string::size_type* output_string_position) {
                     std::visit([&](auto&& arg) {
-                        if constexpr (!std::is_same_v<std::string, decltype(arg)>) {
-                            std::string to_pump = std::move(arg);
+                        if constexpr (!std::is_same_v<string_index, decltype(arg)>) {
+                            std::string to_pump = std::move(all_polymorphic_strings[arg.index]);
                             *string_to_pump_to += to_pump;
                             *(static_cast<uint64_t*>(output_string_position)) += to_pump.length();
                         }
                         else {
-                            std::string to_pump = std::to_string(arg);
+                            std::string to_pump = std::to_string(all_polymorphic_strings[arg.index]);
                             *string_to_pump_to += to_pump;
                             *(static_cast<uint64_t*>(output_string_position)) += to_pump.length();
 
@@ -371,6 +375,7 @@ namespace printing_tools {
         }
     }
 }
+
 
 
 
