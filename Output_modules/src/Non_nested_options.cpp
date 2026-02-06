@@ -677,7 +677,10 @@ namespace printing_tools {
                 read_from_string<bool, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position),
                 read_from_string<bool, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position),
                 read_from_string<bool, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position),
-                read_from_string<bool, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position)
+                read_from_string<bool, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position),
+                read_from_string<char, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position),
+                read_from_string<char, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position),
+                read_from_string<char, source_is_output_config_or_output_data>(output_config, output_data, position, output_data_position)
             );
 
             engine.run_engine();
