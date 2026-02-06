@@ -33,9 +33,9 @@ export namespace driver {
 
         Driver_engine(
             Input_reader&& a,
-            Printer&& b, bool c, std::string d, bool e)
-            :input_file{ std::move(a) },
-            output_file{ std::move(b) }, debug_mode{ c }, error_log_stream{ d }, multi_threaded_launch{ e }{
+            bool c, std::string d, bool e)
+            :input_file{ std::move(a) },debug_mode{ c }, error_log_stream{ d }, 
+			multi_threaded_launch{ e }{
         }
         Input_reader input_file;
         Printer output_file;
@@ -59,6 +59,7 @@ export namespace driver {
 			default_output_config_delimeter=13,
 			input_delimeter=14
         };
+		 
         static Driver_engine create_driver(std::string input_config_file, std::string output_config_file, std::string input_file, std::string output_file, std::string error_log_file_for_config, std::string error_log_file, bool debug_mode_for_reading_input_config, bool debug_mode_for_reading_output_config, bool debug_mode, bool multi_threaded_launch, bool multi_thread_optimization_paremeter, bool default_input_config_delimeter, bool default_output_config_delimeter, char input_delimeter) {
             try{
 			std::ostream error_log_stream_for_config{ error_log_file_for_config };
@@ -68,17 +69,18 @@ export namespace driver {
 			}
 			try {
 
-                using All_entries = absolute_base::All_non_terminal_entries;
+                using All_entries_input = absolute_base::All_non_terminal_entries<estd::regex_pattern>;
+                using All_entries_output = absolute_base::All_non_terminal_entries<estd::processed_string>;
 
-                Config_reader read_input_stream = Config_reader{ file_stream_intializater<std::ifstream>(input_config_file), default_input_config_delimeter };
-                std::shared_ptr<All_entries> input_config = std::make_shared<All_entries>();
+                Config_reader<estd::regex_pattern> read_input_stream_config = Config_reader<estd::regex_pattern>{ file_stream_intializater<std::ifstream>(input_config_file), default_input_config_delimeter };
+                std::unique_ptr<All_entries_input> input_config = std::make_unique<All_entries_input>();
                 std::thread input_config_reader_thread{
                 [] {
                     while (debug_mode_for_reading_intput_config) {
                         error_log_stream_for_config << "\n###INPUT CONFIG ERRORS###\n";
                         try {
                             read_input_stream.get_and_parse_input();
-                            input_config = std::make_shared<All_entries>(std::move(read_input_stream.get_all_entries_by_l_reference()));
+                            input_config = std::make_unique<All_entries>(std::move(read_input_stream_config.get_all_entries_by_l_reference()));
                             break;
 
                         }
@@ -89,8 +91,8 @@ export namespace driver {
                     }
                     } };
                 //as you can guess input config is shared because output needs to manage it(if the user asks by providing options) while input needs to use it
-                Config_reader output_config_stream = Config_reader{ file_stream_intializater<std::ofstream>(output_config_file), default_output_config_delimeter };
-                std::unique_ptr<All_entries> output_config = std::make_unique<All_entries>();
+                Config_reader<estd::processed_string> output_config_stream = Config_reader<estd::processed_string>{ file_stream_intializater<std::ofstream>(output_config_file), default_output_config_delimeter };
+                All_entries_output output_config{};
                 std::thread output_config_reader_thread{
                 [] {
 
@@ -99,7 +101,7 @@ export namespace driver {
                         try {
                             output_config_stream.get_and_parse_input();
 
-                            output_config = std::make_unique<All_entries>(std::move(output_config_stream.get_all_entries_by_l_reference()));
+                            output_config = std::move(output_config_stream.get_all_entries_by_l_reference());
                             break;
                         }
                         catch (std::string error) {
@@ -111,29 +113,31 @@ export namespace driver {
                 output_config_reader_thread.join();
                 input_config_reader_thread.join();
                 //output isnt shared and is only used by Printer class that both uses it and manages it(if the user asks by providing options)
-                using Input_stream_handler_ptr = absolute_base::Streamable_manager<std::ifstream, std::shared_ptr>;
-                using Output_stream_handler_ptr = absolute_base::Streamable_manager<std::ofstream, std::unique_ptr>;
+                using Input_stream_handler_ptr = absolute_base::Streamable_manager<std::ifstream, std::unique_ptr, std::unique_ptr>;
+                using Output_stream_handler_ptr = absolute_base::Streamable_manager<std::ofstream, std::unique_ptr, std::unique_ptr>;
                 //inner and outer means child and parent pointer respectively
-                auto inner_input{ std::make_shared<std::ifstream>(std::move(file_stream_intializater<std::ifstream>(input_file))) };
-                auto outer_input{ std::make_shared<std::shared_ptr<std::ifstream>>(inner_input) };
+                auto inner_input{ std::unique_ptr<std::ifstream>(std::move(file_stream_intializater<std::ifstream>(input_file))) };
+                auto outer_input{ std::unique_ptr<std::unique_ptr<std::ifstream>>(inner_input) };
                 Input_stream_handler_ptr input{ outer_input };
 
                 auto inner_output{ std::make_unique<std::ofstream>(std::move(file_stream_intializater<std::ofstream>(output_file))) };
                 auto outer_output{ std::make_unique<std::unique_ptr<std::ofstream>>(std::move(inner_output)) };
                 Output_stream_handler_ptr output{ std::move(outer_output) };
-                std::shared_ptr<bool> multi_thread_optimization = std::make_shared<bool>(multi_thread_optimization_paremeter);
-
-                printing_tools::Printer output_printer{ std::move(output), std::move(output_config), input_config, input,multi_thread_optimization };
+                std::unique_ptr<bool> multi_thread_optimization = std::make_unique<bool>(multi_thread_optimization_paremeter);
+				std::unique_ptr<char> delimeter= std::make_unique<char>(input_delimeter);
+                printing_tools::Printer output_printer{ output.get(), std::move(output_config),
+				input_config.get(), input.get(), multi_thread_optimization.get(), delimeter.get() };
                 //notice i am moving output and its config, that is because only output_printer will need it and because they are unique_ptr's
-                input_tools::Input_reader input_reader{ input, output, input_config };
-                return Driver_engine{std::move(input_reader), std::move(output_printer), debug_mode, error_log_file,multi_threaded_launch };
+                input_tools::Input_reader input_reader{ input, std::move(output_printer), 
+				input_config, multi_thread_optimization, delimeter};
+                return Driver_engine{std::move(input_reader), debug_mode, error_log_file,multi_threaded_launch };
             }
             catch (...) {
                 error_log_stream_for_config << "DRIVER MODULE CONFIG READER: unexpected error (its basically FBAR(from saving private ryan) this time)\n";
             }
         }
     };
-	void run_engine_helper(){
+	inline void run_engine_helper(){
         bool init = true;
         while (debug_mode) {
             try {
