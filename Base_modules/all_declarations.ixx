@@ -55,7 +55,7 @@ export module All_declarations;//for c++ noobs, including myself, the module nam
 
         };
 
-        template<typename T, typename type_to_stream = std::string>
+        template<typename T, typename type_to_stream>
         concept Streamable = OutputStream<T, type_to_stream> || InputStream<T, type_to_stream>;
         template<typename Pointer_type, typename value_pointer_to_by_pointer>
        concept SmartPointer = requires(Pointer_type ptr) {
@@ -77,12 +77,14 @@ export module All_declarations;//for c++ noobs, including myself, the module nam
         
         template<
             common_concepts::Streamable T,
-            template<typename> typename PtrTemplate
+			template<typename> typename OuterPtrTemplate
+            template<typename> typename InnerPtrTemplate
         >
-        requires common_concepts::SmartPointer<PtrTemplate<T>, T>
+        requires common_concepts::SmartPointer<OuterPtrTemplate<T>, T> &&
+		common_concepts::SmartPointer<InnerPtrTemplate<T>, T>
         class Streamable_manager {
         public:
-            using T_ptr= PtrTemplate<T>;
+            using T_ptr= InnerPtrTemplate<T>;
 
             // Use std::move to support move-only types like std::unique_ptr
             explicit Streamable_manager(PtrTemplate<T_ptr> holder) : holder(holder) {}
@@ -98,7 +100,7 @@ export module All_declarations;//for c++ noobs, including myself, the module nam
             Streamable_manager(PtrTemplate<T_ptr> a):holder{a}{}
             //the rest of constructors(and destructor) are default, hence you dont need to worry about "under the hood" memory management .
         private:
-            PtrTemplate<T_ptr> holder;
+            OuterPtrTemplate<T_ptr> holder;
         };
         
     }
