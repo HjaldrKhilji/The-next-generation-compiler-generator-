@@ -37,7 +37,7 @@ namespace printing_tools {
                 }
             }
             template <bool read_from_x_or_y>
-            inline T read_from_string<bool>(const std::string& x, const std::string& y, std::string::size_type* x_pos, std::string::size_type* y_pos) {
+            inline bool read_from_string<bool>(const std::string& x, const std::string& y, std::string::size_type* x_pos, std::string::size_type* y_pos) {
                 constexpr if (read_from_x_or_y) {
                     absolute_base::convert_to_bool(x, x_pos);
                 }
@@ -47,7 +47,7 @@ namespace printing_tools {
                 }
             }
             template <bool read_from_x_or_y>
-            inline T read_from_string<char>(const std::string& x, const std::string& y, std::string::size_type* x_pos, std::string::size_type* y_pos) {
+            inline char read_from_string<char>(const std::string& x, const std::string& y, std::string::size_type* x_pos, std::string::size_type* y_pos) {
                 constexpr if (read_from_x_or_y) {
                     absolute_base::convert_to_char(x, x_pos);
                 }
@@ -55,6 +55,12 @@ namespace printing_tools {
                     absolute_base::convert_to_char(y, y_pos);
 
                 }
+            }
+            template <>
+            inline char read_from_string<char>(const std::string& y, std::string::size_type* y_pos) {
+                
+                    absolute_base::convert_to_char(y, y_pos);
+
             }
             template <absolute_base::Numeric T>
             inline std::string convert_to_string(T source) {
@@ -70,7 +76,7 @@ namespace printing_tools {
 
             }
             template <absolute_base::Numeric T>
-            T convert_to_number(std::string source) {
+            inline T convert_to_number(std::string source) {
                 std::string::size_type position = 0;
                 T result = absolute_base::read_number_from_string_at_a_position<T>(source, &position);
                 if (position != source.length()) {
@@ -152,66 +158,69 @@ namespace printing_tools {
                     return false;
                 }
             }
-            struct string_index{
-            static std::vector<std::string> all_polymorphic_strings;
-            static uint64_t minus_index;
-            
-            uint64_t index;
-            string_index(std::string string_to_add):index{all_polymorphic_strings.length()}{
-                all_polymorphic_strings.push_back(string_to_add);
+            struct polymorphic_strings{
+            std::string* ptr;
+            polymorphic_strings(std::string string_to_build_it_with): 
+            ptr{    new std::string{  std::move( string_to_build_it_with )  }    } {}
+            inline std::string get(){
+                return *ptr;
             }
-            ~string_index(){
-                all_polymorphic_strings.erase(index);
+            inline std::string get_moved(){
+                return std::move(*ptr);
             }
+            ~polymorphic_strings(){
+                delete ptr;
             }
-            string_index::all_polymorphic_strings{};
-            string_index::minus_index{};
 
+            };
+           
             struct Polymorphic_accumulator {
-                std::variant<uint64_t, long double, all_polymorphic_strings> internal_data;
+                std::variant<uint64_t, long double, polymorphic_strings> internal_data;
                 bool value_type;
 
                 void pump(std::string* string_to_pump_to, std::string::size_type* output_string_position) {
                     std::visit([&](auto&& arg) {
-                        if constexpr (!std::is_same_v<string_index, decltype(arg)>) {
-                            std::string to_pump = std::move(all_polymorphic_strings[arg.index]);
-                            *string_to_pump_to += to_pump;
-                            *(static_cast<uint64_t*>(output_string_position)) += to_pump.length();
+                        std::string to_pump{};
+                        if constexpr (!std::is_same_v<polymorphic_strings, decltype(arg)>) {
+                            to_pump = arg.get();
                         }
                         else {
-                            std::string to_pump = std::to_string(all_polymorphic_strings[arg.index]);
-                            *string_to_pump_to += to_pump;
-                            *(static_cast<uint64_t*>(output_string_position)) += to_pump.length();
+                            to_pump = std::to_string(arg);
 
                         }
+                        *string_to_pump_to += to_pump;
+                        *(static_cast<uint64_t*>(output_string_position)) += to_pump.length();
+                        }, internal_data);
+                }
+                void pump_move(std::string* string_to_pump_to, std::string::size_type* output_string_position) {
+                    std::visit([&](auto&& arg) {
+                        if constexpr (!std::is_same_v<polymorphic_strings, decltype(arg)>) {
+                            std::string to_pump = std::move(arg.get());
+                            
+                        }
+                        else {
+                            std::string to_pump = std::to_string(arg);
+                        }
+                        *string_to_pump_to += to_pump;
+                        *(static_cast<uint64_t*>(output_string_position)) += to_pump.length();
                         
                         }, internal_data);
                 }
-                inline bool regex_match(std::string& string_to_match, std::string& pattern_to_be_matched) {
-                    estd::smatch match_info;
-                    return estd::regex_search(string_to_match, match_info, estd::regex{ pattern_to_be_matched });
-
-                }
-                bool regex_match(const Polymorphic_accumulator& rhs) {
-                  
-                        Polymorphic_accumulator result = std::visit([&](auto&& a, auto&& b) -> Polymorphic_accumulator {
-
-                            if constexpr (std::is_same_v<std::string, decltype(a)> && std::is_same_v<std::string, decltype(b)>) {
-                                regex_match(a, b);
-                            }
-                            else {
-                                if (std::is_same_v<std::string, decltype(b)>) {
-                                    regex_match(std::to_string(a), b);
-
-                                }
-                                else {
-                                    throw std::string{ "DYNAMIC ARETHIMETIC ENGINE: operand mismatch in regex match (both operands are strings) " };
-
-                                }
-                            }
-                            }, *this, rhs);
-                   
-                
+                void pump_polymorphic_copy_semantics(std::string* string_to_pump_to, std::string::size_type* output_string_position) {
+                    std::visit([&](auto&& arg) {
+                        if constexpr (!std::is_same_v<polymorphic_strings, decltype(arg)>) {
+                            bool move_or_copy=read_from_string<bool>(string_to_pump_to, output_string_position);
+                            
+                            std::string to_pump = move_or_copy?std::move(arg.get()):arg.get() ;
+                            
+                        }
+                        else {
+                            std::string to_pump = std::to_string(arg);
+                        }
+                        *string_to_pump_to += to_pump;
+                        *(static_cast<uint64_t*>(output_string_position)) += to_pump.length();
+                        
+                        }, internal_data);
                 }
 
                 template<typename Op_type>
@@ -275,22 +284,23 @@ namespace printing_tools {
                     return all_comparision_imp_generator(*this, polymorphic_accumulator, std::greater_equal <>{});
 
                 }
-                Polymorphic_accumulator operator+(Polymorphic_accumulator polymorphic_accumulator) {
+                inline Polymorphic_accumulator operator+(Polymorphic_accumulator polymorphic_accumulator) {
                     Polymorphic_accumulator result = std::visit([&](auto&& a, auto&& b) -> Polymorphic_accumulator {
 
                         if constexpr (std::is_same_v<std::string, decltype(a)>) {
                             if constexpr (!std::is_same_v<std::string, decltype(b)>) {
-                                return Polymorphic_accumulator{ std::move(a) + std::move(std::to_string(b) };//used std::move() because of strings
+                                return Polymorphic_accumulator{ a + b };//used std::move() because of strings
 
                             }
                             else {
-                                return Polymorphic_accumulator{ std::move(a) + std::move(b) };//used std::move() because of strings
+                                return Polymorphic_accumulator{ a + std::to_string(b) };//used std::move() because of strings
 
                             }
                         }
                         else {
-                            if constexpr (std::is_same_v<std::string, decltype(b)>) {
-                                throw std::string{"DYNAMIC ARETHIMETIC ENGINE std::visit all_opoerator_impl compile time error, first paremeter is std::string, type mismatch. ")};
+                        if constexpr (std::is_same_v<std::string, decltype(b)>) {
+                        return Polymorphic_accumulator{ std::to_string(a) + b };//used std::move() because of strings
+
                             }
                             else {
                                 return Polymorphic_accumulator{ a+b };
@@ -301,8 +311,36 @@ namespace printing_tools {
                     return result;
 
                 }
+                inline Polymorphic_accumulator plus_with_move(Polymorphic_accumulator polymorphic_accumulator) {
+                    Polymorphic_accumulator result = std::visit([&](auto&& a, auto&& b) -> Polymorphic_accumulator {
+
+                        if constexpr (std::is_same_v<std::string, decltype(a)>) {
+                            if constexpr (!std::is_same_v<std::string, decltype(b)>) {
+                                return Polymorphic_accumulator{ std::move(a) + std::move(b) };//used std::move() because of strings
+
+                            }
+                            else {
+                                return Polymorphic_accumulator{ std::move(a) + std::to_string(b) };//used std::move() because of strings
+
+                            }
+                        }
+                        else {
+                        if constexpr (std::is_same_v<std::string, decltype(b)>) {
+                        return Polymorphic_accumulator{ std::to_string(a) + std::move(b) };//used std::move() because of strings
+
+                            }
+                            else {
+                                return Polymorphic_accumulator{ a+b };
+
+                            }
+                        }
+                        }, *this, polymorphic_accumulator);
+                    return result;
+
+                }
+
                 template<typename Op_type>
-                Polymorphic_accumulator all_operator_impl_generator(const Polymorphic_accumulator& lhs, const Polymorphic_accumulator& rhs, Op_type operator_name) {
+                inline Polymorphic_accumulator all_operator_impl_generator(const Polymorphic_accumulator& lhs, const Polymorphic_accumulator& rhs, Op_type operator_name) {
                     
                     Polymorphic_accumulator result = std::visit([&](auto&& a, auto&& b) -> Polymorphic_accumulator {
                         //I used && to enable the good old reference forwading
@@ -321,10 +359,7 @@ namespace printing_tools {
                     
                     
                    }
-                inline Polymorphic_accumulator operator-(Polymorphic_accumulator polymorphic_accumulator) {
-                    return all_operator_impl_generator(*this, polymorphic_accumulator, std::plus <>{});
-
-                }
+                
                 inline Polymorphic_accumulator operator-(Polymorphic_accumulator polymorphic_accumulator) {
                     return all_operator_impl_generator(*this, polymorphic_accumulator, std::minus<>{});
 
@@ -386,6 +421,7 @@ namespace printing_tools {
         }
     }
 }
+
 
 
 
