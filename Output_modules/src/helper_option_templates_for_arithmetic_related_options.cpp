@@ -152,13 +152,24 @@ namespace printing_tools {
                     return false;
                 }
             }
-            std::vector<std::string> all_polymorphic_strings{}
             struct string_index{
+            static std::vector<std::string> all_polymorphic_strings;
+            static uint64_t minus_index;
+            
             uint64_t index;
+            string_index(std::string string_to_add):index{all_polymorphic_strings.length()}{
+                all_polymorphic_strings.push_back(string_to_add);
             }
+            ~string_index(){
+                all_polymorphic_strings.erase(index);
+            }
+            }
+            string_index::all_polymorphic_strings{};
+            string_index::minus_index{};
+
             struct Polymorphic_accumulator {
                 std::variant<uint64_t, long double, all_polymorphic_strings> internal_data;
-
+                bool value_type;
 
                 void pump(std::string* string_to_pump_to, std::string::size_type* output_string_position) {
                     std::visit([&](auto&& arg) {
@@ -354,7 +365,7 @@ namespace printing_tools {
 
 
                     else {
-                        return  Polymorphic_accumulator{ read_from_string<std::string>(string_to_read_from, pos) };
+                        return  Polymorphic_accumulator{ string_index{read_from_string<std::string>(string_to_read_from, pos)} };
                     }
                     
                 
@@ -375,6 +386,7 @@ namespace printing_tools {
         }
     }
 }
+
 
 
 
