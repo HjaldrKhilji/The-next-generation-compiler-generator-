@@ -600,56 +600,65 @@ namespace printing_tools {
         template<char operator_name>
         void polymorphic_calculator(const std::string& output_config, std::string::size_type* position, std::string* output_data, std::string::size_type* output_data_position) {
             using helper_templates_for_options::helpers_for_arithmetic_options::read_polymorphically_from_string;
-            using T_result_type = helper_templates_for_options::helpers_for_arithmetic_options::Accumulator<Polymorphic_accumulator>;
             try {
                  if constexpr (operator_name == '+') {
-                    T_result_type result =
-                        T_result_type{ read_polymorphically_from_string(output_config, position) }
-                    + T_result_type{ read_polymorphically_from_string(output_config, position) };
+                    auto result =
+                     read_polymorphically_from_string(output_config, position) 
+                    + read_polymorphically_from_string(output_config, position) ;
                     result.pump(output_data);
 
                 }
+                else if (operator_name == '@') {
+                     auto result =
+                     read_polymorphically_from_string(output_config, position).plus_with_move(
+                     read_polymorphically_from_string(output_config, position)) ;
+                    result.pump(output_data);
+
+                }     
                 else if (operator_name == '-') {
-                    T_result_type result =
-                        T_result_type{ read_polymorphically_from_string(output_config, position) }
-                    - T_result_type{ read_polymorphically_from_string(output_config, position) };
+                     auto result =
+                     read_polymorphically_from_string(output_config, position) 
+                    - read_polymorphically_from_string(output_config, position) ;
                     result.pump(output_data);
 
                 }
                 else if (operator_name == '*') {
-                    T_result_type result =
-                        T_result_type{ read_polymorphically_from_string(output_config, position) }
-                    - T_result_type{ read_polymorphically_from_string(output_config, position) };
+                    auto result =
+                     read_polymorphically_from_string(output_config, position) 
+                    * read_polymorphically_from_string(output_config, position) ;
                     result.pump(output_data);
 
                 }
                 else if (operator_name == '/') {
-                    T_result_type result =
-                        T_result_type{ read_polymorphically_from_string(output_config, position) }
-                    / T_result_type{ read_polymorphically_from_string(output_config, position) };
+                    auto result =
+                     read_polymorphically_from_string(output_config, position) 
+                    / read_polymorphically_from_string(output_config, position) ;
                     result.pump(output_data);
 
                 }
                 else if (operator_name == '|') {
-                    T_result_type result =
-                        T_result_type{ read_polymorphically_from_string(output_config, position) }
-                    | T_result_type{ read_polymorphically_from_string(output_config, position) };
+                     auto result =
+                     read_polymorphically_from_string(output_config, position) 
+                    | read_polymorphically_from_string(output_config, position) ;
                     result.pump(output_data);
 
                 }
                 else if (operator_name == '&') {
-                    T_result_type result =
-                        T_result_type{ read_polymorphically_from_string(output_config, position) }
-                    &T_result_type{ read_polymorphically_from_string(output_config, position) };
+                     auto result =
+                     read_polymorphically_from_string(output_config, position) 
+                    & read_polymorphically_from_string(output_config, position) ;
                     result.pump(output_data);
 
                 }
                 else if (operator_name == '^') {
-                    T_result_type result =
-                        T_result_type{ read_polymorphically_from_string(output_config, position) }
-                    ^ T_result_type{ read_polymorphically_from_string(output_config, position) };
+                     auto result =
+                     read_polymorphically_from_string(output_config, position) 
+                    ^ read_polymorphically_from_string(output_config, position) ;
                     result.pump(output_data);
 
+                }
+                else{
+                    static_assert(1, "invalid operation used to instantiate template");
                 }
             }
             catch (std::string engine_error_label) {
